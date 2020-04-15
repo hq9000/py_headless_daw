@@ -1,11 +1,11 @@
 from typing import List, Union, Dict
 from em.platform.rendering.dto.time_interval import TimeInterval
 from em.platform.rendering.processing_strategies.stream.constant_level import ConstantLevel
-from em.platform.rendering.schema.events.event import Event
-from em.platform.rendering.schema.host import Host
-from em.platform.rendering.schema.processing_strategy import ProcessingStrategy
+from py_headless_daw.schema.events.event import Event
+from py_headless_daw.schema.host import Host
+from py_headless_daw.schema.processing_strategy import ProcessingStrategy
 import numpy as np
-from em.platform.rendering.schema.wiring import StreamNode, EventNode, Node
+from py_headless_daw.schema.wiring import StreamNode, EventNode, Node
 
 
 class Unit:
