@@ -2,9 +2,10 @@ from typing import List
 
 import numpy as np
 import random
-from em.platform.rendering.dto.time_interval import TimeInterval
-from em.platform.rendering.schema.events.event import Event
-from em.platform.rendering.schema.processing_strategy import ProcessingStrategy
+
+from py_headless_daw.schema.dto.time_interval import TimeInterval
+from py_headless_daw.schema.events.event import Event
+from py_headless_daw.schema.processing_strategy import ProcessingStrategy
 
 
 class ImpulseNoiseGeneratorStrategy(ProcessingStrategy):

@@ -1,10 +1,10 @@
-from typing import List, Union
-
-from em.platform.rendering.dto.time_interval import TimeInterval
-from em.platform.rendering.schema.events.event import Event
+from typing import List, Union, Optional
 
 import numpy as np
 
+from py_headless_daw.schema.dto.time_interval import TimeInterval
+from py_headless_daw.schema.events.event import Event
+from py_headless_daw.schema.unit import Unit
 
 class Connector:
     def __init__(self, in_node, out_node):
@@ -18,24 +18,21 @@ class Connector:
 class Node:
     def __init__(self, processing_unit=None):
         """
-
         :param processing_unit: # Unit we are not doing type checking here to avoid circular dependency
         """
-        from em.platform.rendering.schema.unit import Unit
         self.unit: Unit = processing_unit
-        self.connector: Connector = None
+        self.connector: Optional[Connector] = None
 
     def set_connector(self, connector: Connector):
         self.connector = connector
 
-    def set_unit(self, processing_unit):
-        from em.platform.rendering.schema.unit import Unit
+    def set_unit(self, processing_unit: Unit):
         self.unit: Unit = processing_unit
 
-    def is_stream(self):
+    def is_stream(self) -> bool:
         return False
 
-    def is_event(self):
+    def is_event(self) -> bool:
         return False
 
     def render(self, interval: TimeInterval, out_buffer: Union[np.ndarray, List[Event]]):

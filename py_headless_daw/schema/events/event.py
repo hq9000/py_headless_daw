@@ -3,6 +3,7 @@ import random
 
 
 class Event(ABC):
+
     TYPE_MIDI = 'midi'
     TYPE_TRACK_SAMPLER = 'track_sampler'
     TYPE_PARAMETER_VALUE = 'param_value'

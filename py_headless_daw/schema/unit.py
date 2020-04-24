@@ -1,6 +1,7 @@
 from typing import List, Union, Dict
-from em.platform.rendering.dto.time_interval import TimeInterval
-from em.platform.rendering.processing_strategies.stream.constant_level import ConstantLevel
+
+from py_headless_daw.processing.stream.constant_level import ConstantLevel
+from py_headless_daw.schema.dto.time_interval import TimeInterval
 from py_headless_daw.schema.events.event import Event
 from py_headless_daw.schema.host import Host
 from py_headless_daw.schema.processing_strategy import ProcessingStrategy

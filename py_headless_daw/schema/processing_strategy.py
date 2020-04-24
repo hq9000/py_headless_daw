@@ -1,8 +1,8 @@
 from abc import abstractmethod, ABC
 from typing import List
 import numpy as np
-from em.platform.rendering.dto.time_interval import TimeInterval
-from em.platform.rendering.schema.events.event import Event
+from py_headless_daw.schema.dto.time_interval import TimeInterval
+from py_headless_daw.schema.events.event import Event
 
 
 class ProcessingStrategy(ABC):
@@ -12,7 +12,8 @@ class ProcessingStrategy(ABC):
                event_inputs: List[List[Event]], event_outputs: List[List[Event]]):
         pass
 
-    def _flatten_event_inputs(self, event_inputs: List[List[Event]]) -> List[Event]:
+    @staticmethod
+    def _flatten_event_inputs(event_inputs: List[List[Event]]) -> List[Event]:
 
         events: List[Event] = []
 
