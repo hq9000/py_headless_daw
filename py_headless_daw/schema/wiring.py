@@ -4,7 +4,7 @@ import numpy as np
 
 from py_headless_daw.schema.dto.time_interval import TimeInterval
 from py_headless_daw.schema.events.event import Event
-from py_headless_daw.schema.unit import Unit
+
 
 class Connector:
     def __init__(self, in_node, out_node):
@@ -20,13 +20,15 @@ class Node:
         """
         :param processing_unit: # Unit we are not doing type checking here to avoid circular dependency
         """
+        from py_headless_daw.schema.unit import Unit
         self.unit: Unit = processing_unit
         self.connector: Optional[Connector] = None
 
     def set_connector(self, connector: Connector):
         self.connector = connector
 
-    def set_unit(self, processing_unit: Unit):
+    def set_unit(self, processing_unit):
+        from py_headless_daw.schema.unit import Unit
         self.unit: Unit = processing_unit
 
     def is_stream(self) -> bool:
