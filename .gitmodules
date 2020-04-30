@@ -1,0 +1,3 @@
+[submodule "submodules/pyvst"]
+	path = submodules/pyvst
+	url = https://github.com/hq9000/pyvst.git
