@@ -8,7 +8,7 @@ from py_headless_daw.schema.events.event import Event
 class ProcessingStrategy(ABC):
 
     @abstractmethod
-    def render(self, interval: TimeInterval, stream_inputs: List[np.ndarray], stream_outputs: List[np.ndarray],
+    def render(self, interval: TimeInterval, stream_inputs: np.ndarray, stream_outputs: np.ndarray,
                event_inputs: List[List[Event]], event_outputs: List[List[Event]]):
         pass
 
