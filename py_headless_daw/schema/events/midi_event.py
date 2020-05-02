@@ -1,4 +1,4 @@
-from em.platform.rendering.schema.events.event import Event
+from py_headless_daw.schema.events.event import Event
 
 
 class MidiEvent(Event):
@@ -13,9 +13,6 @@ class MidiEvent(Event):
         self.data1: int = 0
         self.data2: int = 0
         self.note: int = -1
-
-    def get_type(self) -> str:
-        return Event.TYPE_MIDI
 
     def is_note_off(self) -> bool:
         # we consider any event with velocity == 0 as note off, which can be not correct sometimes,

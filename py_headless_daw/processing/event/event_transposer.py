@@ -11,7 +11,7 @@ class EventTransposer(AbstractStatelessEventProcessor):
 
     def _process_event(self, e: Event, buffer_length: int):
 
-        if e.get_type() == Event.TYPE_MIDI:
+        if e.get_event_type() == Event.TYPE_MIDI:
             midi_event: MidiEvent = e
             if midi_event.is_note_on() or midi_event.is_note_off():
                 midi_event.set_note(midi_event.get_note() + self._transpose)

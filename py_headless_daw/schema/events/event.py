@@ -8,10 +8,6 @@ class Event(ABC):
     TYPE_TRACK_SAMPLER = 'track_sampler'
     TYPE_PARAMETER_VALUE = 'param_value'
 
-    @abstractmethod
-    def get_type(self) -> str:
-        raise NotImplementedError('getting type is not possible on base Event class')
-
     def __init__(self, sample_position: int):
         self.sample_position: int = sample_position
         self.probability: float = 1.0

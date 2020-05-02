@@ -21,7 +21,7 @@ class MidiToTrackSamplerEventConverter(ProcessingStrategy):
 
         for i in range(0, len(event_inputs)):
             for event in event_inputs[i]:
-                if event.get_type() == Event.TYPE_MIDI:
+                if event.get_event_type() == Event.TYPE_MIDI:
                     midi_event: MidiEvent = event
                     event_outputs[i].append(self._get_converted(midi_event))
 

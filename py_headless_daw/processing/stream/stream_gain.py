@@ -23,7 +23,7 @@ class StreamGain(ProcessingStrategy):
         all_events = sorted(all_events, key=lambda event: event.sample_position)
 
         for event in all_events:
-            if event.get_type() == Event.TYPE_PARAMETER_VALUE:
+            if event.get_event_type() == Event.TYPE_PARAMETER_VALUE:
                 param_value_event: ParameterValueEvent = event
                 if param_value_event.parameter_id == self.PARAMETER_GAIN:
                     self.gain = param_value_event.value

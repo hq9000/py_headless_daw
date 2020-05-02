@@ -30,7 +30,7 @@ class EventMuter(ProcessingStrategy, FuzzilyDeterministicObject):
 
     def _event_should_pass(self, event: Event, interval: TimeInterval) -> bool:
 
-        if event.get_type() == Event.TYPE_MIDI:
+        if event.get_event_type() == Event.TYPE_MIDI:
             # noinspection PyUnresolvedReferences
             if event.is_note_off():
                 return True
