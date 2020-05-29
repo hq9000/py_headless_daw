@@ -22,7 +22,7 @@ class VstPlugin(ProcessingStrategy):
 
         self._pyvst_plugin: PyvstPlugin = PyvstPlugin(path_to_plugin, host_callback)
 
-    def render(self, interval: TimeInterval, stream_inputs: np.ndarray, stream_outputs: np.ndarray,
+    def render(self, interval: TimeInterval, stream_inputs: List[np.ndarray], stream_outputs: List[np.ndarray],
                event_inputs: List[List[Event]], event_outputs: List[List[Event]]):
         """
 
@@ -33,16 +33,9 @@ class VstPlugin(ProcessingStrategy):
         :param event_outputs:
         :return:
         """
-
-        num_input_channels: int
-        input_sample_frames: int
-        num_input_channels, input_sample_frames = stream_inputs.shape
-
-        num_output_channels: int
-        output_sample_frames: int
-        num_output_channels, output_sample_frames = stream_outputs.shape
-
-        assert input_sample_frames == output_sample_frames
+        sample_frames: int = stream_inputs[0].shape[0]
+        num_stream_inputs: int = len(stream_inputs)
+        num_stream_outputs: int = len(stream_outputs)
 
         flattened_events: List[Event] = self._flatten_event_inputs(event_inputs)
 
@@ -51,7 +44,7 @@ class VstPlugin(ProcessingStrategy):
         wrapped_events = wrap_vst_events(pyvst_events)
 
         self._pyvst_plugin.process_events(wrapped_events)
-        self._pyvst_plugin.process(stream_inputs, input_sample_frames)  # todo
+        self._pyvst_plugin.process() # todo
 
     def _transform_events_to_pyvst_events(self, native_events: List[Event]) -> List[PyvstMidiEvent]:
         res = []
@@ -81,3 +74,4 @@ class VstPlugin(ProcessingStrategy):
             detune=0,
             note_off_velocity=0
         )
+
