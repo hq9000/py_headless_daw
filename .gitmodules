@@ -1,0 +1,4 @@
+[submodule "submodules/cython-vst-loader"]
+	path = submodules/cython-vst-loader
+	url = https://github.com/hq9000/cython-vst-loader.git
+	branch = master
