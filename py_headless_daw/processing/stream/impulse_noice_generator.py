@@ -9,7 +9,10 @@ from py_headless_daw.schema.processing_strategy import ProcessingStrategy
 
 
 class ImpulseNoiseGeneratorStrategy(ProcessingStrategy):
-
+    """
+    generates portions of noise intermittenly with portions of silence.
+    Used mainly for testing and initial development.
+    """
     def __init__(self):
         self.times_called = 0
 
@@ -20,10 +23,10 @@ class ImpulseNoiseGeneratorStrategy(ProcessingStrategy):
 
         for i in range(0, num_samples):
             if i < num_samples // 2 and self.times_called < 2:
-                stream_outputs[0][i] = random.uniform(-1, 1)
-                stream_outputs[1][i] = random.uniform(-1, 1)
+                for output in stream_outputs:
+                    output[i] = random.uniform(-1, 1)
             else:
-                stream_outputs[0][i] = .0
-                stream_outputs[1][i] = .0
+                for output in stream_outputs:
+                    output[i] = .0
 
         self.times_called += 1
