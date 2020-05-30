@@ -14,6 +14,7 @@ class ImpulseNoiseGeneratorStrategy(ProcessingStrategy):
     Used mainly for testing and initial development.
     """
     def __init__(self):
+        super().__init__()
         self.times_called = 0
 
     def render(self, interval: TimeInterval, stream_inputs: List[np.ndarray], stream_outputs: List[np.ndarray],

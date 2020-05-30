@@ -10,6 +10,7 @@ from py_headless_daw.schema.processing_strategy import ProcessingStrategy
 class StereoPanner(ProcessingStrategy):
 
     def __init__(self, panning: float):
+        super().__init__()
         self.panning = panning
 
     def render(self, interval: TimeInterval, stream_inputs: List[np.ndarray], stream_outputs: List[np.ndarray],

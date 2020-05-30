@@ -34,4 +34,5 @@ class StreamGain(ProcessingStrategy):
             stream_outputs[i] *= self.gain
 
     def __init__(self, gain: np.float32):
+        super().__init__()
         self.gain: np.float32 = gain

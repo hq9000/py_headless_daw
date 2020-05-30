@@ -1,17 +1,15 @@
 from typing import List
-
+from cython_vst_loader.vst_host import VstHost
 import numpy as np
 
-from em.platform.rendering.dto.time_interval import TimeInterval
-from em.platform.rendering.schema.events.event import Event
-from em.platform.rendering.schema.processing_strategy import ProcessingStrategy
-import em.platform.adapters.vst_wrapper.vst_plugin as wrapper
+from py_headless_daw.schema.processing_strategy import ProcessingStrategy
 
 
 class VstPlugin(ProcessingStrategy):
 
-    def __init__(self, plugin_name: str):
+    def __init__(self, path_to_plugin_file: bytes):
         self.plugin_name: str = plugin_name
+        host = VstHost(self)
         self._plugin: wrapper.VstPlugin = wrapper.VstPlugin(plugin_name)
 
     def render(self, interval: TimeInterval, stream_inputs: List[np.ndarray], stream_outputs: List[np.ndarray],

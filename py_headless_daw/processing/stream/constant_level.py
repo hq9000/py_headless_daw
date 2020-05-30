@@ -10,6 +10,7 @@ from py_headless_daw.schema.processing_strategy import ProcessingStrategy
 class ConstantLevel(ProcessingStrategy):
 
     def __init__(self, level: np.float32):
+        super().__init__()
         self.level: np.float32 = level
 
     def render(self, interval: TimeInterval, stream_inputs: List[np.ndarray], stream_outputs: List[np.ndarray],

@@ -1,16 +1,30 @@
 from abc import abstractmethod, ABC
-from typing import List
+from typing import List, Optional
+
 import numpy as np
+
 from py_headless_daw.schema.dto.time_interval import TimeInterval
 from py_headless_daw.schema.events.event import Event
+from py_headless_daw.schema.unit import Unit
 
 
 class ProcessingStrategy(ABC):
+
+    def __init__(self):
+        self._unit: Optional[Unit] = None
 
     @abstractmethod
     def render(self, interval: TimeInterval, stream_inputs: List[np.ndarray], stream_outputs: List[np.ndarray],
                event_inputs: List[List[Event]], event_outputs: List[List[Event]]):
         pass
+
+    @property
+    def unit(self) -> Optional[Unit]:
+        return self._unit
+
+    @unit.setter
+    def unit(self, unit: Unit):
+        self._unit: Unit = unit
 
     @staticmethod
     def _flatten_event_inputs(event_inputs: List[List[Event]]) -> List[Event]:

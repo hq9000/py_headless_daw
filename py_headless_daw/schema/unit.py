@@ -1,10 +1,8 @@
 from typing import List, Union, Dict
 
-from py_headless_daw.processing.stream.constant_level import ConstantLevel
 from py_headless_daw.schema.dto.time_interval import TimeInterval
 from py_headless_daw.schema.events.event import Event
 from py_headless_daw.schema.host import Host
-from py_headless_daw.schema.processing_strategy import ProcessingStrategy
 import numpy as np
 from py_headless_daw.schema.wiring import StreamNode, EventNode, Node
 
@@ -12,7 +10,7 @@ from py_headless_daw.schema.wiring import StreamNode, EventNode, Node
 class Unit:
 
     def __init__(self, number_of_stream_inputs: int, number_of_event_inputs: int, number_of_stream_outputs: int,
-                 number_of_event_outputs: int, host: Host, processing_strategy: ProcessingStrategy = None):
+                 number_of_event_outputs: int, host: Host, processing_strategy):
         """
 
         :param number_of_stream_inputs:
@@ -28,19 +26,21 @@ class Unit:
         self.output_event_nodes: List[EventNode] = [EventNode(self) for _ in range(number_of_event_outputs)]
         self.last_processed_interval_id: int = -1
 
-        if processing_strategy is None:
-            processing_strategy = ConstantLevel(np.float32(0.0))
+        # if processing_strategy is None:
+        #     processing_strategy = ConstantLevel(np.float32(0.0))
 
-        self._processing_strategy: ProcessingStrategy = processing_strategy
+        processing_strategy.unit = self
+
+        self._processing_strategy = processing_strategy
         processing_strategy.unit = self
 
         self.name = 'unnamed'
         self._internal_buffers: Dict[Node] = {}
 
-    def set_processing_strategy(self, strategy: ProcessingStrategy):
-        self._processing_strategy: ProcessingStrategy = strategy
+    def set_processing_strategy(self, strategy):
+        self._processing_strategy = strategy
 
-    def get_processing_strategy(self) -> ProcessingStrategy:
+    def get_processing_strategy(self):
         return self._processing_strategy
 
     def _refresh_internal_buffers(self, interval: TimeInterval, size_of_stream_buffer: Union[int, None] = None):

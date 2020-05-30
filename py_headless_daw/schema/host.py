@@ -1,12 +1,14 @@
-
-
 class Host:
 
     def __init__(self):
         self._bpm: float = 120.0
+        self._block_size: int = 1024
+        self._sample_rate: int = 44100
 
-    def get_bpm(self) -> float:
-        return self.get_bpm()
+    @property
+    def bpm(self) -> float:
+        return self._bpm
 
-    def set_bpm(self, bpm: float):
-        self._bpm = bpm
+    @bpm.setter
+    def bpm(self, new_bpm: float):
+        self._bpm = new_bpm
