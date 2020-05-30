@@ -1,8 +1,10 @@
-from em.platform.rendering.schema.events.event import Event
+from py_headless_daw.schema.events.event import Event
 
 
 class ParameterValueEvent(Event):
-    def get_type(self) -> str:
+
+    @property
+    def type(self) -> str:
         return Event.TYPE_PARAMETER_VALUE
 
     def __init__(self, sample_position: int, parameter_id: str, value: float):

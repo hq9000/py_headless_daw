@@ -8,6 +8,11 @@ class Event(ABC):
     TYPE_TRACK_SAMPLER = 'track_sampler'
     TYPE_PARAMETER_VALUE = 'param_value'
 
+    @property
+    @abstractmethod
+    def type(self):
+        pass
+
     def __init__(self, sample_position: int):
         self.sample_position: int = sample_position
         self.probability: float = 1.0

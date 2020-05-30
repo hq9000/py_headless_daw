@@ -2,10 +2,10 @@ from typing import List
 
 import numpy as np
 
-from em.platform.rendering.dto.time_interval import TimeInterval
-from em.platform.rendering.schema.events.event import Event
-from em.platform.rendering.schema.events.parameter_value_event import ParameterValueEvent
-from em.platform.rendering.schema.processing_strategy import ProcessingStrategy
+from py_headless_daw.schema.dto.time_interval import TimeInterval
+from py_headless_daw.schema.events.event import Event
+from py_headless_daw.schema.events.parameter_value_event import ParameterValueEvent
+from py_headless_daw.schema.processing_strategy import ProcessingStrategy
 
 
 class StreamGain(ProcessingStrategy):
@@ -23,7 +23,8 @@ class StreamGain(ProcessingStrategy):
         all_events = sorted(all_events, key=lambda event: event.sample_position)
 
         for event in all_events:
-            if event.get_event_type() == Event.TYPE_PARAMETER_VALUE:
+            if event.type == Event.TYPE_PARAMETER_VALUE:
+                # noinspection PyTypeChecker
                 param_value_event: ParameterValueEvent = event
                 if param_value_event.parameter_id == self.PARAMETER_GAIN:
                     self.gain = param_value_event.value
