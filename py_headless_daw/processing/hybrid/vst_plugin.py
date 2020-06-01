@@ -9,12 +9,14 @@ from py_headless_daw.schema.dto.time_interval import TimeInterval
 from py_headless_daw.schema.events.event import Event
 from py_headless_daw.schema.events.midi_event import MidiEvent
 from py_headless_daw.schema.processing_strategy import ProcessingStrategy
+from py_headless_daw.schema.unit import Unit
 
 
 class VstPlugin(ProcessingStrategy):
 
-    def __init__(self, path_to_plugin_file: bytes):
+    def __init__(self, path_to_plugin_file: bytes, unit: Unit):
         super().__init__()
+        self.unit = unit
         self._path_to_plugin_file: bytes = path_to_plugin_file
 
         bpm = self.unit.host.bpm
@@ -22,8 +24,8 @@ class VstPlugin(ProcessingStrategy):
         buffer_size = self.unit.host.block_size
 
         host = VstHost(int(sample_rate), buffer_size)
-
-        self._internal_plugin: InternalPlugin = InternalPlugin(path_to_plugin_file, )
+        host.bpm = bpm
+        self._internal_plugin: InternalPlugin = InternalPlugin(path_to_plugin_file, host)
 
     def render(self, interval: TimeInterval, stream_inputs: List[np.ndarray], stream_outputs: List[np.ndarray],
                event_inputs: List[List[Event]], event_outputs: List[List[Event]]):
@@ -35,9 +37,27 @@ class VstPlugin(ProcessingStrategy):
             # noinspection PyTypeChecker
             self._internal_plugin.process_events(internal_midi_events)
 
-        # convert inputs/outputs into lists of pointers
-        self._plugin.process_audio(stream_inputs, stream_outputs)
+        def numpy_array_to_pointer(numpy_array: np.ndarray) -> int:
+            if numpy_array.ndim != 1:
+                raise Exception('expected a 1d numpy array here')
+            pointer, ro_flag = numpy_array.__array_interface__['data']
+            return pointer
 
+        input_stream_pointers: List[int] = []
+        output_stream_pointers: List[int] = []
+
+        block_size: int = stream_outputs[0].shape[0]
+        for stream_input in stream_inputs:
+            if stream_input.shape[0] != block_size:
+                raise Exception('block of different unexpected size')
+            input_stream_pointers.append(numpy_array_to_pointer(stream_input))
+
+        for stream_output in stream_outputs:
+            if stream_output.shape[0] != block_size:
+                raise Exception('block of different unexpected size')
+            output_stream_pointers.append(numpy_array_to_pointer(stream_output))
+
+        self._internal_plugin.process_replacing(input_stream_pointers, output_stream_pointers, block_size)
 
     @staticmethod
     def _convert_midi_event_to_internal(external_event: MidiEvent) -> VstMidiEvent:

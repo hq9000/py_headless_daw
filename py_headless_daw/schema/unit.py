@@ -1,16 +1,17 @@
 from typing import List, Union, Dict
 
+import numpy as np
+
 from py_headless_daw.schema.dto.time_interval import TimeInterval
 from py_headless_daw.schema.events.event import Event
 from py_headless_daw.schema.host import Host
-import numpy as np
 from py_headless_daw.schema.wiring import StreamNode, EventNode, Node
 
 
 class Unit:
 
     def __init__(self, number_of_stream_inputs: int, number_of_event_inputs: int, number_of_stream_outputs: int,
-                 number_of_event_outputs: int, host: Host, processing_strategy):
+                 number_of_event_outputs: int, host: Host, processing_strategy=None):
         """
 
         :param number_of_stream_inputs:
@@ -25,20 +26,17 @@ class Unit:
         self.input_event_nodes: List[EventNode] = [EventNode(self) for _ in range(number_of_event_inputs)]
         self.output_event_nodes: List[EventNode] = [EventNode(self) for _ in range(number_of_event_outputs)]
         self.last_processed_interval_id: int = -1
+        self._processing_strategy = None  # no type hints to avoid an import cycle
 
-        # if processing_strategy is None:
-        #     processing_strategy = ConstantLevel(np.float32(0.0))
-
-        processing_strategy.unit = self
-
-        self._processing_strategy = processing_strategy
-        processing_strategy.unit = self
+        if processing_strategy is not None:
+            self.set_processing_strategy(processing_strategy)
 
         self.name = 'unnamed'
         self._internal_buffers: Dict[Node] = {}
 
     def set_processing_strategy(self, strategy):
         self._processing_strategy = strategy
+        strategy.unit = self
 
     def get_processing_strategy(self):
         return self._processing_strategy

@@ -18,3 +18,4 @@ class ImpulseNoiseGeneratorStrategyTest(unittest.TestCase):
         interval.end_in_bars = 1
 
         strategy.render(interval, [], [out_stream_buffer], [], [])
+

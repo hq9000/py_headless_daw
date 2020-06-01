@@ -43,7 +43,7 @@ class ProcessingStrategy(ABC):
 
         res = []
         for event in flattened_events:
-            if event.get_event_type() == event_type:
+            if event.type == event_type:
                 res.append(event)
 
         return res

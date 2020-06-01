@@ -1,8 +1,7 @@
-from em.platform.rendering.schema.events.midi_event import MidiEvent
+from py_headless_daw.schema.events.midi_event import MidiEvent
 
 
 class MidiEventFactory:
-
     SAMPLE_POSITION_UNDEFINED: int = -1
 
     STATUS_TEMPLATE_NOTE_ON: int = 0b10010000
