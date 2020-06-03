@@ -28,6 +28,8 @@ jobs:
     - name: clonning submodules
       run: |
         git submodule update
+        ls submodules
+        ls submodules/cython-vst-loader
     - name: Build Cython module
       run: |
         cd submodules/cython-vst-loader/cython_vst_loader; python setup.py build_ext --inplace
