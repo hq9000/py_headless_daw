@@ -28,8 +28,6 @@ jobs:
     - name: clonning submodules
       run: |
         git submodule update --init
-        ls submodules
-        ls submodules/cython-vst-loader
     - name: Build Cython module
       run: |
         cd submodules/cython-vst-loader/cython_vst_loader; python setup.py build_ext --inplace
@@ -41,4 +39,5 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with pytest
       run: |
+        echo $PYTHONPATH
         pytest
