@@ -27,7 +27,7 @@ jobs:
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: clonning submodules
       run: |
-        git submodule update
+        git submodule update --init
         ls submodules
         ls submodules/cython-vst-loader
     - name: Build Cython module
