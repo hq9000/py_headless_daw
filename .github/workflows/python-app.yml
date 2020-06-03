@@ -26,8 +26,8 @@ jobs:
         pip install flake8 pytest
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Build Cython module
-        run: |
-          cd submodules/cython-vst-loader/cython_vst_loader; python setup.py build_ext --inplace
+      run: |
+        cd submodules/cython-vst-loader/cython_vst_loader; python setup.py build_ext --inplace
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
