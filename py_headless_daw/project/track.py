@@ -20,9 +20,3 @@ class Track(HavingParameters):
 
         self.add_parameter(self.GAIN, 1.0)
         self.add_parameter(self.PANNING, 0.0)
-
-        self.add_parameter(self.SEND1_GAIN, 0.1)
-        self.add_parameter(self.SEND1_PANNING, 0.0)
-
-        self.add_parameter(self.SEND2_GAIN, 0.1)
-        self.add_parameter(self.SEND2_PANNING, 0.0)
