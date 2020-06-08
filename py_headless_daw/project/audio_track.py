@@ -1,6 +1,6 @@
-from typing import List, Optional
+from typing import List
 
-from py_headless_daw.project.plugins.effect import Effect
+from py_headless_daw.project.plugins.plugin import Plugin
 from py_headless_daw.project.project import Track
 
 
@@ -10,7 +10,14 @@ class AudioTrack(Track):
 
     def __init__(self):
         super().__init__()
-        self.effects: List[Effect] = []
-
         self.add_parameter(self.GAIN, 1.0)
         self.add_parameter(self.PANNING, 0.0)
+        self._plugins: List[Plugin] = []
+
+    @property
+    def plugins(self) -> List[Plugin]:
+        return self._plugins
+
+    @plugins.setter
+    def plugins(self, plugins: List[Plugin]):
+        self._plugins = plugins

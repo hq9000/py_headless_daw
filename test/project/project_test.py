@@ -7,28 +7,24 @@ from py_headless_daw.project.content.midi_clip import MidiClip
 from py_headless_daw.project.content.midi_note import MidiNote
 from py_headless_daw.project.exceptions import RoutingException
 from py_headless_daw.project.midi_track import MidiTrack
+from py_headless_daw.project.plugins.vst_plugin import VstPlugin
 from py_headless_daw.project.project import Project
 from py_headless_daw.project.sampler_track import SamplerTrack
-from py_headless_daw.project.synth_track import SynthTrack
 
 
 class ProjectTest(unittest.TestCase):
 
-    def test_synth_track_output_target(self):
+    def test_midi_track_output_target(self):
         with self.assertRaises(RoutingException):
-            synth_track = SynthTrack()
-            other_synth_track = SynthTrack()
-            synth_track.add_output(other_synth_track)
-
-        with self.assertRaises(RoutingException):
-            synth_track = SynthTrack()
             midi_track = MidiTrack(1)
+            other_midi_track = MidiTrack(1)
             # noinspection PyTypeChecker
-            synth_track.add_output(midi_track)
+            midi_track.add_output(other_midi_track)
 
         audio_track = AudioTrack()
-        synth_track.add_output(audio_track)
+        midi_track.add_output(audio_track)
 
+    # noinspection PyMethodMayBeStatic
     def test_create_project(self):
         """
         +------------+    +-------------+    +--------+
@@ -59,7 +55,7 @@ class ProjectTest(unittest.TestCase):
 
         # - tracks
         master_track: AudioTrack = AudioTrack()
-        synth_track: SynthTrack = SynthTrack()
+        synth_track: AudioTrack = AudioTrack()
         midi_track: MidiTrack = MidiTrack(1)
         sampler_track: SamplerTrack = SamplerTrack()
         send_track: AudioTrack = AudioTrack()
@@ -83,7 +79,7 @@ class ProjectTest(unittest.TestCase):
             sampler_track,
             send1, send2)
 
-        # - adding some midi
+        # - adding some midi content
         midi_clip = MidiClip(0.0, 1.0)
         midi_clip.midi_notes = [
             MidiNote(0.0, 65, 0.1),
@@ -94,7 +90,36 @@ class ProjectTest(unittest.TestCase):
 
         midi_track.clips = [midi_clip]
 
-        # - adding some audio
+        # - adding some audio content
         path_to_file = str(Path(__file__).parents[0]) + "/resources/test.wav"
         audio_clip = AudioClip(0.1, 1.1, path_to_file, 40, 1.1)
         sampler_track.clips = [audio_clip]
+
+        # - putting plugins to tracks
+        synth = self._create_vst_plugin('amsynth-vst.x86_64-linux.so')
+        effect_on_synth_track = self._create_vst_plugin('DragonflyRoomReverb-vst.x86_64-linux.so')
+        effect_on_sampler_track = self._create_vst_plugin('DragonflyRoomReverb-vst.x86_64-linux.so')
+        effect_on_send_track = self._create_vst_plugin('DragonflyRoomReverb-vst.x86_64-linux.so')
+        effect_on_master_track = self._create_vst_plugin('DragonflyRoomReverb-vst.x86_64-linux.so')
+
+        synth_track.plugins = [
+            synth, effect_on_synth_track
+        ]
+
+        sampler_track.plugins = [
+            effect_on_sampler_track
+        ]
+
+        send_track.plugins = [
+            effect_on_send_track
+        ]
+
+        master_track.plugins = [
+            effect_on_master_track
+        ]
+
+    @staticmethod
+    def _create_vst_plugin(name: str) -> VstPlugin:
+        dir_of_this_file = str(Path(__file__).parents[0])
+        return VstPlugin(
+            dir_of_this_file + '/../../submodules/cython-vst-loader/tests/test_plugins/' + name)
