@@ -1,3 +1,6 @@
+from typing import List
+
+from py_headless_daw.project.content.midi_clip import MidiClip
 from py_headless_daw.project.exceptions import RoutingException
 from py_headless_daw.project.project import Track
 from py_headless_daw.project.synth_track import SynthTrack
@@ -7,6 +10,7 @@ class MidiTrack(Track):
     def __init__(self, channel: int):
         super().__init__()
         self.channel: int = channel
+        self.clips: List[MidiClip] = []
 
     def add_output(self, output: SynthTrack):
         if not isinstance(output, SynthTrack):

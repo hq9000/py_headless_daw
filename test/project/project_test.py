@@ -1,6 +1,10 @@
 import unittest
+from pathlib import Path
 
 from py_headless_daw.project.audio_track import AudioTrack
+from py_headless_daw.project.content.audio_clip import AudioClip
+from py_headless_daw.project.content.midi_clip import MidiClip
+from py_headless_daw.project.content.midi_note import MidiNote
 from py_headless_daw.project.exceptions import RoutingException
 from py_headless_daw.project.midi_track import MidiTrack
 from py_headless_daw.project.project import Project
@@ -53,7 +57,7 @@ class ProjectTest(unittest.TestCase):
         """
         project = Project()
 
-        # 1. tracks
+        # - tracks
         master_track: AudioTrack = AudioTrack()
         synth_track: SynthTrack = SynthTrack()
         midi_track: MidiTrack = MidiTrack(1)
@@ -62,7 +66,7 @@ class ProjectTest(unittest.TestCase):
         send1: AudioTrack = AudioTrack()
         send2: AudioTrack = AudioTrack()
 
-        # 2. commutation
+        # - commutation
         midi_track.add_output(synth_track)
         synth_track.add_output(master_track)
         synth_track.add_output(send1)
@@ -72,9 +76,25 @@ class ProjectTest(unittest.TestCase):
         send2.add_output(send_track)
         send_track.add_output(master_track)
 
-        # 3. registering tracks in the project
+        # - registering tracks in the project
         project.add_tracks(
             midi_track, synth_track,
             master_track, send_track,
             sampler_track,
             send1, send2)
+
+        # - adding some midi
+        midi_clip = MidiClip(0.0, 1.0)
+        midi_clip.midi_notes = [
+            MidiNote(0.0, 65, 0.1),
+            MidiNote(0.25, 66, 0.2),
+            MidiNote(0.5, 67, 0.025),
+            MidiNote(0.75, 68, 0.005),
+        ]
+
+        midi_track.clips = [midi_clip]
+
+        # - adding some audio
+        path_to_file = str(Path(__file__).parents[0]) + "/resources/test.wav"
+        audio_clip = AudioClip(0.1, 1.1, path_to_file, 40, 1.1)
+        sampler_track.clips = [audio_clip]
