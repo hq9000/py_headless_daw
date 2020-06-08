@@ -23,3 +23,11 @@ class HavingParameters:
             raise Exception('parameter named ' + name + ' is not present in this object')
 
         return self._parameters[name]
+
+    def get_parameter_value(self, name: str) -> float:
+        param = self.get_parameter(name)
+        return param.value
+
+    def set_parameter_value(self, name: str, value: float):
+        param = self.get_parameter_value(name)
+        param.value = value

@@ -1,22 +1,19 @@
-from typing import Optional, List
+from typing import List
 
 from py_headless_daw.project.having_parameters import HavingParameters
-from py_headless_daw.project.plugins.effect import Effect
-from py_headless_daw.project.plugins.synth import Synth
 
 
 class Track(HavingParameters):
-    GAIN: str = 'gain'
-    PANNING: str = 'panning'
-    SEND1_GAIN: str = 'send1_gain'
-    SEND1_PANNING: str = 'send1_panning'
-    SEND2_GAIN: str = 'send2_gain'
-    SEND2_PANNING: str = 'send2_panning'
-
     def __init__(self):
         super().__init__()
-        self._synth: Optional[Synth] = None
-        self._effects: List[Effect] = []
 
-        self.add_parameter(self.GAIN, 1.0)
-        self.add_parameter(self.PANNING, 0.0)
+        self.outputs = []  # type: List[Track]
+        self.inputs = []  # type: List[Track]
+
+    def add_input(self, input_track):
+        self.inputs.append(input_track)
+
+    def add_output(self, output_track):
+        # type: (Track)->None
+        self.outputs.append(output_track)
+        output_track.inputs.append(self)
