@@ -1,9 +1,10 @@
-from typing import List, Union, Optional
+from typing import List, Union
 
 import numpy as np
 
 from py_headless_daw.schema.dto.time_interval import TimeInterval
 from py_headless_daw.schema.events.event import Event
+from py_headless_daw.schema.exceptions import SchemaException
 
 
 class Connector:
@@ -11,8 +12,8 @@ class Connector:
         self.input_node: Node = in_node
         self.out_node: Node = out_node
 
-        self.input_node.connector = self
-        self.out_node.connector = self
+        self.input_node.attach_to_connector_output(self)
+        self.out_node.attach_to_connector_input(self)
 
 
 class Node:
@@ -22,14 +23,21 @@ class Node:
         """
         from py_headless_daw.schema.unit import Unit
         self.unit: Unit = processing_unit
-        self.connector: Optional[Connector] = None
+        self._connectors: List[Connector] = []
 
-    def set_connector(self, connector: Connector):
-        self.connector = connector
+    def attach_to_connector_output(self, connector: Connector):
+        if self._is_unit_output():
+            raise SchemaException(
+                'this node is an output of a unit, but it has been attempted to connect to an output of a connector')
 
-    def set_unit(self, processing_unit):
-        from py_headless_daw.schema.unit import Unit
-        self.unit: Unit = processing_unit
+        self._connectors.append(connector)
+
+    def attach_to_connector_input(self, connector: Connector):
+        if not self._is_unit_output():
+            raise SchemaException(
+                'this node is an input of a unit, but it has been attempted to connect to an input of a connector')
+
+        self._connectors.append(connector)
 
     def is_stream(self) -> bool:
         return False
@@ -38,20 +46,34 @@ class Node:
         return False
 
     def render(self, interval: TimeInterval, out_buffer: Union[np.ndarray, List[Event]]):
+        """
 
+        :param interval:
+        :param out_buffer:
+        :return:
+        """
         if not self._is_unit_output():
             # this node is not directly an output of a unit, so we
-            # need to find its outputting unit through the connector
-            node_to_render: Node = self.connector.input_node
+            # need to find its outputting units through the connectors
+            nodes_to_render: List[Node] = []
+            for connector in self._connectors:
+                nodes_to_render.append(connector.input_node)
         else:
             # the node IS an output of a unit, so we render it directly`
-            node_to_render = self
+            nodes_to_render: List[Node] = [self]
 
-        if self.is_stream():
-            node_to_render.unit.render(interval, out_buffer, None, node_to_render)
-        if self.is_event():
-            node_to_render.unit.render(interval, None, out_buffer, node_to_render)
-
+        for sequence_number, node_to_render in enumerate(nodes_to_render):
+            if self.is_stream():
+                if 0 == sequence_number:
+                    node_to_render.unit.render(interval, out_buffer, None, node_to_render)
+                else:
+                    node_to_render.unit.render_add(interval, out_buffer, None, node_to_render)
+            if self.is_event():
+                if 0 == sequence_number:
+                    node_to_render.unit.render(interval, None, out_buffer, node_to_render)
+                else:
+                    node_to_render.unit.render_add(interval, None, out_buffer, node_to_render)
+                    
     def _is_unit_output(self) -> bool:
         if self.unit is not None:
             return self.unit.is_output(self)

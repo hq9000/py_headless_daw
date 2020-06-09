@@ -4,8 +4,12 @@ import numpy as np
 
 from py_headless_daw.schema.dto.time_interval import TimeInterval
 from py_headless_daw.schema.events.event import Event
+from py_headless_daw.schema.exceptions import SchemaException
 from py_headless_daw.schema.host import Host
 from py_headless_daw.schema.wiring import StreamNode, EventNode, Node
+
+RENDERING_TYPE_REPLACE: str = 'replace'
+RENDERING_TYPE_ADD: str = 'add'
 
 
 class Unit:
@@ -108,9 +112,10 @@ class Unit:
 
     def render(self, interval: TimeInterval, out_stream_buffer: Union[np.ndarray, None],
                out_event_buffer: Union[List[Event], None],
-               out_node: Node):
+               out_node: Node, rendering_type: str):
         """
 
+        :param rendering_type:
         :param interval:
         :param out_stream_buffer:
         :param out_event_buffer:
@@ -126,13 +131,13 @@ class Unit:
 
         if out_node.is_stream():
             out_node: StreamNode
-            self._render_stream_buffer_to_output(out_node, out_stream_buffer)
+            self._render_stream_buffer_to_output(out_node, out_stream_buffer, rendering_type)
 
         if out_node.is_event():
             out_node: EventNode
-            self._render_event_buffer_to_output(out_node, out_event_buffer)
+            self._render_event_buffer_to_output(out_node, out_event_buffer, rendering_type)
 
-    def _render_stream_buffer_to_output(self, out_node: StreamNode, out_stream_buffer: np.ndarray):
+    def _render_stream_buffer_to_output(self, out_node: StreamNode, out_stream_buffer: np.ndarray, rendering_type: str):
         """
 
         :param out_node:
@@ -140,9 +145,14 @@ class Unit:
         :return:
         """
         internal_buffer: np.ndarray = self._find_internal_buffer(out_node)
-        np.copyto(out_stream_buffer, internal_buffer)
+        if rendering_type == RENDERING_TYPE_REPLACE:
+            np.copyto(out_stream_buffer, internal_buffer)
+        elif rendering_type == RENDERING_TYPE_ADD:
+            out_stream_buffer += internal_buffer
+        else:
+            raise SchemaException('unknown rendering type "' + rendering_type + '"')
 
-    def _render_event_buffer_to_output(self, out_node: EventNode, out_event_buffer: List[Event]):
+    def _render_event_buffer_to_output(self, out_node: EventNode, out_event_buffer: List[Event], rendering_type: str):
         """
 
         :param out_node:
