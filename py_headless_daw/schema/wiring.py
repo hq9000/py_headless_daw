@@ -12,8 +12,8 @@ class Connector:
         self.input_node: Node = in_node
         self.out_node: Node = out_node
 
-        self.input_node.attach_to_connector_output(self)
-        self.out_node.attach_to_connector_input(self)
+        self.input_node.attach_to_connector_input(self)
+        self.out_node.attach_to_connector_output(self)
 
 
 class Node:
@@ -52,6 +52,9 @@ class Node:
         :param out_buffer:
         :return:
         """
+        # to postpone importing to avoid a cycle:
+        from py_headless_daw.schema.unit import RENDERING_TYPE_REPLACE, RENDERING_TYPE_ADD
+
         if not self._is_unit_output():
             # this node is not directly an output of a unit, so we
             # need to find its outputting units through the connectors
@@ -63,17 +66,18 @@ class Node:
             nodes_to_render: List[Node] = [self]
 
         for sequence_number, node_to_render in enumerate(nodes_to_render):
+
             if self.is_stream():
                 if 0 == sequence_number:
-                    node_to_render.unit.render(interval, out_buffer, None, node_to_render)
+                    node_to_render.unit.render(interval, out_buffer, None, node_to_render, RENDERING_TYPE_REPLACE)
                 else:
-                    node_to_render.unit.render_add(interval, out_buffer, None, node_to_render)
+                    node_to_render.unit.render(interval, out_buffer, None, node_to_render, RENDERING_TYPE_ADD)
             if self.is_event():
                 if 0 == sequence_number:
-                    node_to_render.unit.render(interval, None, out_buffer, node_to_render)
+                    node_to_render.unit.render(interval, None, out_buffer, node_to_render, RENDERING_TYPE_REPLACE)
                 else:
-                    node_to_render.unit.render_add(interval, None, out_buffer, node_to_render)
-                    
+                    node_to_render.unit.render(interval, None, out_buffer, node_to_render, RENDERING_TYPE_ADD)
+
     def _is_unit_output(self) -> bool:
         if self.unit is not None:
             return self.unit.is_output(self)
