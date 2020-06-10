@@ -68,4 +68,8 @@ class ProjectCompiler:
     @staticmethod
     def _compile_audio_track_itself(track: AudioTrack) -> Unit:
 
+
+        for plugin in track.plugins:
+            unit = self._compile_audio_plugin_to_unit
+
         pass
