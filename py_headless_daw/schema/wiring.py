@@ -9,6 +9,7 @@ from py_headless_daw.schema.exceptions import SchemaException
 
 class Connector:
     def __init__(self, in_node, out_node):
+        # type: (Node, Node) -> None
         self.input_node: Node = in_node
         self.out_node: Node = out_node
 
