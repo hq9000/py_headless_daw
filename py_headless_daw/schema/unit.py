@@ -25,10 +25,13 @@ class Unit:
         :param processing_strategy:
         """
         self.host = host
-        self.input_stream_nodes: List[StreamNode] = [StreamNode(self) for _ in range(number_of_stream_inputs)]
-        self.output_stream_nodes: List[StreamNode] = [StreamNode(self) for _ in range(number_of_stream_outputs)]
-        self.input_event_nodes: List[EventNode] = [EventNode(self) for _ in range(number_of_event_inputs)]
-        self.output_event_nodes: List[EventNode] = [EventNode(self) for _ in range(number_of_event_outputs)]
+
+        self._input_stream_nodes: List[StreamNode] = [StreamNode(self) for _ in range(number_of_stream_inputs)]
+        self._output_stream_nodes: List[StreamNode] = [StreamNode(self) for _ in range(number_of_stream_outputs)]
+
+        self._input_event_nodes: List[EventNode] = [EventNode(self) for _ in range(number_of_event_inputs)]
+        self._output_event_nodes: List[EventNode] = [EventNode(self) for _ in range(number_of_event_outputs)]
+
         self.last_processed_interval_id: int = -1
         self._processing_strategy = None  # no type hints to avoid an import cycle
 
@@ -37,6 +40,22 @@ class Unit:
 
         self.name = 'unnamed'
         self._internal_buffers: Dict[Node] = {}
+
+    @property
+    def output_stream_nodes(self) -> List[StreamNode]:
+        return self._output_stream_nodes
+
+    @property
+    def input_stream_nodes(self) -> List[StreamNode]:
+        return self._input_stream_nodes
+
+    @property
+    def output_event_nodes(self) -> List[EventNode]:
+        return self._output_event_nodes
+
+    @property
+    def input_event_nodes(self) -> List[EventNode]:
+        return self._output_event_nodes
 
     def set_processing_strategy(self, strategy):
         self._processing_strategy = strategy
