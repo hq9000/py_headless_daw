@@ -51,10 +51,10 @@ class ProjectTest(unittest.TestCase):
 
         :return:
         """
-        project = Project()
 
         # - tracks
         master_track: AudioTrack = AudioTrack()
+
         synth_track: AudioTrack = AudioTrack()
         midi_track: MidiTrack = MidiTrack(1)
         sampler_track: SamplerTrack = SamplerTrack()
@@ -71,13 +71,6 @@ class ProjectTest(unittest.TestCase):
         send1.add_output(send_track)
         send2.add_output(send_track)
         send_track.add_output(master_track)
-
-        # - registering tracks in the project
-        project.add_tracks(
-            midi_track, synth_track,
-            master_track, send_track,
-            sampler_track,
-            send1, send2)
 
         # - adding some midi content
         midi_clip = MidiClip(0.0, 1.0)
@@ -117,6 +110,8 @@ class ProjectTest(unittest.TestCase):
         master_track.plugins = [
             effect_on_master_track
         ]
+
+        project = Project(master_track)
 
     @staticmethod
     def _create_vst_plugin(name: str) -> VstPlugin:
