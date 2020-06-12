@@ -20,6 +20,12 @@ class Chain(Unit):
         :param last_unit:
         """
 
+        if isinstance(first_unit, Unit) is not True:
+            raise Exception
+
+        if isinstance(last_unit, Unit) is not True:
+            raise Exception
+
         self._fist_unit: Unit = first_unit
         self._last_unit: Unit = last_unit
 
