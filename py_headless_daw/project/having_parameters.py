@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, List
 
 from py_headless_daw.project.parameter import Parameter
 
@@ -31,3 +31,7 @@ class HavingParameters:
     def set_parameter_value(self, name: str, value: float):
         param = self.get_parameter_value(name)
         param.value = value
+
+    @property
+    def parameters(self) -> List[Parameter]:
+        return list(self._parameters.values())

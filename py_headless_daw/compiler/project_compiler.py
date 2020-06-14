@@ -1,15 +1,22 @@
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Callable
 
+from py_headless_daw.processing.event.value_provider_based_event_emitter import ValueProviderBasedEventEmitter
 from py_headless_daw.processing.hybrid.vst_plugin import VstPlugin as VstPluginProcessingStrategy
+from py_headless_daw.processing.stream.stereo_panner import StereoPanner
+from py_headless_daw.processing.stream.stream_gain import StreamGain
 from py_headless_daw.project.audio_track import AudioTrack
 from py_headless_daw.project.midi_track import MidiTrack
+from py_headless_daw.project.parameter import Parameter
 from py_headless_daw.project.plugins.internal_plugin import InternalPlugin as InternalProjectPlugin
 from py_headless_daw.project.plugins.plugin import Plugin
 from py_headless_daw.project.plugins.vst_plugin import VstPlugin as VstProjectPlugin
 from py_headless_daw.project.project import Project
 from py_headless_daw.project.track import Track
 from py_headless_daw.schema.chain import Chain
+from py_headless_daw.schema.events.event import Event
+from py_headless_daw.schema.events.parameter_value_event import ParameterValueEvent
 from py_headless_daw.schema.host import Host
+from py_headless_daw.schema.processing_strategy import ProcessingStrategy
 from py_headless_daw.schema.unit import Unit
 from py_headless_daw.schema.wiring import StreamNode, Connector
 
@@ -42,7 +49,8 @@ class ProjectCompiler:
 
         return this_track_unit
 
-    def _compile_track_itself(self, host: Host, project: Project, track: Track, compiled_tracks: Dict[Track, Unit]) -> Unit:
+    def _compile_track_itself(self, host: Host, project: Project, track: Track,
+                              compiled_tracks: Dict[Track, Unit]) -> Unit:
         """
         non-recursively compiles a track
 
@@ -91,11 +99,27 @@ class ProjectCompiler:
     @classmethod
     def _create_audio_plugin_unit(cls, host: Host, project: Project, plugin: Plugin) -> Unit:
         if isinstance(plugin, VstProjectPlugin):
-            return cls._create_vst_audio_plugin_unit(host, project, plugin)
+            main_unit: Unit = cls._create_vst_audio_plugin_unit(host, project, plugin)
         elif isinstance(plugin, InternalProjectPlugin):
-            return cls._create_internal_plugin_unit(host, project, plugin)
-        else
+            main_unit: Unit = cls._create_internal_plugin_unit(host, project, plugin)
+        else:
             raise Exception('do not know how to treat project plugins of class ' + type(plugin).__name__)
+
+        for parameter in plugin.parameters:
+            if parameter.value_provider is not None:
+
+                def parameter_value_transformer(value: float, sample_position: int) -> ParameterValueEvent:
+                    # the "parameter" is enclosed from the outer scope
+                    return ParameterValueEvent(sample_position, parameter.name, value)
+
+                value_event_emitter_unit: Unit = cls._create_unit_for_parameter_value_emission(
+                    host,
+                    parameter,
+                    parameter_value_transformer)
+
+                Connector(value_event_emitter_unit.output_event_nodes[0], main_unit.input_event_nodes[0])
+
+        return main_unit
 
     @classmethod
     def _create_vst_audio_plugin_unit(cls, host: Host, project: Project, plugin: VstProjectPlugin) -> Unit:
@@ -118,7 +142,27 @@ class ProjectCompiler:
                     num_output_event_channels, host, strategy)
 
     @classmethod
-    def _create_internal_plugin_unit(cls, host: Host, project: Project, plugin: InternalProjectPlugin):
-        strategy = cls._create_strategy_for_internal_plugin(host, project, plugin)
-        # todo
+    def _create_internal_plugin_unit(cls, host: Host, project: Project, plugin: InternalProjectPlugin) -> Unit:
+        strategy = InternalPluginProcessingStrategyFactory().produce(plugin)
+
         pass
+
+    @classmethod
+    def _create_unit_for_parameter_value_emission(cls, host: Host, parameter: Parameter,
+                                                  transformer_function: Callable[
+                                                      [float, int], Event]) -> Unit:
+        strategy = ValueProviderBasedEventEmitter(parameter.value_provider, transformer_function)
+        return Unit(0, 0, 0, 1, host, strategy)
+
+    @classmethod
+    def _create_parameter_value_transformer_function(cls, parameter, plugin) -> Callable[[float], Event]:
+        pass
+
+
+class InternalPluginProcessingStrategyFactory:
+    # noinspection PyMethodMayBeStatic
+    def produce(self, plugin: InternalProjectPlugin) -> ProcessingStrategy:
+        if plugin.internal_plugin_type == InternalProjectPlugin.TYPE_GAIN:
+            return StreamGain()
+        elif plugin.internal_plugin_type == InternalProjectPlugin.TYPE_PANNING:
+            return StereoPanner()

@@ -8,6 +8,7 @@ from cython_vst_loader.vst_plugin import VstPlugin as InternalPlugin
 from py_headless_daw.schema.dto.time_interval import TimeInterval
 from py_headless_daw.schema.events.event import Event
 from py_headless_daw.schema.events.midi_event import MidiEvent
+from py_headless_daw.schema.events.parameter_value_event import ParameterValueEvent
 from py_headless_daw.schema.processing_strategy import ProcessingStrategy
 from py_headless_daw.schema.unit import Unit
 
@@ -30,7 +31,12 @@ class VstPlugin(ProcessingStrategy):
     def render(self, interval: TimeInterval, stream_inputs: List[np.ndarray], stream_outputs: List[np.ndarray],
                event_inputs: List[List[Event]], event_outputs: List[List[Event]]):
 
-        midi_events: List[Event] = self._filter_events(event_inputs, Event.TYPE_MIDI)
+        midi_events: List[MidiEvent] = List[MidiEvent](self._filter_events(event_inputs, Event.TYPE_MIDI))
+        parameter_events: List[ParameterValueEvent] = List[ParameterValueEvent](
+            self._filter_events(event_inputs, Event.TYPE_PARAMETER_VALUE))
+
+        # todo
+        # convert parameter event into the series of set_parameter calls
 
         internal_midi_events = map(self._convert_midi_event_to_internal, midi_events)
         if len(midi_events) > 0:
