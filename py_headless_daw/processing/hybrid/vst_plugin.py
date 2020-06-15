@@ -35,8 +35,15 @@ class VstPlugin(ProcessingStrategy):
         parameter_events: List[ParameterValueEvent] = List[ParameterValueEvent](
             self._filter_events(event_inputs, Event.TYPE_PARAMETER_VALUE))
 
-        # todo
-        # convert parameter event into the series of set_parameter calls
+        # just setting the values of params (if any corresponding events have arrived) before
+        # processing the upcoming audio block.
+
+        # this is a simple, and, probably, wrong approach to setting parameters to a plugin:
+        # it does not allow to precisely put parameter change event with sample
+        # accuracy, also, the behaviour of plugin starts to depend on the block size.
+        for parameter_event in parameter_events:
+            parameter_index: int = self._find_parameter_index_by_name(parameter_event.parameter_id)
+            self._internal_plugin.set_parameter_value(parameter_index, parameter_event.value)
 
         internal_midi_events = map(self._convert_midi_event_to_internal, midi_events)
         if len(midi_events) > 0:
@@ -88,3 +95,13 @@ class VstPlugin(ProcessingStrategy):
             raise TypeError('unknown external midi event type')
 
         return res
+
+    def _find_parameter_index_by_name(self, parameter_string_id: str) -> int:
+        """
+        this method is ued to convert from internal parameter ids (which are unique human-readable strings)
+        into the indices of params of this particular vst plugin
+
+        :param parameter_string_id:
+        :return:
+        """
+        pass
