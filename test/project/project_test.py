@@ -5,8 +5,10 @@ from py_headless_daw.project.audio_track import AudioTrack
 from py_headless_daw.project.content.audio_clip import AudioClip
 from py_headless_daw.project.content.midi_clip import MidiClip
 from py_headless_daw.project.content.midi_note import MidiNote
+from py_headless_daw.project.envelope import Envelope, EnvelopePoint
 from py_headless_daw.project.exceptions import RoutingException
 from py_headless_daw.project.midi_track import MidiTrack
+from py_headless_daw.project.plugins.internal_plugin import InternalPlugin
 from py_headless_daw.project.plugins.vst_plugin import VstPlugin
 from py_headless_daw.project.project import Project
 from py_headless_daw.project.sampler_track import SamplerTrack
@@ -110,6 +112,13 @@ class ProjectTest(unittest.TestCase):
         master_track.plugins = [
             effect_on_master_track
         ]
+
+        master_volume_envelope = Envelope(master_track.get_parameter(InternalPlugin.PARAMETER_GAIN))
+
+        point1 = EnvelopePoint(0.0, 0.0)
+        point2 = EnvelopePoint(0.0, 1.0)
+
+        master_volume_envelope.points = [point1, point2]
 
         project = Project(master_track)
 
