@@ -29,6 +29,10 @@ class ProjectTest(unittest.TestCase):
     # noinspection PyMethodMayBeStatic
     def test_create_project(self):
         """
+                                                envelope
+                                                  |
+                                                  v
+                                                 gain
         +------------+    +-------------+    +--------+
         |            |    |             |    |        |
         | midi_track +----> synth_track +----+ master |

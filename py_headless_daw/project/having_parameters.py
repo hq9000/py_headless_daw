@@ -19,10 +19,11 @@ class HavingParameters:
         self._parameters[name] = parameter
 
     def get_parameter(self, name: str) -> Parameter:
-        if name not in self._parameters:
-            raise Exception('parameter named ' + name + ' is not present in this object')
+        for parameter in self.parameters:
+            if parameter.name == name:
+                return parameter
 
-        return self._parameters[name]
+        raise Exception('parameter named ' + name + ' not found')
 
     def get_parameter_value(self, name: str) -> float:
         param = self.get_parameter(name)

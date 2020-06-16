@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, cast
 
 import numpy as np
 
@@ -31,9 +31,10 @@ class VstPlugin(ProcessingStrategy):
     def render(self, interval: TimeInterval, stream_inputs: List[np.ndarray], stream_outputs: List[np.ndarray],
                event_inputs: List[List[Event]], event_outputs: List[List[Event]]):
 
-        midi_events: List[MidiEvent] = List[MidiEvent](self._filter_events(event_inputs, Event.TYPE_MIDI))
-        parameter_events: List[ParameterValueEvent] = List[ParameterValueEvent](
-            self._filter_events(event_inputs, Event.TYPE_PARAMETER_VALUE))
+        midi_events: List[MidiEvent] = cast(List[MidiEvent], self._filter_events(event_inputs, Event.TYPE_MIDI))
+        parameter_events: List[ParameterValueEvent] = cast(List[ParameterValueEvent],
+                                                           self._filter_events(event_inputs,
+                                                                               Event.TYPE_PARAMETER_VALUE))
 
         # just setting the values of params (if any corresponding events have arrived) before
         # processing the upcoming audio block.
