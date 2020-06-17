@@ -1,6 +1,7 @@
 import unittest
 from pathlib import Path
 
+from py_headless_daw.compiler.project_compiler import ProjectCompiler
 from py_headless_daw.project.audio_track import AudioTrack
 from py_headless_daw.project.content.audio_clip import AudioClip
 from py_headless_daw.project.content.midi_clip import MidiClip
@@ -29,10 +30,10 @@ class ProjectTest(unittest.TestCase):
     # noinspection PyMethodMayBeStatic
     def test_create_project(self):
         """
-                                                envelope
-                                                  |
-                                                  v
-                                                 gain
+                                 envelope        envelope
+                                    |               |
+                                    v               v
+                           synth->reverb     rev->(gain)
         +------------+    +-------------+    +--------+
         |            |    |             |    |        |
         | midi_track +----> synth_track +----+ master |
@@ -119,12 +120,22 @@ class ProjectTest(unittest.TestCase):
 
         master_volume_envelope = Envelope(master_track.get_parameter(InternalPlugin.PARAMETER_GAIN))
 
-        point1 = EnvelopePoint(0.0, 0.0)
-        point2 = EnvelopePoint(0.0, 1.0)
+        point11 = EnvelopePoint(0.0, 0.0)
+        point12 = EnvelopePoint(0.0, 1.0)
 
-        master_volume_envelope.points = [point1, point2]
+        master_volume_envelope.points = [point11, point12]
+
+        reverb_envelope = Envelope(effect_on_synth_track.get_parameter('Early Level'))
+
+        point21 = EnvelopePoint(0.0, 0.0)
+        point22 = EnvelopePoint(0.0, 1.0)
+
+        reverb_envelope.points = [point21, point22]
 
         project = Project(master_track)
+
+        compiler: ProjectCompiler = ProjectCompiler()
+        compilation_result = compiler.compile(project)
 
     @staticmethod
     def _create_vst_plugin(name: str) -> VstPlugin:

@@ -55,7 +55,7 @@ class Unit:
 
     @property
     def input_event_nodes(self) -> List[EventNode]:
-        return self._output_event_nodes
+        return self._input_event_nodes
 
     def set_processing_strategy(self, strategy):
         self._processing_strategy = strategy
@@ -237,7 +237,7 @@ class Unit:
 
     def is_output(self, node_to_check: Node) -> bool:
         for node in self.get_all_output_nodes():
-            if node_to_check == node:
+            if node_to_check is node:
                 return True
         return False
 

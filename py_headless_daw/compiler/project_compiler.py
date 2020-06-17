@@ -1,5 +1,7 @@
 from typing import List, Dict, Optional, Callable
 
+import numpy as np
+
 from py_headless_daw.processing.event.value_provider_based_event_emitter import ValueProviderBasedEventEmitter
 from py_headless_daw.processing.hybrid.vst_plugin import VstPlugin as VstPluginProcessingStrategy
 from py_headless_daw.processing.stream.stereo_panner import StereoPanner
@@ -73,7 +75,7 @@ class ProjectCompiler:
             Connector(source_stream_node, output_node)
 
         for i, source_event_node in enumerate(source.output_event_nodes):
-            output_node = destination.output_event_nodes[i]
+            output_node = destination.input_event_nodes[i]
             Connector(source_event_node, output_node)
 
     @staticmethod
@@ -88,11 +90,12 @@ class ProjectCompiler:
         first_unit: Optional[Unit] = None
         last_unit: Optional[Unit] = None
         for number, plugin in enumerate(track.plugins):
-            last0_unit = cls._create_audio_plugin_unit(host, project, plugin)
-            if 1 == number:
+            last_unit = cls._create_audio_plugin_unit(host, project, plugin)
+            if 0 == number:
                 first_unit = last_unit
             if previous_unit is not None:
                 cls._connect_units(previous_unit, last_unit)
+            previous_unit = last_unit
 
         return Chain(first_unit, last_unit)
 
@@ -107,7 +110,6 @@ class ProjectCompiler:
 
         for parameter in plugin.parameters:
             if parameter.value_provider is not None:
-
                 def parameter_value_transformer(value: float, sample_position: int) -> ParameterValueEvent:
                     # the "parameter" is enclosed from the outer scope
                     return ParameterValueEvent(sample_position, parameter.name, value)
@@ -125,8 +127,6 @@ class ProjectCompiler:
     def _create_vst_audio_plugin_unit(cls, host: Host, project: Project, plugin: VstProjectPlugin) -> Unit:
         path_to_shared_lib: bytes = plugin.path_to_shared_library.encode('utf-8')
 
-        strategy = VstPluginProcessingStrategy(path_to_shared_lib)
-
         if plugin.is_synth:
             num_input_event_channels = 1
             num_input_stream_channels = 0
@@ -138,14 +138,25 @@ class ProjectCompiler:
             num_output_event_channels = 0
             num_output_stream_channels = project.num_audio_channels
 
-        return Unit(num_input_stream_channels, num_input_event_channels, num_output_stream_channels,
-                    num_output_event_channels, host, strategy)
+        unit = Unit(num_input_stream_channels, num_input_event_channels, num_output_stream_channels,
+                    num_output_event_channels, host)
+
+        strategy = VstPluginProcessingStrategy(path_to_shared_lib, unit)
+        unit.set_processing_strategy(strategy)
+        return unit
 
     @classmethod
     def _create_internal_plugin_unit(cls, host: Host, project: Project, plugin: InternalProjectPlugin) -> Unit:
         strategy = InternalPluginProcessingStrategyFactory().produce(plugin)
 
-        pass
+        num_input_event_channels = 1
+        num_input_stream_channels = project.num_audio_channels
+        num_output_event_channels = 1
+        num_output_stream_channels = project.num_audio_channels
+
+        unit = Unit(num_input_stream_channels, num_input_event_channels, num_output_stream_channels,
+                    num_output_event_channels, host, strategy)
+        return unit
 
     @classmethod
     def _create_unit_for_parameter_value_emission(cls, host: Host, parameter: Parameter,
@@ -163,6 +174,6 @@ class InternalPluginProcessingStrategyFactory:
     # noinspection PyMethodMayBeStatic
     def produce(self, plugin: InternalProjectPlugin) -> ProcessingStrategy:
         if plugin.internal_plugin_type == InternalProjectPlugin.TYPE_GAIN:
-            return StreamGain()
+            return StreamGain(np.float32(1.0))
         elif plugin.internal_plugin_type == InternalProjectPlugin.TYPE_PANNING:
-            return StereoPanner()
+            return StereoPanner(np.float32(0.0))

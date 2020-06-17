@@ -1,4 +1,4 @@
-from typing import List, cast
+from typing import List, cast, Optional
 
 import numpy as np
 
@@ -17,7 +17,7 @@ class VstPlugin(ProcessingStrategy):
 
     def __init__(self, path_to_plugin_file: bytes, unit: Unit):
         super().__init__()
-        self.unit = unit
+        self.unit: Unit = unit
         self._path_to_plugin_file: bytes = path_to_plugin_file
 
         bpm = self.unit.host.bpm
@@ -105,4 +105,12 @@ class VstPlugin(ProcessingStrategy):
         :param parameter_string_id:
         :return:
         """
-        pass
+        available_parameter_names: List[str] = []
+        for idx in range(0, self._internal_plugin.get_num_parameters()):
+            available_parameter_names.append(self._internal_plugin.get_parameter_name(idx))
+            if self._internal_plugin.get_parameter_name(idx) == parameter_string_id:
+                return idx
+
+        raise LookupError(
+            'a parameter named ' + parameter_string_id + ' not found in this vst plugin. Available parameters are '
+            + ", ".join(available_parameter_names))

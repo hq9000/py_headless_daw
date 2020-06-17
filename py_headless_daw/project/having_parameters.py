@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict, List, cast
 
 from py_headless_daw.project.parameter import Parameter
 
@@ -23,7 +23,8 @@ class HavingParameters:
             if parameter.name == name:
                 return parameter
 
-        raise Exception('parameter named ' + name + ' not found')
+        available_names: List[str] = cast(List[str], map(lambda param: str(param.name), self.parameters))
+        raise Exception('parameter named ' + name + ' not found. Available: ' + ', '.join(available_names))
 
     def get_parameter_value(self, name: str) -> float:
         param = self.get_parameter(name)

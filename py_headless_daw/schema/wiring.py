@@ -34,7 +34,7 @@ class Node:
         self._connectors.append(connector)
 
     def attach_to_connector_input(self, connector: Connector):
-        if not self._is_unit_output():
+        if self._is_unit_input():
             raise SchemaException(
                 'this node is an input of a unit, but it has been attempted to connect to an input of a connector')
 
@@ -84,6 +84,9 @@ class Node:
             return self.unit.is_output(self)
         else:
             return False
+
+    def _is_unit_input(self) -> bool:
+        return not self._is_unit_output()
 
 
 class StreamNode(Node):

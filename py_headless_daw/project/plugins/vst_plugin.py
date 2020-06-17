@@ -17,7 +17,7 @@ class VstPlugin(Plugin):
         self.is_synth: bool = plugin_instance.is_synth()
 
         for i in range(0, plugin_instance.get_num_parameters()):
-            name: str = plugin_instance.get_parameter_name(i)
+            name: str = plugin_instance.get_parameter_name(i).decode()
             value: float = plugin_instance.get_parameter_value(i)
             self.add_parameter(name, value)
 
