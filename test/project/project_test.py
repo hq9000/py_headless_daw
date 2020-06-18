@@ -69,6 +69,13 @@ class ProjectTest(unittest.TestCase):
         send1: AudioTrack = AudioTrack()
         send2: AudioTrack = AudioTrack()
 
+        synth_track.name = "Synth Track"
+        midi_track.name = "Midi Track"
+        sampler_track.name = "Sampler Track"
+        send_track.name = "Send Bus"
+        send1.name = "Send1"
+        send2.name = "Send2"
+
         # - commutation
         midi_track.add_output(synth_track)
         synth_track.add_output(master_track)

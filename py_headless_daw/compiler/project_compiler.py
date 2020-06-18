@@ -80,8 +80,9 @@ class ProjectCompiler:
 
     @staticmethod
     def _compile_midi_track_itself(host: Host, project: Project, track: MidiTrack) -> Unit:
-
-        pass
+        strategy = MidiTrackStrategy(track)
+        unit = Unit(0, 0, 0, 1, host)
+        return unit
 
     @classmethod
     def _compile_audio_track_itself(cls, host: Host, project: Project, track: AudioTrack) -> Chain:

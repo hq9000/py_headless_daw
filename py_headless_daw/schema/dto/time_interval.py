@@ -16,6 +16,9 @@ class TimeInterval:
     def get_length_in_bars(self) -> float:
         return self.end_in_bars - self.start_in_bars
 
+    def get_length_in_seconds(self) -> float:
+        return self.end_in_seconds - self.start_in_seconds
+
     @property
     def start_in_seconds(self) -> float:
         if self._start_in_seconds is None:

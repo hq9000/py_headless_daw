@@ -9,6 +9,7 @@ class Track(HavingParameters):
 
         self.outputs = []  # type: List[Track]
         self.inputs = []  # type: List[Track]
+        self.name: str = 'unnamed'
 
     def add_input(self, input_track):
         self.inputs.append(input_track)
