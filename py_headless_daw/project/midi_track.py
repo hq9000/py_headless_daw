@@ -1,13 +1,13 @@
 from typing import List
 
 from py_headless_daw.project.audio_track import AudioTrack
-from py_headless_daw.project.content.midi_clip import MidiClip
-from py_headless_daw.project.content.midi_clip_event import MidiClipEvent
+from py_headless_daw.project.content.midi_clip import MidiClip, MidiClipEvent
 from py_headless_daw.project.exceptions import RoutingException
 from py_headless_daw.project.project import Track
 
 
 class MidiTrack(Track):
+
     def __init__(self, channel: int):
         super().__init__()
         self.channel: int = channel
@@ -31,4 +31,49 @@ class MidiTrack(Track):
         :param end_time:
         :return:
         """
-        return []
+
+        clips = self._find_overlapping_clips(start_time, end_time)
+        res: List[MidiClipEvent] = []
+
+        for clip in clips:
+            events = self._find_overlapping_events(clip, start_time, end_time)
+            for event in events:
+                res.append(event)
+
+        return res
+
+    def _find_overlapping_clips(self, start_time: float, end_time: float) -> List[MidiClip]:
+        """
+        http://i.imgur.com/HpSAG4P.png
+
+        :param start_time:
+        :param end_time:
+        :return:
+        """
+        res: List[MidiClip] = []
+        for clip in self.clips:
+            overlaps: bool = True
+            if clip.end_time < start_time:
+                overlaps = False
+            if clip.start_time > end_time:
+                overlaps = False
+
+            if overlaps:
+                res.append(clip)
+
+        return res
+
+    @staticmethod
+    def _find_overlapping_events(clip: MidiClip, start_time: float, end_time: float) -> List[MidiClipEvent]:
+        res: List[MidiClipEvent] = []
+        for event in clip.events:
+            overlaps: bool = True
+            if event.get_absolute_start_time() > end_time:
+                overlaps = False
+            if event.get_absolute_end_time() < start_time:
+                overlaps = False
+
+            if overlaps:
+                res.append(event)
+
+        return res

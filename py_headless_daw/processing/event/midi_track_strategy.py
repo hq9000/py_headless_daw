@@ -2,7 +2,7 @@ from typing import List, cast
 
 import numpy as np
 
-from py_headless_daw.project.content.midi_clip_event import MidiClipEvent
+from py_headless_daw.project.content.midi_clip import MidiClipEvent
 from py_headless_daw.project.content.midi_note import MidiNote
 from py_headless_daw.project.midi_track import MidiTrack
 from py_headless_daw.schema.dto.time_interval import TimeInterval
@@ -22,10 +22,14 @@ class MidiTrackStrategy(ProcessingStrategy):
                event_inputs: List[List[Event]], event_outputs: List[List[Event]]):
 
         clip_events: List[MidiClipEvent] = self.track.get_events(interval.start_in_seconds, interval.end_in_seconds)
-        midi_events = map(self._clip_event_transformer, clip_events)
+        midi_event_lists: List[List[MidiEvent]] = []
+        for event in clip_events:
+            midi_event_lists.append(self._clip_event_transformer(interval, event))
+
         for event_output in event_outputs:
-            for midi_event in midi_events:
-                event_output.append(midi_event)
+            for midi_event_list in midi_event_lists:
+                for midi_event in midi_event_list:
+                    event_output.append(midi_event)
 
     def _clip_event_transformer(self, interval: TimeInterval, clip_event: MidiClipEvent) -> List[MidiEvent]:
         """
@@ -40,8 +44,8 @@ class MidiTrackStrategy(ProcessingStrategy):
             return self._convert_midi_note_to_events(interval, midi_note)
 
     def _convert_midi_note_to_events(self, interval: TimeInterval, midi_note: MidiNote) -> List[MidiEvent]:
-        note_start_in_seconds = midi_note.get_absolute_time()
-        note_end_in_seconds = midi_note.get_absolute_time_of_note_off()
+        note_start_in_seconds = midi_note.get_absolute_start_time()
+        note_end_in_seconds = midi_note.get_absolute_end_time()
 
         if note_start_in_seconds > interval.end_in_seconds:
             raise Exception(
@@ -68,6 +72,7 @@ class MidiTrackStrategy(ProcessingStrategy):
 
     @staticmethod
     def _calculate_sample_position(interval: TimeInterval, event_time_in_seconds: float) -> int:
+
         assert interval.start_in_seconds <= event_time_in_seconds <= interval.end_in_seconds
         relative_time_in_seconds = event_time_in_seconds - interval.start_in_seconds
         assert 0 <= relative_time_in_seconds <= interval.get_length_in_seconds()
