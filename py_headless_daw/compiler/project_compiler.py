@@ -2,6 +2,7 @@ from typing import List, Dict, Optional, Callable
 
 import numpy as np
 
+from py_headless_daw.processing.event.midi_track_strategy import MidiTrackStrategy
 from py_headless_daw.processing.event.value_provider_based_event_emitter import ValueProviderBasedEventEmitter
 from py_headless_daw.processing.hybrid.vst_plugin import VstPlugin as VstPluginProcessingStrategy
 from py_headless_daw.processing.stream.stereo_panner import StereoPanner
@@ -81,7 +82,7 @@ class ProjectCompiler:
     @staticmethod
     def _compile_midi_track_itself(host: Host, project: Project, track: MidiTrack) -> Unit:
         strategy = MidiTrackStrategy(track)
-        unit = Unit(0, 0, 0, 1, host)
+        unit = Unit(0, 0, 0, 1, host, strategy)
         return unit
 
     @classmethod
