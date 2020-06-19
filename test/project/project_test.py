@@ -1,5 +1,8 @@
 import unittest
 from pathlib import Path
+from typing import List
+
+import numpy as np
 
 from py_headless_daw.compiler.project_compiler import ProjectCompiler
 from py_headless_daw.project.audio_track import AudioTrack
@@ -13,6 +16,8 @@ from py_headless_daw.project.plugins.internal_plugin import InternalPlugin
 from py_headless_daw.project.plugins.vst_plugin import VstPlugin
 from py_headless_daw.project.project import Project
 from py_headless_daw.project.sampler_track import SamplerTrack
+from py_headless_daw.schema.dto.time_interval import TimeInterval
+from py_headless_daw.schema.wiring import StreamNode
 
 
 class ProjectTest(unittest.TestCase):
@@ -142,7 +147,23 @@ class ProjectTest(unittest.TestCase):
         project = Project(master_track)
 
         compiler: ProjectCompiler = ProjectCompiler()
-        compilation_result = compiler.compile(project)
+        output_stream_nodes: List[StreamNode] = compiler.compile(project)
+
+        left_node = output_stream_nodes[0]
+        right_node = output_stream_nodes[1]
+
+        # let's render it
+        for i in range(0, 10):
+            interval = TimeInterval()
+            interval.num_samples = 512
+            interval.start_in_seconds = (i - 1) * 0.1
+            interval.end_in_seconds = i * 0.1
+
+            left_buffer = np.ndarray(shape=(512,), dtype=np.float32)
+            right_buffer = np.ndarray(shape=(512,), dtype=np.float32)
+
+            left_node.render(interval, left_buffer)
+            right_node.render(interval, right_buffer)
 
     @staticmethod
     def _create_vst_plugin(name: str) -> VstPlugin:
