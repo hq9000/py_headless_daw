@@ -1,3 +1,5 @@
+import logging
+import sys
 import unittest
 from pathlib import Path
 from typing import List
@@ -108,11 +110,15 @@ class ProjectTest(unittest.TestCase):
         sampler_track.clips = [audio_clip]
 
         # - putting plugins to tracks
-        synth = self._create_vst_plugin('amsynth-vst.x86_64-linux.so')
-        effect_on_synth_track = self._create_vst_plugin('DragonflyRoomReverb-vst.x86_64-linux.so')
-        effect_on_sampler_track = self._create_vst_plugin('DragonflyRoomReverb-vst.x86_64-linux.so')
-        effect_on_send_track = self._create_vst_plugin('DragonflyRoomReverb-vst.x86_64-linux.so')
-        effect_on_master_track = self._create_vst_plugin('DragonflyRoomReverb-vst.x86_64-linux.so')
+        synth = self._create_vst_plugin('amsynth-vst.x86_64-linux.so', 'synth')
+        effect_on_synth_track = self._create_vst_plugin('DragonflyRoomReverb-vst.x86_64-linux.so',
+                                                        'reverb on synth track')
+        effect_on_sampler_track = self._create_vst_plugin('DragonflyRoomReverb-vst.x86_64-linux.so',
+                                                          'reverb on sampler track')
+        effect_on_send_track = self._create_vst_plugin('DragonflyRoomReverb-vst.x86_64-linux.so',
+                                                       'reverb on send track')
+        effect_on_master_track = self._create_vst_plugin('DragonflyRoomReverb-vst.x86_64-linux.so',
+                                                         'reverb on master track')
 
         synth_track.plugins = [
             synth, effect_on_synth_track
@@ -166,7 +172,12 @@ class ProjectTest(unittest.TestCase):
             right_node.render(interval, right_buffer)
 
     @staticmethod
-    def _create_vst_plugin(name: str) -> VstPlugin:
+    def _create_vst_plugin(so_name: str, plugin_name: str = "no name") -> VstPlugin:
         dir_of_this_file = str(Path(__file__).parents[0])
-        return VstPlugin(
-            dir_of_this_file + '/../../submodules/cython-vst-loader/tests/test_plugins/' + name)
+        res = VstPlugin(
+            dir_of_this_file + '/../../submodules/cython-vst-loader/tests/test_plugins/' + so_name)
+        res.name = plugin_name
+        return res
+
+
+logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)

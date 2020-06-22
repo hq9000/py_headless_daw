@@ -55,7 +55,8 @@ class MidiTrack(Track):
             overlaps: bool = True
             if clip.end_time < start_time:
                 overlaps = False
-            if clip.start_time > end_time:
+            if clip.start_time >= end_time:
+                # http://i.imgur.com/BJI5ol6.png
                 overlaps = False
 
             if overlaps:

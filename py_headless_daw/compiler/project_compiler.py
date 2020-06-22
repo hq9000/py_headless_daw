@@ -65,15 +65,21 @@ class ProjectCompiler:
             return compiled_tracks[track]
 
         if isinstance(track, MidiTrack):
-            return self._compile_midi_track_itself(host, project, track)
+            res = self._compile_midi_track_itself(host, project, track)
         elif isinstance(track, AudioTrack):
-            return self._compile_audio_track_itself(host, project, track)
+            res = self._compile_audio_track_itself(host, project, track)
+        else:
+            raise Exception('don\'t know ho to compile this type of track')
+
+        compiled_tracks[track] = res
+        return res
 
     @classmethod
     def _connect_units(cls, source: Unit, destination: Unit):
         for i, source_stream_node in enumerate(source.output_stream_nodes):
             output_node = destination.input_stream_nodes[i]
-            Connector(source_stream_node, output_node)
+            if not Connector.connected(source_stream_node, output_node):
+                Connector(source_stream_node, output_node)
 
         for i, source_event_node in enumerate(source.output_event_nodes):
             output_node = destination.input_event_nodes[i]
@@ -83,6 +89,7 @@ class ProjectCompiler:
     def _compile_midi_track_itself(host: Host, project: Project, track: MidiTrack) -> Unit:
         strategy = MidiTrackStrategy(track)
         unit = Unit(0, 0, 0, 1, host, strategy)
+        unit.name = "midi track"
         return unit
 
     @classmethod
@@ -99,7 +106,9 @@ class ProjectCompiler:
                 cls._connect_units(previous_unit, last_unit)
             previous_unit = last_unit
 
-        return Chain(first_unit, last_unit)
+        res = Chain(first_unit, last_unit)
+        res.name = track.name
+        return res
 
     @classmethod
     def _create_audio_plugin_unit(cls, host: Host, project: Project, plugin: Plugin) -> Unit:
@@ -145,6 +154,7 @@ class ProjectCompiler:
 
         strategy = VstPluginProcessingStrategy(path_to_shared_lib, unit)
         unit.set_processing_strategy(strategy)
+        unit.name = plugin.name
         return unit
 
     @classmethod
@@ -165,7 +175,11 @@ class ProjectCompiler:
                                                   transformer_function: Callable[
                                                       [float, int], Event]) -> Unit:
         strategy = ValueProviderBasedEventEmitter(parameter.value_provider, transformer_function)
-        return Unit(0, 0, 0, 1, host, strategy)
+        res = Unit(0, 0, 0, 1, host, strategy)
+
+        res.name = "parameter emitter for %s" % (parameter.name,)
+
+        return res
 
     @classmethod
     def _create_parameter_value_transformer_function(cls, parameter, plugin) -> Callable[[float], Event]:

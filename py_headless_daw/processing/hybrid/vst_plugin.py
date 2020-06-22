@@ -1,3 +1,4 @@
+import logging
 from typing import List, cast, Optional
 
 import numpy as np
@@ -46,9 +47,9 @@ class VstPlugin(ProcessingStrategy):
             parameter_index: int = self._find_parameter_index_by_name(parameter_event.parameter_id)
             self._internal_plugin.set_parameter_value(parameter_index, parameter_event.value)
 
-        internal_midi_events = map(self._convert_midi_event_to_internal, midi_events)
+        internal_midi_events = list(map(self._convert_midi_event_to_internal, midi_events))
         if len(midi_events) > 0:
-            # noinspection PyTypeChecker
+            logging.debug('processing events for unit %s in interval %i' % (self.unit.name, interval.id))
             self._internal_plugin.process_events(internal_midi_events)
 
         def numpy_array_to_pointer(numpy_array: np.ndarray) -> int:
