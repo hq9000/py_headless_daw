@@ -99,7 +99,7 @@ class ProjectCompiler:
         first_unit: Optional[Unit] = None
         last_unit: Optional[Unit] = None
         for number, plugin in enumerate(track.plugins):
-            last_unit = cls._create_audio_plugin_unit(host, project, plugin)
+            last_unit = cls._create_audio_plugin_unit(host, project, plugin, track)
             if 0 == number:
                 first_unit = last_unit
             if previous_unit is not None:
@@ -111,11 +111,11 @@ class ProjectCompiler:
         return res
 
     @classmethod
-    def _create_audio_plugin_unit(cls, host: Host, project: Project, plugin: Plugin) -> Unit:
+    def _create_audio_plugin_unit(cls, host: Host, project: Project, plugin: Plugin, track: Track) -> Unit:
         if isinstance(plugin, VstProjectPlugin):
-            main_unit: Unit = cls._create_vst_audio_plugin_unit(host, project, plugin)
+            main_unit: Unit = cls._create_vst_audio_plugin_unit(host, project, plugin, track)
         elif isinstance(plugin, InternalProjectPlugin):
-            main_unit: Unit = cls._create_internal_plugin_unit(host, project, plugin)
+            main_unit: Unit = cls._create_internal_plugin_unit(host, project, plugin, track)
         else:
             raise Exception('do not know how to treat project plugins of class ' + type(plugin).__name__)
 
@@ -135,7 +135,7 @@ class ProjectCompiler:
         return main_unit
 
     @classmethod
-    def _create_vst_audio_plugin_unit(cls, host: Host, project: Project, plugin: VstProjectPlugin) -> Unit:
+    def _create_vst_audio_plugin_unit(cls, host: Host, project: Project, plugin: VstProjectPlugin, track: Track) -> Unit:
         path_to_shared_lib: bytes = plugin.path_to_shared_library.encode('utf-8')
 
         if plugin.is_synth:
@@ -154,11 +154,11 @@ class ProjectCompiler:
 
         strategy = VstPluginProcessingStrategy(path_to_shared_lib, unit)
         unit.set_processing_strategy(strategy)
-        unit.name = plugin.name
+        unit.name = track.name + " - " + plugin.name
         return unit
 
     @classmethod
-    def _create_internal_plugin_unit(cls, host: Host, project: Project, plugin: InternalProjectPlugin) -> Unit:
+    def _create_internal_plugin_unit(cls, host: Host, project: Project, plugin: InternalProjectPlugin, track: Track) -> Unit:
         strategy = InternalPluginProcessingStrategyFactory().produce(plugin)
 
         num_input_event_channels = 1
@@ -168,6 +168,8 @@ class ProjectCompiler:
 
         unit = Unit(num_input_stream_channels, num_input_event_channels, num_output_stream_channels,
                     num_output_event_channels, host, strategy)
+
+        unit.name = track.name + ' - ' + type(strategy).__name__
         return unit
 
     @classmethod

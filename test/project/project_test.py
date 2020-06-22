@@ -68,6 +68,7 @@ class ProjectTest(unittest.TestCase):
 
         # - tracks
         master_track: AudioTrack = AudioTrack()
+        master_track.name = 'master'
 
         synth_track: AudioTrack = AudioTrack()
         midi_track: MidiTrack = MidiTrack(1)
