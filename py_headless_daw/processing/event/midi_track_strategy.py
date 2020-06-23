@@ -31,6 +31,10 @@ class MidiTrackStrategy(ProcessingStrategy):
                 for midi_event in midi_event_list:
                     event_output.append(midi_event)
 
+    @staticmethod
+    def round(a: float) -> float:
+        return round(a, 5)
+
     def _clip_event_transformer(self, interval: TimeInterval, clip_event: MidiClipEvent) -> List[MidiEvent]:
         """
         the result can be multiple events
@@ -58,13 +62,15 @@ class MidiTrackStrategy(ProcessingStrategy):
 
         res: List[MidiEvent] = []
 
-        if note_start_in_seconds >= interval.start_in_seconds:
-            sample_position = self._calculate_sample_position(interval, note_start_in_seconds)
+        tolerance: float = 0.000000001
+
+        if self.round(note_start_in_seconds) >= self.round(interval.start_in_seconds):
+            sample_position = self._calculate_sample_position(interval, self.round(note_start_in_seconds))
             res.append(
                 self._midi_event_factory.create_note_on_event(midi_note.note, midi_note.velocity, sample_position))
 
-        if note_end_in_seconds <= interval.end_in_seconds:
-            sample_position = self._calculate_sample_position(interval, note_end_in_seconds)
+        if self.round(note_end_in_seconds) < self.round(interval.end_in_seconds):
+            sample_position = self._calculate_sample_position(interval, self.round(note_end_in_seconds))
             res.append(
                 self._midi_event_factory.create_note_off_event(midi_note.note, midi_note.velocity, sample_position))
 
@@ -73,8 +79,12 @@ class MidiTrackStrategy(ProcessingStrategy):
     @staticmethod
     def _calculate_sample_position(interval: TimeInterval, event_time_in_seconds: float) -> int:
 
-        assert interval.start_in_seconds <= event_time_in_seconds <= interval.end_in_seconds
+        assert interval.start_in_seconds <= event_time_in_seconds < interval.end_in_seconds, \
+            'event time %5.5f is out of interval [%5.5f, %5.5f)' % (
+                event_time_in_seconds, interval.start_in_seconds, interval.end_in_seconds
+            )
+
         relative_time_in_seconds = event_time_in_seconds - interval.start_in_seconds
-        assert 0 <= relative_time_in_seconds <= interval.get_length_in_seconds()
+        assert 0 <= relative_time_in_seconds < interval.get_length_in_seconds()
 
         return round(interval.num_samples * relative_time_in_seconds / interval.get_length_in_seconds())

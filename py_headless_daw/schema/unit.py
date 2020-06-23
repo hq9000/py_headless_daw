@@ -1,4 +1,5 @@
-from typing import List, Union, Dict
+import logging
+from typing import List, Union, Dict, cast
 
 import numpy as np
 
@@ -50,6 +51,14 @@ class Unit:
         return self._input_stream_nodes
 
     @property
+    def output_nodes(self) -> List[Node]:
+        return cast(List[Node], self._output_stream_nodes) + cast(List[Node], self._output_event_nodes)
+
+    @property
+    def input_nodes(self) -> List[Node]:
+        return cast(List[Node], self._input_stream_nodes) + cast(List[Node], self._input_event_nodes)
+
+    @property
     def output_event_nodes(self) -> List[EventNode]:
         return self._output_event_nodes
 
@@ -88,6 +97,8 @@ class Unit:
             node.render(interval, self._find_internal_buffer(node))
 
         self.last_processed_interval_id = interval.id
+        logging.debug('rendering processing strategy for unit "' + self.name + '" on %d:(%2.2f,%2.2f,%d)' % (
+            interval.id, interval.start_in_seconds, interval.end_in_seconds, interval.num_samples))
 
         self._processing_strategy.render(interval, self._get_input_stream_buffers(), self._get_output_stream_buffers(),
                                          self._get_input_event_buffers(), self._get_output_event_buffers())

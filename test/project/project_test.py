@@ -1,5 +1,10 @@
+import logging
+import sys
 import unittest
 from pathlib import Path
+from typing import List
+
+import numpy as np
 
 from py_headless_daw.compiler.project_compiler import ProjectCompiler
 from py_headless_daw.project.audio_track import AudioTrack
@@ -13,6 +18,8 @@ from py_headless_daw.project.plugins.internal_plugin import InternalPlugin
 from py_headless_daw.project.plugins.vst_plugin import VstPlugin
 from py_headless_daw.project.project import Project
 from py_headless_daw.project.sampler_track import SamplerTrack
+from py_headless_daw.schema.dto.time_interval import TimeInterval
+from py_headless_daw.schema.wiring import StreamNode
 
 
 class ProjectTest(unittest.TestCase):
@@ -36,7 +43,7 @@ class ProjectTest(unittest.TestCase):
                            synth->reverb     rev->(gain)
         +------------+    +-------------+    +--------+
         |            |    |             |    |        |
-        | midi_track +----> synth_track +----+ master |
+        | midi_track +----> synth_track +----> master |
         |            |    |             |    |        |
         +------------+    +-----+-------+    +----^---+
                                 +                 |
@@ -61,6 +68,7 @@ class ProjectTest(unittest.TestCase):
 
         # - tracks
         master_track: AudioTrack = AudioTrack()
+        master_track.name = 'master'
 
         synth_track: AudioTrack = AudioTrack()
         midi_track: MidiTrack = MidiTrack(1)
@@ -103,11 +111,15 @@ class ProjectTest(unittest.TestCase):
         sampler_track.clips = [audio_clip]
 
         # - putting plugins to tracks
-        synth = self._create_vst_plugin('amsynth-vst.x86_64-linux.so')
-        effect_on_synth_track = self._create_vst_plugin('DragonflyRoomReverb-vst.x86_64-linux.so')
-        effect_on_sampler_track = self._create_vst_plugin('DragonflyRoomReverb-vst.x86_64-linux.so')
-        effect_on_send_track = self._create_vst_plugin('DragonflyRoomReverb-vst.x86_64-linux.so')
-        effect_on_master_track = self._create_vst_plugin('DragonflyRoomReverb-vst.x86_64-linux.so')
+        synth = self._create_vst_plugin('amsynth-vst.x86_64-linux.so', 'synth')
+        effect_on_synth_track = self._create_vst_plugin('DragonflyRoomReverb-vst.x86_64-linux.so',
+                                                        'reverb on synth track')
+        effect_on_sampler_track = self._create_vst_plugin('DragonflyRoomReverb-vst.x86_64-linux.so',
+                                                          'reverb on sampler track')
+        effect_on_send_track = self._create_vst_plugin('DragonflyRoomReverb-vst.x86_64-linux.so',
+                                                       'reverb on send track')
+        effect_on_master_track = self._create_vst_plugin('DragonflyRoomReverb-vst.x86_64-linux.so',
+                                                         'reverb on master track')
 
         synth_track.plugins = [
             synth, effect_on_synth_track
@@ -142,10 +154,32 @@ class ProjectTest(unittest.TestCase):
         project = Project(master_track)
 
         compiler: ProjectCompiler = ProjectCompiler()
-        compilation_result = compiler.compile(project)
+
+        output_stream_nodes: List[StreamNode] = compiler.compile(project)
+
+        left_node = output_stream_nodes[0]
+        right_node = output_stream_nodes[1]
+
+        # let's render it
+        for i in range(1, 10):
+            interval = TimeInterval()
+            interval.num_samples = 512
+            interval.start_in_seconds = (i - 1) * 0.1
+            interval.end_in_seconds = i * 0.1
+
+            left_buffer = np.ndarray(shape=(512,), dtype=np.float32)
+            right_buffer = np.ndarray(shape=(512,), dtype=np.float32)
+
+            left_node.render(interval, left_buffer)
+            right_node.render(interval, right_buffer)
 
     @staticmethod
-    def _create_vst_plugin(name: str) -> VstPlugin:
+    def _create_vst_plugin(so_name: str, plugin_name: str = "no name") -> VstPlugin:
         dir_of_this_file = str(Path(__file__).parents[0])
-        return VstPlugin(
-            dir_of_this_file + '/../../submodules/cython-vst-loader/tests/test_plugins/' + name)
+        res = VstPlugin(
+            dir_of_this_file + '/../../submodules/cython-vst-loader/tests/test_plugins/' + so_name)
+        res.name = plugin_name
+        return res
+
+
+logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)

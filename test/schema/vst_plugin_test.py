@@ -29,7 +29,7 @@ class VstPluginProcessingStrategyTest(unittest.TestCase):
         unit.set_processing_strategy(strategy)
         event_factory = MidiEventFactory()
         event = event_factory.create_note_on_event(87, 10)
-        event.sample_position = 10
+        event.sample_position = 9
         events: List[Event] = [event]
 
         def generate():
@@ -41,6 +41,7 @@ class VstPluginProcessingStrategyTest(unittest.TestCase):
         interval = TimeInterval()
         interval.start_in_bars = 0
         interval.end_in_bars = 1
+        interval.num_samples = 100
 
         self.assertTrue(left_out[13] == 0.0)
         self.assertTrue(right_out[13] == 0.0)

@@ -8,13 +8,31 @@ from py_headless_daw.schema.exceptions import SchemaException
 
 
 class Connector:
+    _registry = []  # type: List[Connector]
+
     def __init__(self, in_node, out_node):
         # type: (Node, Node) -> None
         self.input_node: Node = in_node
         self.out_node: Node = out_node
 
+        assert self.connected(in_node, out_node) is False, "these two nodes already have a connector between them"
+
+
         self.input_node.attach_to_connector_input(self)
         self.out_node.attach_to_connector_output(self)
+
+        self._registry.append(self)
+
+    @classmethod
+    def connected(cls, node1, node2):
+        # type: (Node, Node)->bool
+        for connector in cls._registry:
+            if connector.input_node is node1 and connector.out_node is node2:
+                return True
+            if connector.out_node is node1 and connector.input_node is node2:
+                return True
+
+        return False
 
 
 class Node:
