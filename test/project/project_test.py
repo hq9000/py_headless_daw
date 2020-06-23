@@ -43,7 +43,7 @@ class ProjectTest(unittest.TestCase):
                            synth->reverb     rev->(gain)
         +------------+    +-------------+    +--------+
         |            |    |             |    |        |
-        | midi_track +----> synth_track +----+ master |
+        | midi_track +----> synth_track +----> master |
         |            |    |             |    |        |
         +------------+    +-----+-------+    +----^---+
                                 +                 |
@@ -154,13 +154,14 @@ class ProjectTest(unittest.TestCase):
         project = Project(master_track)
 
         compiler: ProjectCompiler = ProjectCompiler()
+
         output_stream_nodes: List[StreamNode] = compiler.compile(project)
 
         left_node = output_stream_nodes[0]
         right_node = output_stream_nodes[1]
 
         # let's render it
-        for i in range(0, 10):
+        for i in range(1, 10):
             interval = TimeInterval()
             interval.num_samples = 512
             interval.start_in_seconds = (i - 1) * 0.1

@@ -83,7 +83,8 @@ class ProjectCompiler:
 
         for i, source_event_node in enumerate(source.output_event_nodes):
             output_node = destination.input_event_nodes[i]
-            Connector(source_event_node, output_node)
+            if not Connector.connected(source_event_node, output_node):
+                Connector(source_event_node, output_node)
 
     @staticmethod
     def _compile_midi_track_itself(host: Host, project: Project, track: MidiTrack) -> Unit:

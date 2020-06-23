@@ -67,11 +67,12 @@ class MidiTrack(Track):
     @staticmethod
     def _find_overlapping_events(clip: MidiClip, start_time: float, end_time: float) -> List[MidiClipEvent]:
         res: List[MidiClipEvent] = []
+        tolerance: float = 0.0000001
         for event in clip.events:
             overlaps: bool = True
-            if event.get_absolute_start_time() > end_time:
+            if event.get_absolute_start_time() >= end_time + tolerance:
                 overlaps = False
-            if event.get_absolute_end_time() < start_time:
+            if event.get_absolute_end_time() < start_time - tolerance:
                 overlaps = False
 
             if overlaps:
