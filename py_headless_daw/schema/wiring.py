@@ -15,6 +15,9 @@ class Connector:
         self.input_node: Node = in_node
         self.out_node: Node = out_node
 
+        assert self.connected(in_node, out_node) is False, "these two nodes already have a connector between them"
+
+
         self.input_node.attach_to_connector_input(self)
         self.out_node.attach_to_connector_output(self)
 

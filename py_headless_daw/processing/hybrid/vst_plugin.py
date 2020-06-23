@@ -1,5 +1,5 @@
 import logging
-from typing import List, cast, Optional
+from typing import List, cast
 
 import numpy as np
 
@@ -48,8 +48,14 @@ class VstPlugin(ProcessingStrategy):
             self._internal_plugin.set_parameter_value(parameter_index, parameter_event.value)
 
         internal_midi_events = list(map(self._convert_midi_event_to_internal, midi_events))
+
+        assert interval.num_samples > 0, "num samples in this interval <= 0: " + str(
+            interval.num_samples) + ", this cannot be right"
+
         if len(midi_events) > 0:
             logging.debug('processing events for unit %s in interval %i' % (self.unit.name, interval.id))
+
+            assert self.midi_events_are_valid(interval, midi_events)
             self._internal_plugin.process_events(internal_midi_events)
 
         def numpy_array_to_pointer(numpy_array: np.ndarray) -> int:
@@ -115,3 +121,16 @@ class VstPlugin(ProcessingStrategy):
         raise LookupError(
             'a parameter named ' + parameter_string_id + ' not found in this vst plugin. Available parameters are '
             + ", ".join(available_parameter_names))
+
+    @staticmethod
+    def midi_events_are_valid(interval: TimeInterval, midi_events: List[MidiEvent]) -> bool:
+        for event in midi_events:
+            if event.sample_position < 0:
+                raise Exception('event has a negative sample position of ' + str(event.sample_position))
+            if event.sample_position > interval.num_samples - 1:
+                raise Exception(
+                    'event has a too big sample position of ' + str(event.sample_position) + ". Max allowed is " + str(
+                        interval.num_samples - 1)
+                )
+
+        return True
