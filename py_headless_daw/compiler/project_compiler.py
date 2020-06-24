@@ -1,10 +1,11 @@
-from typing import List, Dict, Optional, Callable
+from typing import List, Dict, Optional, Callable, cast
 
 import numpy as np
 
 from py_headless_daw.processing.event.midi_track_strategy import MidiTrackStrategy
 from py_headless_daw.processing.event.value_provider_based_event_emitter import ValueProviderBasedEventEmitter
 from py_headless_daw.processing.hybrid.vst_plugin import VstPlugin as VstPluginProcessingStrategy
+from py_headless_daw.processing.stream.sampler_track_strategy import SamplerTrackStrategy
 from py_headless_daw.processing.stream.stereo_panner import StereoPanner
 from py_headless_daw.processing.stream.stream_gain import StreamGain
 from py_headless_daw.project.audio_track import AudioTrack
@@ -14,6 +15,7 @@ from py_headless_daw.project.plugins.internal_plugin import InternalPlugin as In
 from py_headless_daw.project.plugins.plugin import Plugin
 from py_headless_daw.project.plugins.vst_plugin import VstPlugin as VstProjectPlugin
 from py_headless_daw.project.project import Project
+from py_headless_daw.project.sampler_track import SamplerTrack
 from py_headless_daw.project.track import Track
 from py_headless_daw.schema.chain import Chain
 from py_headless_daw.schema.events.event import Event
@@ -136,7 +138,8 @@ class ProjectCompiler:
         return main_unit
 
     @classmethod
-    def _create_vst_audio_plugin_unit(cls, host: Host, project: Project, plugin: VstProjectPlugin, track: Track) -> Unit:
+    def _create_vst_audio_plugin_unit(cls, host: Host, project: Project, plugin: VstProjectPlugin,
+                                      track: Track) -> Unit:
         path_to_shared_lib: bytes = plugin.path_to_shared_library.encode('utf-8')
 
         if plugin.is_synth:
@@ -159,8 +162,9 @@ class ProjectCompiler:
         return unit
 
     @classmethod
-    def _create_internal_plugin_unit(cls, host: Host, project: Project, plugin: InternalProjectPlugin, track: Track) -> Unit:
-        strategy = InternalPluginProcessingStrategyFactory().produce(plugin)
+    def _create_internal_plugin_unit(cls, host: Host, project: Project, plugin: InternalProjectPlugin,
+                                     track: Track) -> Unit:
+        strategy = InternalPluginProcessingStrategyFactory().produce(plugin, track)
 
         num_input_event_channels = 1
         num_input_stream_channels = project.num_audio_channels
@@ -191,8 +195,17 @@ class ProjectCompiler:
 
 class InternalPluginProcessingStrategyFactory:
     # noinspection PyMethodMayBeStatic
-    def produce(self, plugin: InternalProjectPlugin) -> ProcessingStrategy:
+    def produce(self, plugin: InternalProjectPlugin, track: Track) -> ProcessingStrategy:
         if plugin.internal_plugin_type == InternalProjectPlugin.TYPE_GAIN:
             return StreamGain(np.float32(1.0))
         elif plugin.internal_plugin_type == InternalProjectPlugin.TYPE_PANNING:
             return StereoPanner(np.float32(0.0))
+        elif plugin.internal_plugin_type == InternalProjectPlugin.TYPE_SAMPLER:
+
+            if type(track) is not SamplerTrack:
+                raise Exception('a SamplerTrack expected, given ' + str(type(track)))
+
+            return SamplerTrackStrategy(cast(SamplerTrack, track))
+        else:
+            raise Exception(
+                'do not know how to produce strategy for an internal plugin of type: ' + plugin.internal_plugin_type)

@@ -35,7 +35,7 @@ class ProjectTest(unittest.TestCase):
         midi_track.add_output(audio_track)
 
     # noinspection PyMethodMayBeStatic
-    def test_create_project(self):
+    def test_create_and_render_project(self):
         """
                                  envelope        envelope
                                     |               |
@@ -62,7 +62,7 @@ class ProjectTest(unittest.TestCase):
                           | sampler_track +-------+
                           |               |
                           +---------------+
-
+                           sampler->reverb
         :return:
         """
 
