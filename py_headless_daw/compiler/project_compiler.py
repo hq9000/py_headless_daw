@@ -10,10 +10,11 @@ from py_headless_daw.processing.stream.stream_gain import StreamGain
 from py_headless_daw.project.audio_track import AudioTrack
 from py_headless_daw.project.midi_track import MidiTrack
 from py_headless_daw.project.parameter import Parameter
-from py_headless_daw.project.plugins.internal_plugin import InternalPlugin as InternalProjectPlugin
+from py_headless_daw.project.plugins.internal_plugin import InternalPlugin as InternalProjectPlugin, InternalPlugin
 from py_headless_daw.project.plugins.plugin import Plugin
 from py_headless_daw.project.plugins.vst_plugin import VstPlugin as VstProjectPlugin
 from py_headless_daw.project.project import Project
+from py_headless_daw.project.sampler_track import SamplerTrack
 from py_headless_daw.project.track import Track
 from py_headless_daw.schema.chain import Chain
 from py_headless_daw.schema.events.event import Event
@@ -99,6 +100,9 @@ class ProjectCompiler:
         previous_unit: Optional[Unit] = None
         first_unit: Optional[Unit] = None
         last_unit: Optional[Unit] = None
+
+        sampler_plugin: Plugin = InternalPlugin(InternalPlugin.TYPE_SAMPLER)
+
         for number, plugin in enumerate(track.plugins):
             last_unit = cls._create_audio_plugin_unit(host, project, plugin, track)
             if 0 == number:
@@ -136,7 +140,8 @@ class ProjectCompiler:
         return main_unit
 
     @classmethod
-    def _create_vst_audio_plugin_unit(cls, host: Host, project: Project, plugin: VstProjectPlugin, track: Track) -> Unit:
+    def _create_vst_audio_plugin_unit(cls, host: Host, project: Project, plugin: VstProjectPlugin,
+                                      track: Track) -> Unit:
         path_to_shared_lib: bytes = plugin.path_to_shared_library.encode('utf-8')
 
         if plugin.is_synth:
@@ -159,7 +164,8 @@ class ProjectCompiler:
         return unit
 
     @classmethod
-    def _create_internal_plugin_unit(cls, host: Host, project: Project, plugin: InternalProjectPlugin, track: Track) -> Unit:
+    def _create_internal_plugin_unit(cls, host: Host, project: Project, plugin: InternalProjectPlugin,
+                                     track: Track) -> Unit:
         strategy = InternalPluginProcessingStrategyFactory().produce(plugin)
 
         num_input_event_channels = 1

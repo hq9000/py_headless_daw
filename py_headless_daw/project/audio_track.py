@@ -1,7 +1,7 @@
 from typing import List
 
 from py_headless_daw.project.having_parameters import HavingParameters
-from py_headless_daw.project.plugins.internal_plugin import InternalPlugin
+from py_headless_daw.project.plugins.internal_plugin import InternalPlugin, GainPlugin, PanningPlugin
 from py_headless_daw.project.plugins.plugin import Plugin
 from py_headless_daw.project.project import Track
 
@@ -13,8 +13,8 @@ class AudioTrack(Track):
     def __init__(self):
         super().__init__()
         self._plugins: List[Plugin] = []
-        self._gain: InternalPlugin = InternalPlugin(InternalPlugin.TYPE_GAIN)
-        self._panner: InternalPlugin = InternalPlugin(InternalPlugin.TYPE_PANNING)
+        self._gain: GainPlugin = GainPlugin()
+        self._panner: PanningPlugin = PanningPlugin()
 
     @HavingParameters.parameters.getter
     def parameters(self):
