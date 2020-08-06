@@ -5,12 +5,14 @@ import numpy as np
 from py_headless_daw.processing.event.midi_track_strategy import MidiTrackStrategy
 from py_headless_daw.processing.event.value_provider_based_event_emitter import ValueProviderBasedEventEmitter
 from py_headless_daw.processing.hybrid.vst_plugin import VstPlugin as VstPluginProcessingStrategy
+from py_headless_daw.processing.stream.sampler import Sampler
 from py_headless_daw.processing.stream.stereo_panner import StereoPanner
 from py_headless_daw.processing.stream.stream_gain import StreamGain
 from py_headless_daw.project.audio_track import AudioTrack
 from py_headless_daw.project.midi_track import MidiTrack
 from py_headless_daw.project.parameter import Parameter
-from py_headless_daw.project.plugins.internal_plugin import InternalPlugin as InternalProjectPlugin, InternalPlugin
+from py_headless_daw.project.plugins.internal_plugin import InternalPlugin as InternalProjectPlugin, InternalPlugin, \
+    GainPlugin, PanningPlugin, SamplerPlugin
 from py_headless_daw.project.plugins.plugin import Plugin
 from py_headless_daw.project.plugins.vst_plugin import VstPlugin as VstProjectPlugin
 from py_headless_daw.project.project import Project
@@ -23,6 +25,10 @@ from py_headless_daw.schema.host import Host
 from py_headless_daw.schema.processing_strategy import ProcessingStrategy
 from py_headless_daw.schema.unit import Unit
 from py_headless_daw.schema.wiring import StreamNode, Connector
+
+
+class CompilerException(Exception):
+    pass
 
 
 class ProjectCompiler:
@@ -198,7 +204,13 @@ class ProjectCompiler:
 class InternalPluginProcessingStrategyFactory:
     # noinspection PyMethodMayBeStatic
     def produce(self, plugin: InternalProjectPlugin) -> ProcessingStrategy:
-        if plugin.internal_plugin_type == InternalProjectPlugin.TYPE_GAIN:
+
+        if isinstance(plugin, GainPlugin):
             return StreamGain(np.float32(1.0))
-        elif plugin.internal_plugin_type == InternalProjectPlugin.TYPE_PANNING:
+        elif isinstance(plugin, PanningPlugin):
             return StereoPanner(np.float32(0.0))
+        elif isinstance(plugin, SamplerPlugin):
+            return Sampler(plugin.clips)
+        else:
+            raise CompilerException(
+                "I don't know how to produce a processing strategy for internal plugin of type " + str(type(plugin)))
