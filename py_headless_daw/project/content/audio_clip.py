@@ -7,3 +7,4 @@ class AudioClip(Clip):
         self.source_file: str = source_file
         self.cue_sample: int = cue_sample
         self.rate: float = rate
+        self.gain: float = 1.0
