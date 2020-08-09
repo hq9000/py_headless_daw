@@ -10,11 +10,30 @@ class ClipIntersection:
         self.start_clip_time: Optional[float] = None
         self.end_clip_time: Optional[float] = None
         self.start_project_time: Optional[float] = None
+        self.end_project_time: Optional[float] = None
+
+    @staticmethod
+    def create_intersection_of_clip_and_interval(clip, interval):
+        """
+        This is just a stub to be overridden with an implementation below in this module.
+        This is to avoid cyclic dependency (class referring to itself)
+
+        For the same reason, type annotations are done here in this docstring instead of normal hints.
+
+        :param clip
+        :type clip Clip
+
+        :param interval
+        :type interval TimeInterval
+
+        :rtype: ClipIntersection
+        """
+        pass
 
 
-def create_intersection_of_clip_and_interval(self, clip: Clip, interval: TimeInterval) -> Optional[ClipIntersection]:
+def create_intersection_of_clip_and_interval(clip: Clip, interval: TimeInterval) -> Optional[ClipIntersection]:
     """
-    returns an intersection or None, if the clip and the interval do not intersect
+    returns an intersection object or None if the clip and the interval do not intersect
     """
 
     if clip.end_time < interval.start_in_seconds:
@@ -28,9 +47,12 @@ def create_intersection_of_clip_and_interval(self, clip: Clip, interval: TimeInt
     res.start_project_time = max(interval.start_in_seconds, clip.start_time)
     res.end_project_time = min(interval.end_in_seconds, clip.end_time)
 
-    res.start_clip_time = min(float(0), interval.start_in_seconds - clip.start_time)
-    res.end_clip_time = max(clip.end_time - clip.start_time, interval.end_in_seconds - clip.start_time)
+    res.start_clip_time = max(float(0), interval.start_in_seconds - clip.start_time)
+    res.end_clip_time = min(clip.end_time - clip.start_time, interval.end_in_seconds - clip.start_time)
 
     res.clip = clip
 
     return res
+
+
+ClipIntersection.create_intersection_of_clip_and_interval = create_intersection_of_clip_and_interval
