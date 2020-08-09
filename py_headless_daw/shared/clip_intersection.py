@@ -31,7 +31,7 @@ class ClipIntersection:
         pass
 
 
-def create_intersection_of_clip_and_interval(clip: Clip, interval: TimeInterval) -> Optional[ClipIntersection]:
+def _create_intersection_of_clip_and_interval(clip: Clip, interval: TimeInterval) -> Optional[ClipIntersection]:
     """
     returns an intersection object or None if the clip and the interval do not intersect
     """
@@ -55,4 +55,4 @@ def create_intersection_of_clip_and_interval(clip: Clip, interval: TimeInterval)
     return res
 
 
-ClipIntersection.create_intersection_of_clip_and_interval = create_intersection_of_clip_and_interval
+ClipIntersection.create_intersection_of_clip_and_interval = _create_intersection_of_clip_and_interval

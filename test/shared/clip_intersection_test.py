@@ -46,6 +46,8 @@ class ClipIntersectionTest(unittest.TestCase):
         self.assertEqual(expected_intersection_end_clip_time, intersection.end_clip_time,
                          "unexpected intersection end clip time")
 
+        self.assertIs(clip, intersection.clip)
+
 
 if __name__ == '__main__':
     unittest.main()

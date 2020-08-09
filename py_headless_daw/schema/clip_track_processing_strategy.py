@@ -24,7 +24,7 @@ class ClipTrackProcessingStrategy(ProcessingStrategy, ABC):
         res: List[ClipIntersection] = []
 
         for clip in self._clips:
-            intersection = create_intersection_of_clip_and_interval(clip, interval)
+            intersection = ClipIntersection.create_intersection_of_clip_and_interval(clip, interval)
             if intersection is not None:
                 res.append(intersection)
 
