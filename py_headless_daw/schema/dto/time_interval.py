@@ -38,3 +38,6 @@ class TimeInterval:
     @end_in_seconds.setter
     def end_in_seconds(self, new: float):
         self._end_in_seconds = new
+
+    def sample_rate(self) -> int:
+        return round(self.num_samples / (self._end_in_seconds - self._start_in_seconds))
