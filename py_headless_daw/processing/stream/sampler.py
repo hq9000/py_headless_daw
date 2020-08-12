@@ -2,6 +2,7 @@ from typing import List, cast
 
 import numpy as np
 
+from py_headless_daw.dto.waveform import Waveform
 from py_headless_daw.project.content.audio_clip import AudioClip
 from py_headless_daw.schema.clip_track_processing_strategy import ClipTrackProcessingStrategy
 from py_headless_daw.schema.dto.time_interval import TimeInterval
@@ -14,9 +15,8 @@ from py_headless_daw.services.waveform_provider_interface import WaveformProvide
 from py_headless_daw.shared.clip_intersection import ClipIntersection
 
 
-class ProcessedWavData:
-    def __init__(self, data: np.ndarray):
-        self.uncompressed_data: np.ndarray = data
+class ProcessedWavData(Waveform):
+    pass
 
 
 class Sampler(ClipTrackProcessingStrategy):
@@ -39,27 +39,38 @@ class Sampler(ClipTrackProcessingStrategy):
         intersections = self._find_intersections(interval)
 
         for intersection in intersections:
-            self._render_one_intersection(intersection, stream_outputs, self.unit.host.sample_rate)
+            self._render_one_intersection(intersection, stream_outputs, interval, self.unit.host.sample_rate)
 
     def _render_one_intersection(self, intersection: ClipIntersection, stream_outputs: List[np.ndarray],
+                                 interval: TimeInterval,
                                  sample_rate: int):
         clip: AudioClip = cast(AudioClip, intersection.clip)
         wav_data = self._get_processed_wav_data(clip)
 
-        if len(wav_data.uncompressed_data) != len(stream_outputs):
+        if wav_data.num_channels != len(stream_outputs):
             raise Exception(
-                f"number of channels in wav_data {len(wav_data.uncompressed_data)} \
+                f"number of channels in wav_data {wav_data.num_channels()} \
                 and in output {len(stream_outputs)} does not match. Related file: {clip.source_file_path}")
 
-        patch_start_in_wav_data: int = round(clip.cue_sample + intersection.start_clip_time * sample_rate)
-        patch_start_in_output: int = # to be continued
+        patch_start_in_wav_data_in_samples: int = round(clip.cue_sample + intersection.start_clip_time * sample_rate)
+        patch_end_in_wav_data_in_samples: int = min(
+            round(clip.cue_sample + intersection.end_clip_time * sample_rate),
+            wav_data.length_in_samples())
 
-        # to be continued
-        # also check how we can use "DI injector" http://python-dependency-injector.ets-labs.org/
-        # idea: wav data provider service to make it easily mockable (probably an overkill though). to be checked
-        patch_length: int
+        patch_start_in_output_in_samples: int = round(
+            (intersection.start_project_time - interval.start_in_seconds) * sample_rate)
 
-        patch_data: np.ndarray = self._get_patch_data(intersection, self.)
+        patch_length_in_samples: int = patch_end_in_wav_data_in_samples - patch_end_in_wav_data_in_samples
+        patch_end_in_output_in_samples: int = patch_start_in_output_in_samples + patch_length_in_samples
+
+        for i, output in enumerate(stream_outputs):
+            channel_in_wav = wav_data.data[i]
+
+            # slicing returns a view, so it must be efficient
+            patch_data: np.ndarray = channel_in_wav[patch_start_in_wav_data_in_samples:patch_end_in_wav_data_in_samples]
+            patched_data: np.ndarray = output[patch_start_in_output_in_samples:patch_end_in_output_in_samples]
+
+            np.add(patch_data, out=patched_data)
 
     def _get_processed_wav_data(self, clip: AudioClip) -> ProcessedWavData:
         cache_key: str = self._generate_cache_key(clip)
