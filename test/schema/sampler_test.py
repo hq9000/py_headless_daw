@@ -60,6 +60,8 @@ class SamplerTest(unittest.TestCase):
         interval.start_in_seconds = 0
         interval.end_in_seconds = 1
 
+        # NEXT_TODO try to render something
+
     def generate_test_clips(self) -> List[AudioClip]:
         clip1 = AudioClip(0.0, 1.0, "2_1.0_1000_100", 0, 100)
         return [clip1]
