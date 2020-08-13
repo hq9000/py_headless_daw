@@ -7,11 +7,8 @@ from py_headless_daw.project.content.audio_clip import AudioClip
 from py_headless_daw.schema.clip_track_processing_strategy import ClipTrackProcessingStrategy
 from py_headless_daw.schema.dto.time_interval import TimeInterval
 from py_headless_daw.schema.events.event import Event
-from py_headless_daw.schema.processing_strategy import ProcessingStrategy
-import wave
-import scipy.io.wavfile
 
-from py_headless_daw.services.waveform_provider_interface import WaveformProviderInterface
+from py_headless_daw.services.wave_data_provider import WaveformProviderInterface
 from py_headless_daw.shared.clip_intersection import ClipIntersection
 
 
@@ -70,7 +67,7 @@ class Sampler(ClipTrackProcessingStrategy):
             patch_data: np.ndarray = channel_in_wav[patch_start_in_wav_data_in_samples:patch_end_in_wav_data_in_samples]
             patched_data: np.ndarray = output[patch_start_in_output_in_samples:patch_end_in_output_in_samples]
 
-            np.add(patch_data, out=patched_data)
+            np.add(patch_data, patched_data, out=patched_data)
 
     def _get_processed_wav_data(self, clip: AudioClip) -> ProcessedWavData:
         cache_key: str = self._generate_cache_key(clip)
@@ -96,5 +93,6 @@ class Sampler(ClipTrackProcessingStrategy):
         # to be in host's one
 
         return ProcessedWavData(
-            data=data
+            data=data,
+            sample_rate=sample_rate
         )

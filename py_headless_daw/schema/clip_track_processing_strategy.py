@@ -1,10 +1,10 @@
 from abc import ABC
-from typing import List, Optional
+from typing import List
 
 from py_headless_daw.project.content.clip import Clip
 from py_headless_daw.schema.dto.time_interval import TimeInterval
 from py_headless_daw.schema.processing_strategy import ProcessingStrategy
-from py_headless_daw.shared.clip_intersection import ClipIntersection, create_intersection_of_clip_and_interval
+from py_headless_daw.shared.clip_intersection import ClipIntersection
 
 
 class ClipTrackProcessingStrategy(ProcessingStrategy, ABC):
@@ -29,4 +29,3 @@ class ClipTrackProcessingStrategy(ProcessingStrategy, ABC):
                 res.append(intersection)
 
         return res
-
