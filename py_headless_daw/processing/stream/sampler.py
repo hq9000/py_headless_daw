@@ -74,6 +74,8 @@ class Sampler(ClipTrackProcessingStrategy):
 
             np.add(patch_data, patched_data, out=patched_data)
 
+            # NEXT_TODO in compiler, make sampler track actually created
+
     def _get_processed_wav_data(self, clip: AudioClip) -> ProcessedWavData:
         cache_key: str = self._generate_cache_key(clip)
         if cache_key not in self._processed_wav_data_cache:
