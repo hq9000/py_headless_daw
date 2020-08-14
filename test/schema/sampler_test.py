@@ -1,7 +1,8 @@
 import unittest
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 
 import numpy as np
+import parametrized
 
 from py_headless_daw.dto.waveform import Waveform
 from py_headless_daw.processing.stream.sampler import Sampler
@@ -41,11 +42,23 @@ class MockedWaveformProvider(WaveformProviderInterface):
 
         return num_channels, volume, length_in_samples, sample_rate
 
-        pass
 
-
+@parametrized.parametrized_test_case
 class SamplerTest(unittest.TestCase):
-    def test_something(self):
+
+    @parametrized.parametrized([
+        [0.0, 1.0, 100, 1.0, None],
+        [1.0, 2.0, 100, 0.0, None],
+        [2.0, 3.0, 100, 2.0, None],
+        [3.0, 4.0, 100, 0.0, None],
+        [0.5, 1.5, 100, None, 0.5],
+        [0.75, 1.75, 100, None, 0.25],
+        [10.0, 11.0, 100, None, 0.5],  # clip goes beyond underlying file
+        [13.0, 14.0, 100, 1.0, None],  # single-channel clip
+
+    ])
+    def one_case(self, interval_start: float, interval_end: float, buffer_length: int,
+                 expected_level_in_output: Optional[float], expected_average: Optional[float]):
         host = Host()
         host.sample_rate = 100
 
@@ -57,15 +70,27 @@ class SamplerTest(unittest.TestCase):
         strategy.unit = unit
 
         interval = TimeInterval()
-        interval.start_in_seconds = 0.0
-        interval.end_in_seconds = 1.0
+        interval.start_in_seconds = interval_start
+        interval.end_in_seconds = interval_end
 
-        out1 = np.zeros(shape=(100,), dtype=np.float32)
-        out2 = np.zeros(shape=(100,), dtype=np.float32)
+        out1 = np.zeros(shape=(buffer_length,), dtype=np.float32)
+        out2 = np.zeros(shape=(buffer_length,), dtype=np.float32)
 
         strategy.render(interval, [], [out1, out2], [], [])
 
-        self.assertTrue((out1 == np.ones((100,))).all())
+        values_tested: bool = False
+
+        if expected_level_in_output is not None:
+            expected_buffer = np.zeros(100, ) + expected_level_in_output
+            self.assertTrue((out1 == expected_buffer).all())
+            values_tested = True
+
+        if expected_average is not None:
+            self.assertEquals(expected_average, np.mean(out1))
+            self.assertEquals(expected_average, np.mean(out2))
+            values_tested = True
+
+        self.assertTrue(values_tested)
 
     def generate_test_clips(self) -> List[AudioClip]:
         clip1 = AudioClip(0.0, 1.0, "2_1.0_1000_100", 0, 1.0)
@@ -73,4 +98,8 @@ class SamplerTest(unittest.TestCase):
         clip2 = AudioClip(2.0, 3.0, "2_1.0_1000_100", 0, 1.0)
         clip3 = AudioClip(2.0, 3.0, "2_1.0_1000_100", 0, 1.0)
 
-        return [clip1, clip2, clip3]
+        clip4 = AudioClip(10.0, 11.0, "2_1.0_1000_100", 950, 1.0)
+
+        clip5 = AudioClip(13.0, 14.0, "1_1.0_1000_100", 0, 1.0)
+
+        return [clip1, clip2, clip3, clip4, clip5]
