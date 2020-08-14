@@ -29,7 +29,7 @@ class MockedWaveformProvider(WaveformProviderInterface):
 
     def _parse_file_path(self, file_path: str) -> Tuple[int, float, int, int]:
         elements = file_path.split('_')
-        if elements.count != 4:
+        if len(elements) != 4:
             raise Exception('the file path should have had exactly 3 underscore-delimited parts')
 
         (num_channels, volume, length_in_samples, sample_rate) = (
@@ -57,11 +57,20 @@ class SamplerTest(unittest.TestCase):
         strategy.unit = unit
 
         interval = TimeInterval()
-        interval.start_in_seconds = 0
-        interval.end_in_seconds = 1
+        interval.start_in_seconds = 0.0
+        interval.end_in_seconds = 1.0
 
-        # NEXT_TODO try to render something
+        out1 = np.zeros(shape=(100,), dtype=np.float32)
+        out2 = np.zeros(shape=(100,), dtype=np.float32)
+
+        strategy.render(interval, [], [out1, out2], [], [])
+
+        self.assertTrue((out1 == np.ones((100,))).all())
 
     def generate_test_clips(self) -> List[AudioClip]:
-        clip1 = AudioClip(0.0, 1.0, "2_1.0_1000_100", 0, 100)
-        return [clip1]
+        clip1 = AudioClip(0.0, 1.0, "2_1.0_1000_100", 0, 1.0)
+
+        clip2 = AudioClip(2.0, 3.0, "2_1.0_1000_100", 0, 1.0)
+        clip3 = AudioClip(2.0, 3.0, "2_1.0_1000_100", 0, 1.0)
+
+        return [clip1, clip2, clip3]

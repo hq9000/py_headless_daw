@@ -10,5 +10,6 @@ class Waveform:
     def length_in_samples(self) -> int:
         return self.data.shape[1]
 
+    @property
     def num_channels(self) -> int:
         return self.data.shape[0]

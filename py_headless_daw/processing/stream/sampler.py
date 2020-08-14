@@ -46,7 +46,7 @@ class Sampler(ClipTrackProcessingStrategy):
 
         if wav_data.num_channels != len(stream_outputs):
             raise Exception(
-                f"number of channels in wav_data {wav_data.num_channels()} \
+                f"number of channels in wav_data {wav_data.num_channels} \
                 and in output {len(stream_outputs)} does not match. Related file: {clip.source_file_path}")
 
         patch_start_in_wav_data_in_samples: int = round(clip.cue_sample + intersection.start_clip_time * sample_rate)
@@ -57,7 +57,7 @@ class Sampler(ClipTrackProcessingStrategy):
         patch_start_in_output_in_samples: int = round(
             (intersection.start_project_time - interval.start_in_seconds) * sample_rate)
 
-        patch_length_in_samples: int = patch_end_in_wav_data_in_samples - patch_end_in_wav_data_in_samples
+        patch_length_in_samples: int = patch_end_in_wav_data_in_samples - patch_start_in_wav_data_in_samples
         patch_end_in_output_in_samples: int = patch_start_in_output_in_samples + patch_length_in_samples
 
         for i, output in enumerate(stream_outputs):
@@ -71,13 +71,13 @@ class Sampler(ClipTrackProcessingStrategy):
 
     def _get_processed_wav_data(self, clip: AudioClip) -> ProcessedWavData:
         cache_key: str = self._generate_cache_key(clip)
-        if self._processed_wav_data_cache[cache_key] is None:
+        if cache_key not in self._processed_wav_data_cache:
             self._processed_wav_data_cache[cache_key] = self._generate_processed_wav_data(clip)
 
         return self._processed_wav_data_cache[cache_key]
 
     def _generate_cache_key(self, clip: AudioClip) -> str:
-        return clip.source_file_path + str(clip.rate)
+        return clip.source_file_path + "_" + str(clip.rate)
 
     def _generate_processed_wav_data(self, clip: AudioClip) -> ProcessedWavData:
 
