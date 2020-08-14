@@ -44,10 +44,11 @@ class Sampler(ClipTrackProcessingStrategy):
         clip: AudioClip = cast(AudioClip, intersection.clip)
         wav_data = self._get_processed_wav_data(clip)
 
-        if wav_data.num_channels != len(stream_outputs):
-            raise Exception(
-                f"number of channels in wav_data {wav_data.num_channels} \
-                and in output {len(stream_outputs)} does not match. Related file: {clip.source_file_path}")
+        if wav_data.num_channels != 1:
+            if wav_data.num_channels != len(stream_outputs):
+                raise Exception(
+                    f"number of channels in wav_data {wav_data.num_channels} " +
+                    "and in output {len(stream_outputs)} does not match. Related file: {clip.source_file_path}")
 
         patch_start_in_wav_data_in_samples: int = round(clip.cue_sample + intersection.start_clip_time * sample_rate)
         patch_end_in_wav_data_in_samples: int = min(
@@ -61,7 +62,11 @@ class Sampler(ClipTrackProcessingStrategy):
         patch_end_in_output_in_samples: int = patch_start_in_output_in_samples + patch_length_in_samples
 
         for i, output in enumerate(stream_outputs):
-            channel_in_wav = wav_data.data[i]
+            if wav_data.num_channels > 1:
+                channel_in_wav = wav_data.data[i]
+            else:
+                # mono samples is a special case - we add their single channel uniformly to all outputs
+                channel_in_wav = wav_data.data[0]
 
             # slicing returns a view, so it must be efficient
             patch_data: np.ndarray = channel_in_wav[patch_start_in_wav_data_in_samples:patch_end_in_wav_data_in_samples]
