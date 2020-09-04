@@ -10,14 +10,15 @@ class SamplerTrack(AudioTrack):
     """
     A sampler track is just an audio track that has some associated AudioClips
     When compiling, this it is also rendered similarly except one additional
-    "Sampler" plugin added in the beginning of the chain. This initial plugin just emits audio according to the clip.
+    "Sampler" plugin added in the beginning of the chain.
+    This initial plugin just emits audio according to the clip.
     """
 
     def __init__(self):
         super().__init__()
         self.clips: List[AudioClip] = []
 
-    @AudioTrack.plugins.setter
+    @AudioTrack.plugins.getter
     def plugins(self) -> List[Plugin]:
         sampler_plugin: Plugin = SamplerPlugin(self.clips)
         return [sampler_plugin] + super().plugins

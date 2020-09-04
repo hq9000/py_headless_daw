@@ -14,7 +14,7 @@ from py_headless_daw.project.content.midi_note import MidiNote
 from py_headless_daw.project.envelope import Envelope, EnvelopePoint
 from py_headless_daw.project.exceptions import RoutingException
 from py_headless_daw.project.midi_track import MidiTrack
-from py_headless_daw.project.plugins.internal_plugin import InternalPlugin
+from py_headless_daw.project.plugins.internal_plugin import InternalPlugin, GainPlugin
 from py_headless_daw.project.plugins.vst_plugin import VstPlugin
 from py_headless_daw.project.project import Project
 from py_headless_daw.project.sampler_track import SamplerTrack
@@ -137,7 +137,7 @@ class ProjectTest(unittest.TestCase):
             effect_on_master_track
         ]
 
-        master_volume_envelope = Envelope(master_track.get_parameter(InternalPlugin.PARAMETER_GAIN))
+        master_volume_envelope = Envelope(master_track.get_parameter(GainPlugin.PARAMETER_GAIN))
 
         point11 = EnvelopePoint(0.0, 0.0)
         point12 = EnvelopePoint(0.0, 1.0)
