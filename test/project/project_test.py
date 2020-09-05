@@ -14,15 +14,16 @@ from py_headless_daw.project.content.midi_note import MidiNote
 from py_headless_daw.project.envelope import Envelope, EnvelopePoint
 from py_headless_daw.project.exceptions import RoutingException
 from py_headless_daw.project.midi_track import MidiTrack
-from py_headless_daw.project.plugins.internal_plugin import InternalPlugin, GainPlugin
+from py_headless_daw.project.plugins.internal_plugin import GainPlugin
 from py_headless_daw.project.plugins.vst_plugin import VstPlugin
 from py_headless_daw.project.project import Project
 from py_headless_daw.project.sampler_track import SamplerTrack
 from py_headless_daw.schema.dto.time_interval import TimeInterval
 from py_headless_daw.schema.wiring import StreamNode
+from test.container_aware_test_case import ContainerAwareTestCase
 
 
-class ProjectTest(unittest.TestCase):
+class ProjectTest(unittest.TestCase, ContainerAwareTestCase):
 
     def test_midi_track_output_target(self):
         with self.assertRaises(RoutingException):
@@ -153,7 +154,7 @@ class ProjectTest(unittest.TestCase):
 
         project = Project(master_track)
 
-        compiler: ProjectCompiler = ProjectCompiler()
+        compiler: ProjectCompiler = self.get_container().project_compiler()
 
         output_stream_nodes: List[StreamNode] = compiler.compile(project)
 
@@ -180,6 +181,8 @@ class ProjectTest(unittest.TestCase):
             dir_of_this_file + '/../../submodules/cython-vst-loader/tests/test_plugins/' + so_name)
         res.name = plugin_name
         return res
+
+
 
 
 logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
