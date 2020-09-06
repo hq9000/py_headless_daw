@@ -23,7 +23,7 @@ from py_headless_daw.schema.wiring import StreamNode
 from test.container_aware_test_case import ContainerAwareTestCase
 
 
-class ProjectTest(unittest.TestCase, ContainerAwareTestCase):
+class ProjectTest(ContainerAwareTestCase):
 
     def test_midi_track_output_target(self):
         with self.assertRaises(RoutingException):
@@ -181,8 +181,6 @@ class ProjectTest(unittest.TestCase, ContainerAwareTestCase):
             dir_of_this_file + '/../../submodules/cython-vst-loader/tests/test_plugins/' + so_name)
         res.name = plugin_name
         return res
-
-
 
 
 logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
