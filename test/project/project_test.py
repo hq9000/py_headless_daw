@@ -173,12 +173,12 @@ class ProjectTest(ContainerAwareTestCase):
         # let's render it
         for i in range(1, 10):
             interval = TimeInterval()
-            interval.num_samples = 512
+            interval.num_samples = 4410
             interval.start_in_seconds = (i - 1) * 0.1
             interval.end_in_seconds = i * 0.1
 
-            left_buffer = np.ndarray(shape=(512,), dtype=np.float32)
-            right_buffer = np.ndarray(shape=(512,), dtype=np.float32)
+            left_buffer = np.ndarray(shape=(4410,), dtype=np.float32)
+            right_buffer = np.ndarray(shape=(4410,), dtype=np.float32)
 
             left_node.render(interval, left_buffer)
             right_node.render(interval, right_buffer)

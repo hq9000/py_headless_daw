@@ -41,14 +41,16 @@ class Sampler(ClipTrackProcessingStrategy):
     def _render_one_intersection(self, intersection: ClipIntersection, stream_outputs: List[np.ndarray],
                                  interval: TimeInterval,
                                  sample_rate: int):
+
         clip: AudioClip = cast(AudioClip, intersection.clip)
         wav_data = self._get_processed_wav_data(clip)
 
         if wav_data.num_channels != 1:
+            # number of channels should match it not a mono sample
             if wav_data.num_channels != len(stream_outputs):
                 raise Exception(
-                    f"number of channels in wav_data {wav_data.num_channels} " +
-                    "and in output {len(stream_outputs)} does not match. Related file: {clip.source_file_path}")
+                    f"""number of channels in wav_data {wav_data.num_channels} 
+                    and in output {len(stream_outputs)} does not match. Related file: {clip.source_file_path}""")
 
         patch_start_in_wav_data_in_samples: int = round(clip.cue_sample + intersection.start_clip_time * sample_rate)
         patch_end_in_wav_data_in_samples: int = min(
@@ -67,7 +69,7 @@ class Sampler(ClipTrackProcessingStrategy):
         if patch_length_in_wav_data != patch_length_in_output:
             raise Exception(
                 f"""patch lengths in sample and in interval diff. In sample: {patch_length_in_wav_data},
-                "in interval: {patch_length_in_output}""")
+                in interval: {patch_length_in_output}""")
 
         for i, output in enumerate(stream_outputs):
             if wav_data.num_channels > 1:

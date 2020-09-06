@@ -153,6 +153,8 @@ class Unit:
         :return:
         """
 
+        self._validate_interval(interval)
+
         if out_stream_buffer is not None:
             size_of_stream_buffer: int = len(out_stream_buffer)
             self._refresh_internal_buffers(interval, size_of_stream_buffer)
@@ -265,3 +267,11 @@ class Unit:
     def get_all_input_nodes(self) -> List[Node]:
         # noinspection PyTypeChecker
         return self.input_stream_nodes + self.input_event_nodes
+
+    def _validate_interval(self, interval: TimeInterval):
+        inferred_sample_rate = round(interval.num_samples / (interval.end_in_seconds - interval.start_in_seconds))
+        host_sample_rate = self.host.sample_rate
+
+        if inferred_sample_rate != host_sample_rate:
+            raise Exception(f"""sample rate inferred from the intrval: {inferred_sample_rate}, does not match
+the host sample rate {host_sample_rate} (error: 3fd4b60f)""")
