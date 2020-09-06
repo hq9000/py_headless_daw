@@ -23,7 +23,8 @@ from py_headless_daw.schema.wiring import StreamNode, Connector
 class ProjectCompiler:
 
     def __init__(self, internal_plugin_processing_strategy_factory: InternalPluginProcessingStrategyFactory):
-        self._internal_plugin_processing_strategy_factory: InternalPluginProcessingStrategyFactory = internal_plugin_processing_strategy_factory
+        self._internal_plugin_processing_strategy_factory: InternalPluginProcessingStrategyFactory = \
+            internal_plugin_processing_strategy_factory
 
     def compile(self, project: Project) -> List[StreamNode]:
         """
@@ -90,6 +91,7 @@ class ProjectCompiler:
             if not Connector.connected(source_event_node, output_node):
                 Connector(source_event_node, output_node)
 
+    # noinspection PyUnusedLocal
     @staticmethod
     def _compile_midi_track_itself(host: Host, project: Project, track: MidiTrack) -> Unit:
         strategy = MidiTrackStrategy(track)
@@ -129,7 +131,7 @@ class ProjectCompiler:
                     # the "parameter" is enclosed from the outer scope
                     return ParameterValueEvent(sample_position, parameter.name, value)
 
-                value_event_emitter_unit: Unit = cls._create_unit_for_parameter_value_emission(
+                value_event_emitter_unit: Unit = self._create_unit_for_parameter_value_emission(
                     host,
                     parameter,
                     parameter_value_transformer)
