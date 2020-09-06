@@ -86,7 +86,7 @@ class SamplerTest(unittest.TestCase):
             values_tested = True
 
         if expected_average is not None:
-            self.assertEquals(expected_average, np.mean(out1))
+            self.assertEqual(expected_average, np.mean(out1))
             self.assertEquals(expected_average, np.mean(out2))
             values_tested = True
 
