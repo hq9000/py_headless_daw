@@ -1,12 +1,9 @@
-from typing import List, Dict, Optional, Callable
+from typing import List, Dict, Optional, Callable, cast
 
-import numpy as np
-
+from py_headless_daw.compiler.internal_plugin_processing_strategy_factory import InternalPluginProcessingStrategyFactory
 from py_headless_daw.processing.event.midi_track_strategy import MidiTrackStrategy
 from py_headless_daw.processing.event.value_provider_based_event_emitter import ValueProviderBasedEventEmitter
 from py_headless_daw.processing.hybrid.vst_plugin import VstPlugin as VstPluginProcessingStrategy
-from py_headless_daw.processing.stream.stereo_panner import StereoPanner
-from py_headless_daw.processing.stream.stream_gain import StreamGain
 from py_headless_daw.project.audio_track import AudioTrack
 from py_headless_daw.project.midi_track import MidiTrack
 from py_headless_daw.project.parameter import Parameter
@@ -19,12 +16,16 @@ from py_headless_daw.schema.chain import Chain
 from py_headless_daw.schema.events.event import Event
 from py_headless_daw.schema.events.parameter_value_event import ParameterValueEvent
 from py_headless_daw.schema.host import Host
-from py_headless_daw.schema.processing_strategy import ProcessingStrategy
 from py_headless_daw.schema.unit import Unit
 from py_headless_daw.schema.wiring import StreamNode, Connector
 
 
 class ProjectCompiler:
+
+    def __init__(self, internal_plugin_processing_strategy_factory: InternalPluginProcessingStrategyFactory):
+        self._internal_plugin_processing_strategy_factory: InternalPluginProcessingStrategyFactory = \
+            internal_plugin_processing_strategy_factory
+
     def compile(self, project: Project) -> List[StreamNode]:
         """
         Given a project, returns a list of stream nodes (as many nodes as many channels
@@ -36,6 +37,7 @@ class ProjectCompiler:
         :return: List[StreamNode]
         """
 
+        # this one is to keep track of compiler tracks to properly handle cycles
         compiled_tracks: Dict[Track, Unit] = {}
 
         host = Host()
@@ -44,6 +46,10 @@ class ProjectCompiler:
         return master_unit.output_stream_nodes
 
     def _compile_internal(self, host: Host, project: Project, track: Track, compiled_tracks: Dict[Track, Unit]) -> Unit:
+        """
+        compiles the "track itself" and then descends to its inputs
+        """
+
         this_track_unit: Unit = self._compile_track_itself(host, project, track, compiled_tracks)
 
         for input_track in track.inputs:
@@ -63,11 +69,10 @@ class ProjectCompiler:
         """
         if track in compiled_tracks:
             return compiled_tracks[track]
-
         if isinstance(track, MidiTrack):
             res = self._compile_midi_track_itself(host, project, track)
         elif isinstance(track, AudioTrack):
-            res = self._compile_audio_track_itself(host, project, track)
+            res = self._compile_audio_track_itself(host, project, cast(AudioTrack, track))
         else:
             raise Exception('don\'t know ho to compile this type of track')
 
@@ -86,6 +91,7 @@ class ProjectCompiler:
             if not Connector.connected(source_event_node, output_node):
                 Connector(source_event_node, output_node)
 
+    # noinspection PyUnusedLocal
     @staticmethod
     def _compile_midi_track_itself(host: Host, project: Project, track: MidiTrack) -> Unit:
         strategy = MidiTrackStrategy(track)
@@ -93,30 +99,29 @@ class ProjectCompiler:
         unit.name = "midi track"
         return unit
 
-    @classmethod
-    def _compile_audio_track_itself(cls, host: Host, project: Project, track: AudioTrack) -> Chain:
+    def _compile_audio_track_itself(self, host: Host, project: Project, track: AudioTrack) -> Chain:
 
         previous_unit: Optional[Unit] = None
         first_unit: Optional[Unit] = None
         last_unit: Optional[Unit] = None
+
         for number, plugin in enumerate(track.plugins):
-            last_unit = cls._create_audio_plugin_unit(host, project, plugin, track)
+            last_unit = self._create_audio_plugin_unit(host, project, plugin, track)
             if 0 == number:
                 first_unit = last_unit
             if previous_unit is not None:
-                cls._connect_units(previous_unit, last_unit)
+                self._connect_units(previous_unit, last_unit)
             previous_unit = last_unit
 
         res = Chain(first_unit, last_unit)
         res.name = track.name
         return res
 
-    @classmethod
-    def _create_audio_plugin_unit(cls, host: Host, project: Project, plugin: Plugin, track: Track) -> Unit:
+    def _create_audio_plugin_unit(self, host: Host, project: Project, plugin: Plugin, track: Track) -> Unit:
         if isinstance(plugin, VstProjectPlugin):
-            main_unit: Unit = cls._create_vst_audio_plugin_unit(host, project, plugin, track)
+            main_unit: Unit = self._create_vst_audio_plugin_unit(host, project, plugin, track)
         elif isinstance(plugin, InternalProjectPlugin):
-            main_unit: Unit = cls._create_internal_plugin_unit(host, project, plugin, track)
+            main_unit: Unit = self._create_internal_plugin_unit(host, project, plugin, track)
         else:
             raise Exception('do not know how to treat project plugins of class ' + type(plugin).__name__)
 
@@ -126,7 +131,7 @@ class ProjectCompiler:
                     # the "parameter" is enclosed from the outer scope
                     return ParameterValueEvent(sample_position, parameter.name, value)
 
-                value_event_emitter_unit: Unit = cls._create_unit_for_parameter_value_emission(
+                value_event_emitter_unit: Unit = self._create_unit_for_parameter_value_emission(
                     host,
                     parameter,
                     parameter_value_transformer)
@@ -136,7 +141,8 @@ class ProjectCompiler:
         return main_unit
 
     @classmethod
-    def _create_vst_audio_plugin_unit(cls, host: Host, project: Project, plugin: VstProjectPlugin, track: Track) -> Unit:
+    def _create_vst_audio_plugin_unit(cls, host: Host, project: Project, plugin: VstProjectPlugin,
+                                      track: Track) -> Unit:
         path_to_shared_lib: bytes = plugin.path_to_shared_library.encode('utf-8')
 
         if plugin.is_synth:
@@ -158,9 +164,9 @@ class ProjectCompiler:
         unit.name = track.name + " - " + plugin.name
         return unit
 
-    @classmethod
-    def _create_internal_plugin_unit(cls, host: Host, project: Project, plugin: InternalProjectPlugin, track: Track) -> Unit:
-        strategy = InternalPluginProcessingStrategyFactory().produce(plugin)
+    def _create_internal_plugin_unit(self, host: Host, project: Project, plugin: InternalProjectPlugin,
+                                     track: Track) -> Unit:
+        strategy = self._internal_plugin_processing_strategy_factory.produce(plugin)
 
         num_input_event_channels = 1
         num_input_stream_channels = project.num_audio_channels
@@ -187,12 +193,3 @@ class ProjectCompiler:
     @classmethod
     def _create_parameter_value_transformer_function(cls, parameter, plugin) -> Callable[[float], Event]:
         pass
-
-
-class InternalPluginProcessingStrategyFactory:
-    # noinspection PyMethodMayBeStatic
-    def produce(self, plugin: InternalProjectPlugin) -> ProcessingStrategy:
-        if plugin.internal_plugin_type == InternalProjectPlugin.TYPE_GAIN:
-            return StreamGain(np.float32(1.0))
-        elif plugin.internal_plugin_type == InternalProjectPlugin.TYPE_PANNING:
-            return StereoPanner(np.float32(0.0))

@@ -32,6 +32,7 @@ class ChainTest(unittest.TestCase):
         interval.start_in_seconds = 0.0
         interval.end_in_seconds = 0.25
 
+        interval.num_samples = 44100 * interval.get_length_in_seconds()
         out_buffer = np.ndarray(shape=(100,), dtype=np.float32)
         chain.output_stream_nodes[0].render(interval, out_buffer)
 

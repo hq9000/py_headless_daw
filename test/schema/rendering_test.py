@@ -53,7 +53,7 @@ class RenderingTest(unittest.TestCase):
         interval.end_in_bars = 1
         interval.start_in_seconds = -0.1
         interval.end_in_seconds = 0.333333333
-
+        interval.num_samples = 44100 * interval.get_length_in_seconds()
 
         out_buffer = np.ndarray(shape=(100,), dtype=np.float32)
         mixer.output_stream_nodes[0].render(interval, out_buffer)

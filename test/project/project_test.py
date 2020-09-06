@@ -14,15 +14,16 @@ from py_headless_daw.project.content.midi_note import MidiNote
 from py_headless_daw.project.envelope import Envelope, EnvelopePoint
 from py_headless_daw.project.exceptions import RoutingException
 from py_headless_daw.project.midi_track import MidiTrack
-from py_headless_daw.project.plugins.internal_plugin import InternalPlugin
+from py_headless_daw.project.plugins.internal_plugin import GainPlugin
 from py_headless_daw.project.plugins.vst_plugin import VstPlugin
 from py_headless_daw.project.project import Project
 from py_headless_daw.project.sampler_track import SamplerTrack
 from py_headless_daw.schema.dto.time_interval import TimeInterval
 from py_headless_daw.schema.wiring import StreamNode
+from test.container_aware_test_case import ContainerAwareTestCase
 
 
-class ProjectTest(unittest.TestCase):
+class ProjectTest(ContainerAwareTestCase):
 
     def test_midi_track_output_target(self):
         with self.assertRaises(RoutingException):
@@ -107,7 +108,16 @@ class ProjectTest(unittest.TestCase):
 
         # - adding some audio content
         path_to_file = str(Path(__file__).parents[0]) + "/resources/test.wav"
-        audio_clip = AudioClip(0.1, 1.1, path_to_file, 40, 1.1)
+
+        clip_constructor_args = {
+            "start_time": 0.1,
+            "end_time": 1.1,
+            "source_file": path_to_file,
+            "cue_sample": 40,
+            "rate": 1.1
+        }
+
+        audio_clip = AudioClip(**clip_constructor_args)
         sampler_track.clips = [audio_clip]
 
         # - putting plugins to tracks
@@ -137,7 +147,7 @@ class ProjectTest(unittest.TestCase):
             effect_on_master_track
         ]
 
-        master_volume_envelope = Envelope(master_track.get_parameter(InternalPlugin.PARAMETER_GAIN))
+        master_volume_envelope = Envelope(master_track.get_parameter(GainPlugin.PARAMETER_GAIN))
 
         point11 = EnvelopePoint(0.0, 0.0)
         point12 = EnvelopePoint(0.0, 1.0)
@@ -153,7 +163,7 @@ class ProjectTest(unittest.TestCase):
 
         project = Project(master_track)
 
-        compiler: ProjectCompiler = ProjectCompiler()
+        compiler: ProjectCompiler = self.get_container().project_compiler()
 
         output_stream_nodes: List[StreamNode] = compiler.compile(project)
 
@@ -163,12 +173,12 @@ class ProjectTest(unittest.TestCase):
         # let's render it
         for i in range(1, 10):
             interval = TimeInterval()
-            interval.num_samples = 512
+            interval.num_samples = 4410
             interval.start_in_seconds = (i - 1) * 0.1
             interval.end_in_seconds = i * 0.1
 
-            left_buffer = np.ndarray(shape=(512,), dtype=np.float32)
-            right_buffer = np.ndarray(shape=(512,), dtype=np.float32)
+            left_buffer = np.ndarray(shape=(4410,), dtype=np.float32)
+            right_buffer = np.ndarray(shape=(4410,), dtype=np.float32)
 
             left_node.render(interval, left_buffer)
             right_node.render(interval, right_buffer)

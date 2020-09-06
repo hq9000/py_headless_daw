@@ -25,6 +25,7 @@ class ConstantLevelStrategyTest(unittest.TestCase):
         interval.end_in_bars = 1
         interval.start_in_seconds = 0.0
         interval.end_in_seconds = 0.11
+        interval.num_samples = 44100 * interval.get_length_in_seconds()
 
         out_buffer = np.ndarray(shape=(100,), dtype=np.float32)
         output_node.render(interval, out_buffer)

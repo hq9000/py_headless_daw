@@ -38,7 +38,6 @@ class MidiTrackStrategyTest(unittest.TestCase):
         self.assertEqual(0, first_event.sample_position)
         self.assertEqual(10, second_event.sample_position)
 
-
     @staticmethod
     def _generate_midi_track() -> MidiTrack:
         track = MidiTrack(1)
