@@ -108,7 +108,16 @@ class ProjectTest(ContainerAwareTestCase):
 
         # - adding some audio content
         path_to_file = str(Path(__file__).parents[0]) + "/resources/test.wav"
-        audio_clip = AudioClip(0.1, 1.1, path_to_file, 40, 1.1)
+
+        clip_constructor_args = {
+            "start_time": 0.1,
+            "end_time": 1.1,
+            "source_file": path_to_file,
+            "cue_sample": 40,
+            "rate": 1.1
+        }
+
+        audio_clip = AudioClip(**clip_constructor_args)
         sampler_track.clips = [audio_clip]
 
         # - putting plugins to tracks
