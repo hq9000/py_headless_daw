@@ -61,6 +61,14 @@ class Sampler(ClipTrackProcessingStrategy):
         patch_length_in_samples: int = patch_end_in_wav_data_in_samples - patch_start_in_wav_data_in_samples
         patch_end_in_output_in_samples: int = patch_start_in_output_in_samples + patch_length_in_samples
 
+        patch_length_in_wav_data = patch_end_in_wav_data_in_samples - patch_start_in_wav_data_in_samples
+        patch_length_in_output = patch_end_in_output_in_samples - patch_start_in_output_in_samples
+
+        if patch_length_in_wav_data != patch_length_in_output:
+            raise Exception(
+                f"""patch lengths in sample and in interval diff. In sample: {patch_length_in_wav_data},
+                "in interval: {patch_length_in_output}""")
+
         for i, output in enumerate(stream_outputs):
             if wav_data.num_channels > 1:
                 channel_in_wav = wav_data.data[i]

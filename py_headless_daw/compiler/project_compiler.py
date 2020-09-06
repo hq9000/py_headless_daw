@@ -1,19 +1,13 @@
 from typing import List, Dict, Optional, Callable, cast
 
-import numpy as np
-
 from py_headless_daw.compiler.internal_plugin_processing_strategy_factory import InternalPluginProcessingStrategyFactory
 from py_headless_daw.processing.event.midi_track_strategy import MidiTrackStrategy
 from py_headless_daw.processing.event.value_provider_based_event_emitter import ValueProviderBasedEventEmitter
 from py_headless_daw.processing.hybrid.vst_plugin import VstPlugin as VstPluginProcessingStrategy
-from py_headless_daw.processing.stream.sampler import Sampler
-from py_headless_daw.processing.stream.stereo_panner import StereoPanner
-from py_headless_daw.processing.stream.stream_gain import StreamGain
 from py_headless_daw.project.audio_track import AudioTrack
 from py_headless_daw.project.midi_track import MidiTrack
 from py_headless_daw.project.parameter import Parameter
-from py_headless_daw.project.plugins.internal_plugin import InternalPlugin as InternalProjectPlugin, InternalPlugin, \
-    GainPlugin, PanningPlugin, SamplerPlugin
+from py_headless_daw.project.plugins.internal_plugin import InternalPlugin as InternalProjectPlugin
 from py_headless_daw.project.plugins.plugin import Plugin
 from py_headless_daw.project.plugins.vst_plugin import VstPlugin as VstProjectPlugin
 from py_headless_daw.project.project import Project
@@ -22,10 +16,8 @@ from py_headless_daw.schema.chain import Chain
 from py_headless_daw.schema.events.event import Event
 from py_headless_daw.schema.events.parameter_value_event import ParameterValueEvent
 from py_headless_daw.schema.host import Host
-from py_headless_daw.schema.processing_strategy import ProcessingStrategy
 from py_headless_daw.schema.unit import Unit
 from py_headless_daw.schema.wiring import StreamNode, Connector
-from py_headless_daw.services.wave_data_provider import WaveformProviderInterface
 
 
 class ProjectCompiler:
@@ -116,7 +108,7 @@ class ProjectCompiler:
             if 0 == number:
                 first_unit = last_unit
             if previous_unit is not None:
-                cls._connect_units(previous_unit, last_unit)
+                self._connect_units(previous_unit, last_unit)
             previous_unit = last_unit
 
         res = Chain(first_unit, last_unit)
