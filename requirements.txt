@@ -12,6 +12,6 @@ six==1.14.0
 wcwidth==0.1.9
 wurlitzer==2.0.0
 zipp==3.1.0
-
+dependency-injector==3.28.0
 parametrized~=0.1
 scipy~=1.5.2
