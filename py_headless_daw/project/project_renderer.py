@@ -13,18 +13,25 @@ import numpy as np
 
 class ProjectRenderer:
 
-    def __init__(self, compiler: ProjectCompiler):
-        self._compiler: ProjectCompiler = compiler
+    SAMPLE_RATE = 44100
+
+    def __init__(self, project_compiler: ProjectCompiler):
+        self._compiler: ProjectCompiler = project_compiler
 
     def render_to_file(self, project: Project, start_time: float, end_time: float, out_file_path: str):
+        buffer = self.render_to_array(project, start_time, end_time)
+        wavfile.write(out_file_path, self.SAMPLE_RATE, buffer)
+
+    def render_to_array(self, project: Project, start_time: float, end_time: float) -> np.ndarray:
         output_stream_nodes: List[StreamNode] = self._compiler.compile(project)
 
         left_node = output_stream_nodes[0]
         right_node = output_stream_nodes[1]
 
-        buffer_length_samples = 44100
-        sample_rate = 44100
-        buffer_length_seconds: int = round(buffer_length_samples / sample_rate)
+        buffer_length_samples = 4410
+        sample_rate = self.SAMPLE_RATE
+
+        buffer_length_seconds = buffer_length_samples / sample_rate
         num_frames = ceil((end_time - start_time) / buffer_length_seconds)
 
         result_buffer = np.ndarray(shape=(2, num_frames * buffer_length_samples), dtype=np.float32)
@@ -35,7 +42,7 @@ class ProjectRenderer:
         for i in range(num_frames):
             interval = TimeInterval()
 
-            interval.num_samples = 4410
+            interval.num_samples = buffer_length_samples
             interval.start_in_seconds = start_time + i * buffer_length_seconds
             interval.end_in_seconds = interval.start_in_seconds + buffer_length_seconds
 
@@ -48,4 +55,4 @@ class ProjectRenderer:
             result_buffer[0][start_sample_in_result:end_sample_in_result] = left_frame_buffer
             result_buffer[1][start_sample_in_result:end_sample_in_result] = right_frame_buffer
 
-        wavfile.write(out_file_path, sample_rate, result_buffer)
+        return result_buffer
