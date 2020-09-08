@@ -1,14 +1,12 @@
-from py_headless_daw.project.project import Project
-from pathlib import Path
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class RidingOnBugs:
+
+    logger = logging.getLogger(__name__)
+
     def render(self, output_file: str):
-        logging.info('starter rendering RidingOnBugs demo')
+        logger.info('started rendering RidingOnBugs demo to ' + output_file)
         pass
-
-
-if __name__ == '__main__':
-    demo = RidingOnBugs()
-    out_file = str(Path(__file__).parent.absolute()) + "/output/out.wav"
-    demo.render(out_file)
