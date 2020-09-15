@@ -187,7 +187,7 @@ class ProjectTest(ContainerAwareTestCase):
     def _create_vst_plugin(so_name: str, plugin_name: str = "no name") -> VstPlugin:
         dir_of_this_file = str(Path(__file__).parents[0])
         res = VstPlugin(
-            dir_of_this_file + '/../../submodules/cython-vst-loader/tests/test_plugins/' + so_name)
+            dir_of_this_file + '/../test_plugins/' + so_name)
         res.name = plugin_name
         return res
 
