@@ -25,12 +25,6 @@ jobs:
         python -m pip install --upgrade pip
         pip install flake8 pytest
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-    - name: clonning submodules
-      run: |
-        git submodule update --init
-    - name: Build Cython module
-      run: |
-        cd submodules/cython-vst-loader/cython_vst_loader; python setup.py build_ext --inplace
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
@@ -38,5 +32,4 @@ jobs:
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with pytest
-      run: |
-        export PYTHONPATH="submodules/cython-vst-loader"; pytest
+      run: pytest
