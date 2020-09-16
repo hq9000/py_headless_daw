@@ -19,8 +19,7 @@ class VstPluginProcessingStrategyTest(unittest.TestCase):
 
         dir_path = os.path.dirname(os.path.realpath(__file__))
 
-        path_to_so: str = dir_path + '/../../submodules/cython-vst-loader/tests/test_plugins' \
-                                     '/amsynth-vst.x86_64-linux.so'
+        path_to_so: str = dir_path + '/../test_plugins/amsynth-vst.x86_64-linux.so'
         as_bytes = path_to_so.encode('utf-8')
 
         unit = Unit(0, 0, 1, 0, host)
