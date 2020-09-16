@@ -22,7 +22,7 @@ class RidingOnBugs:
         logger.info('started rendering RidingOnBugs demo to ' + output_file)
 
         project = self.create_project()
-        self._renderer.render_to_file(project, output_file)
+        self._renderer.render_to_file(project, 0, self.length_bars * self.bar_length, output_file)
 
     def create_project(self) -> Project:
         bass_drum_track = SamplerTrack()
@@ -36,7 +36,7 @@ class RidingOnBugs:
     def _generate_bd_clip(self, bar_number: int) -> AudioClip:
         start_time = bar_number * self.bar_length
         end_time = start_time + self.bar_length / 4
-        res = AudioClip(start_time, end_time, self._get_current_dir() + '/resource/bd.wav', 0)
+        res = AudioClip(start_time, end_time, self._get_current_dir() + '/resources/bd.wav', 0, 1.0)
         return res
 
     @staticmethod

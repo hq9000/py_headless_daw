@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Tuple
 
 import scipy.io.wavfile
 import numpy as np
@@ -20,8 +21,13 @@ class WaveDataProvider(WaveformProviderInterface):
     """
 
     def get_wave_data_by_file_path(self, file_path: str) -> Waveform:
-        (sample_rate, data) = scipy.io.wavfile.read(file_path)
-        data = np.rot90(data)
+        wav_file_details:  Tuple[int, np.ndarray] = scipy.io.wavfile.read(file_path)
+        (sample_rate, data) = wav_file_details
+
+        if data.ndim > 1:
+            data = np.rot90(data)
+        else:
+            data = data.reshape((1, data.shape[0]))
 
         divider = None
         if data.dtype is np.dtype(np.int16):
