@@ -33,6 +33,8 @@ class Sampler(ClipTrackProcessingStrategy):
 
     def render(self, interval: TimeInterval, stream_inputs: List[np.ndarray], stream_outputs: List[np.ndarray],
                event_inputs: List[List[Event]], event_outputs: List[List[Event]]):
+
+        [o.fill(0.0) for o in stream_outputs]
         intersections = self._find_intersections(interval)
 
         for intersection in intersections:
@@ -83,8 +85,6 @@ class Sampler(ClipTrackProcessingStrategy):
             patched_data: np.ndarray = output[patch_start_in_output_in_samples:patch_end_in_output_in_samples]
 
             np.add(patch_data, patched_data, out=patched_data)
-
-            # NEXT_TODO in compiler, make sampler track actually created
 
     def _get_processed_wav_data(self, clip: AudioClip) -> ProcessedWavData:
         cache_key: str = self._generate_cache_key(clip)
