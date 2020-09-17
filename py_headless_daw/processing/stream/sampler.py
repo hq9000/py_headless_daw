@@ -84,6 +84,13 @@ class Sampler(ClipTrackProcessingStrategy):
             patch_data: np.ndarray = channel_in_wav[patch_start_in_wav_data_in_samples:patch_end_in_wav_data_in_samples]
             patched_data: np.ndarray = output[patch_start_in_output_in_samples:patch_end_in_output_in_samples]
 
+            if patch_data.shape != patched_data.shape:
+                raise Exception(f"""
+                patch and patched have different shapes. 
+                patch: {str(patch_data.shape)}
+                patched: {str(patched_data.shape)}
+                """)
+
             np.add(patch_data, patched_data, out=patched_data)
 
     def _get_processed_wav_data(self, clip: AudioClip) -> ProcessedWavData:
