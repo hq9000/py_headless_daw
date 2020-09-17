@@ -36,7 +36,7 @@ class RidingOnBugs:
     def _generate_bd_clip(self, bar_number: int) -> AudioClip:
         start_time = bar_number * self.bar_length
         end_time = start_time + self.bar_length / 4
-        res = AudioClip(start_time, end_time, self._get_current_dir() + '/resources/bd.wav', 0, 1.0)
+        res = AudioClip(start_time, end_time, self._get_current_dir() + '/resources/bd_mono.wav', 0, 1.0)
         return res
 
     @staticmethod

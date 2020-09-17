@@ -12,7 +12,6 @@ import numpy as np
 
 
 class ProjectRenderer:
-
     SAMPLE_RATE = 44100
 
     def __init__(self, project_compiler: ProjectCompiler):
@@ -20,6 +19,7 @@ class ProjectRenderer:
 
     def render_to_file(self, project: Project, start_time: float, end_time: float, out_file_path: str):
         buffer = self.render_to_array(project, start_time, end_time)
+        buffer = np.rot90(buffer, k=-1)
         wavfile.write(out_file_path, self.SAMPLE_RATE, buffer)
 
     def render_to_array(self, project: Project, start_time: float, end_time: float) -> np.ndarray:
