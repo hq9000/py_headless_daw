@@ -3,6 +3,7 @@ import os
 
 from py_headless_daw.project.audio_track import AudioTrack
 from py_headless_daw.project.content.audio_clip import AudioClip
+from py_headless_daw.project.plugins.vst_plugin import VstPlugin
 from py_headless_daw.project.project import Project
 from py_headless_daw.project.project_renderer import ProjectRenderer
 from py_headless_daw.project.sampler_track import SamplerTrack
@@ -28,13 +29,20 @@ class RidingOnBugs:
         self._renderer.render_to_file(project, 0, self.length_bars * self.bar_length, output_file)
 
     def create_project(self) -> Project:
-        bass_drum_track = SamplerTrack()
-        bass_drum_track.clips = [self._generate_bd_clip(i) for i in range(self.length_bars)]
+        bass_drum_track = self._create_bass_drum_track()
 
         master_track = AudioTrack()
         master_track.inputs = [bass_drum_track]
 
         return Project(master_track)
+
+    def _create_bass_drum_track(self) -> AudioTrack:
+        bass_drum_track = SamplerTrack()
+        bass_drum_track.clips = [self._generate_bd_clip(i) for i in range(self.length_bars)]
+        reverb = VstPlugin(
+            self._get_current_dir() + '/../../../test/test_plugins/DragonflyRoomReverb-vst.x86_64-linux.so')
+        bass_drum_track.plugins = [reverb]
+        return bass_drum_track
 
     def _generate_bd_clip(self, bar_number: int) -> AudioClip:
         start_time = bar_number * self.bar_length
