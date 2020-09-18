@@ -1,10 +1,11 @@
 import logging
 import os
-from typing import List
+from typing import List, Optional
 
 from py_headless_daw.project.audio_track import AudioTrack
 from py_headless_daw.project.content.audio_clip import AudioClip
 from py_headless_daw.project.content.midi_clip import MidiClip
+from py_headless_daw.project.content.midi_note import MidiNote
 from py_headless_daw.project.midi_track import MidiTrack
 from py_headless_daw.project.plugins.vst_plugin import VstPlugin
 from py_headless_daw.project.project import Project
@@ -75,4 +76,29 @@ class RidingOnBugs:
         return str(os.path.dirname(os.path.realpath(__file__)))
 
     def _get_synth_midi_clips(self) -> List[MidiClip]:
-        return []
+        clips = []
+        for i in range(self.length_bars):
+            clip = self._generate_synth_midi_clip(i)
+            if clip is not None:
+                clips.append(clip)
+
+        return clips
+
+    def _generate_synth_midi_clip(self, bar_number: int) -> Optional[MidiClip]:
+        if bar_number != 3:
+            return None
+
+        start = bar_number * self.bar_length
+        end = start + self.bar_length
+        clip = MidiClip(start, end)
+
+        note = MidiNote(
+            clip=clip,
+            clip_time=self.bar_length * 0.25,
+            note=65,
+            velocity=40,
+            length=self.bar_length / 2
+        )
+
+        clip.midi_notes = [note]
+        return clip
