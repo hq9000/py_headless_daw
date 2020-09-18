@@ -1,8 +1,11 @@
 import logging
 import os
+from typing import List
 
 from py_headless_daw.project.audio_track import AudioTrack
 from py_headless_daw.project.content.audio_clip import AudioClip
+from py_headless_daw.project.content.midi_clip import MidiClip
+from py_headless_daw.project.midi_track import MidiTrack
 from py_headless_daw.project.plugins.vst_plugin import VstPlugin
 from py_headless_daw.project.project import Project
 from py_headless_daw.project.project_renderer import ProjectRenderer
@@ -31,8 +34,10 @@ class RidingOnBugs:
     def create_project(self) -> Project:
         bass_drum_track = self._create_bass_drum_track()
 
+        synth_track = self._create_synth_track()
+
         master_track = AudioTrack()
-        master_track.inputs = [bass_drum_track]
+        master_track.inputs = [bass_drum_track, synth_track]
 
         return Project(master_track)
 
@@ -44,6 +49,21 @@ class RidingOnBugs:
         bass_drum_track.plugins = [reverb]
         return bass_drum_track
 
+    def _create_synth_track(self):
+        midi_track = MidiTrack(1)
+        midi_track.clips = self._get_synth_midi_clips()
+
+        synth_track = AudioTrack()
+        synth_plugin = VstPlugin(
+            self._get_current_dir() + '/../../../test/test_plugins/amsynth-vst.x86_64-linux.so')
+
+        synth_track.plugins = [
+            synth_plugin
+        ]
+
+        synth_track.inputs = [midi_track]
+        return synth_track
+
     def _generate_bd_clip(self, bar_number: int) -> AudioClip:
         start_time = bar_number * self.bar_length
         end_time = start_time + self.bar_length / 2
@@ -53,3 +73,6 @@ class RidingOnBugs:
     @staticmethod
     def _get_current_dir() -> str:
         return str(os.path.dirname(os.path.realpath(__file__)))
+
+    def _get_synth_midi_clips(self) -> List[MidiClip]:
+        return []
