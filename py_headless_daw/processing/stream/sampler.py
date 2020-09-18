@@ -55,6 +55,10 @@ class Sampler(ClipTrackProcessingStrategy):
                     and in output {len(stream_outputs)} does not match. Related file: {clip.source_file_path}""")
 
         patch_start_in_wav_data_in_samples: int = round(clip.cue_sample + intersection.start_clip_time * sample_rate)
+
+        if patch_start_in_wav_data_in_samples > wav_data.length_in_samples():
+            return
+
         patch_end_in_wav_data_in_samples: int = min(
             round(clip.cue_sample + intersection.end_clip_time * sample_rate),
             wav_data.length_in_samples())
