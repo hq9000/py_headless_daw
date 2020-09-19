@@ -17,6 +17,13 @@ Each step of the workflow uses the output artifact produced by the previous one:
 
 Below go more detailed descriptions of concepts related to each step of the workflow. 
 
+### Demo project
+
+There is a demo project that can be used as a reference. Find its more dertailed readme here:
+
+[Readme for "Riding on Bugs" demo project](py_headless_daw/demo/riding_on_bugs/README.md)
+
+
 ### Create a Project
 
 A project (an instance of `Project` class), is, essentially, a group of interconnected tracks (`Track` class)
