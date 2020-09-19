@@ -13,7 +13,7 @@ class MidiEventFactory:
         pass
 
     def create_note_on_event(self, note: int, velocity: int, position: int = SAMPLE_POSITION_UNDEFINED) -> MidiEvent:
-        status_byte: int = self.STATUS_TEMPLATE_NOTE_OFF
+        status_byte: int = self.STATUS_TEMPLATE_NOTE_ON
         status_byte += self.channel_number
 
         data1: int = note
@@ -29,14 +29,4 @@ class MidiEventFactory:
         return event
 
     def create_note_off_event(self, note: int, velocity: int, position: int = SAMPLE_POSITION_UNDEFINED) -> MidiEvent:
-        status_byte: int = self.STATUS_TEMPLATE_NOTE_ON
-        status_byte += self.channel_number
-
-        data1: int = note
-        data2: int = velocity
-
-        event = MidiEvent(position)
-        event.data1 = data1
-        event.data2 = data2
-
-        return event
+        return self.create_note_on_event(note=note, velocity=0, position=position)
