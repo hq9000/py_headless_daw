@@ -6,6 +6,7 @@ from py_headless_daw.project.parameter import Parameter
 class HavingParameters:
     def __init__(self):
         self._parameters: Dict[str, Parameter] = {}
+        super().__init__()
 
     def has_parameter(self, name: str) -> bool:
         return name in self._parameters

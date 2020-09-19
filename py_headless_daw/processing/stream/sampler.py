@@ -33,6 +33,8 @@ class Sampler(ClipTrackProcessingStrategy):
 
     def render(self, interval: TimeInterval, stream_inputs: List[np.ndarray], stream_outputs: List[np.ndarray],
                event_inputs: List[List[Event]], event_outputs: List[List[Event]]):
+
+        [o.fill(0.0) for o in stream_outputs]
         intersections = self._find_intersections(interval)
 
         for intersection in intersections:
@@ -53,6 +55,10 @@ class Sampler(ClipTrackProcessingStrategy):
                     and in output {len(stream_outputs)} does not match. Related file: {clip.source_file_path}""")
 
         patch_start_in_wav_data_in_samples: int = round(clip.cue_sample + intersection.start_clip_time * sample_rate)
+
+        if patch_start_in_wav_data_in_samples > wav_data.length_in_samples():
+            return
+
         patch_end_in_wav_data_in_samples: int = min(
             round(clip.cue_sample + intersection.end_clip_time * sample_rate),
             wav_data.length_in_samples())
@@ -82,9 +88,14 @@ class Sampler(ClipTrackProcessingStrategy):
             patch_data: np.ndarray = channel_in_wav[patch_start_in_wav_data_in_samples:patch_end_in_wav_data_in_samples]
             patched_data: np.ndarray = output[patch_start_in_output_in_samples:patch_end_in_output_in_samples]
 
-            np.add(patch_data, patched_data, out=patched_data)
+            if patch_data.shape != patched_data.shape:
+                raise Exception(f"""
+                patch and patched have different shapes. 
+                patch: {str(patch_data.shape)}
+                patched: {str(patched_data.shape)}
+                """)
 
-            # NEXT_TODO in compiler, make sampler track actually created
+            np.add(patch_data, patched_data, out=patched_data)
 
     def _get_processed_wav_data(self, clip: AudioClip) -> ProcessedWavData:
         cache_key: str = self._generate_cache_key(clip)

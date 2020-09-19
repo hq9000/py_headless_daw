@@ -17,6 +17,7 @@ from py_headless_daw.project.midi_track import MidiTrack
 from py_headless_daw.project.plugins.internal_plugin import GainPlugin
 from py_headless_daw.project.plugins.vst_plugin import VstPlugin
 from py_headless_daw.project.project import Project
+from py_headless_daw.project.project_renderer import ProjectRenderer
 from py_headless_daw.project.sampler_track import SamplerTrack
 from py_headless_daw.schema.dto.time_interval import TimeInterval
 from py_headless_daw.schema.wiring import StreamNode
@@ -163,25 +164,12 @@ class ProjectTest(ContainerAwareTestCase):
 
         project = Project(master_track)
 
-        compiler: ProjectCompiler = self.get_container().project_compiler()
+        renderer: ProjectRenderer = self.get_container().project_renderer()
 
-        output_stream_nodes: List[StreamNode] = compiler.compile(project)
+        res = renderer.render_to_array(project, 0, 10)
 
-        left_node = output_stream_nodes[0]
-        right_node = output_stream_nodes[1]
 
-        # let's render it
-        for i in range(1, 10):
-            interval = TimeInterval()
-            interval.num_samples = 4410
-            interval.start_in_seconds = (i - 1) * 0.1
-            interval.end_in_seconds = i * 0.1
 
-            left_buffer = np.ndarray(shape=(4410,), dtype=np.float32)
-            right_buffer = np.ndarray(shape=(4410,), dtype=np.float32)
-
-            left_node.render(interval, left_buffer)
-            right_node.render(interval, right_buffer)
 
     @staticmethod
     def _create_vst_plugin(so_name: str, plugin_name: str = "no name") -> VstPlugin:
