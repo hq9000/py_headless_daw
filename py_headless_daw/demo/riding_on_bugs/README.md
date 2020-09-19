@@ -11,7 +11,7 @@ This "song" has two tracks
 - synth track
   - an audio track with an instance of `VstPlugin` which loads `amsynth-vst.x86_64-linux`
 - midi track
-  - this track is input for the synth track and consists of a single midi clip playing a short note
+  - this track is an input for the synth track and consists of a single midi clip playing a short note
 
 ![image](https://user-images.githubusercontent.com/21345604/93659049-ee8d0f80-fa49-11ea-91b4-8085965048e4.png)
 
@@ -23,4 +23,8 @@ when rendered, the waveform looks somewhat like this:
 
 the demo is mainly implemented in `RidingOnBugs` class exposing a
 `def render(self, output_file: str)` method
+
+## How to run
+
+just run the `build.py` script
   
