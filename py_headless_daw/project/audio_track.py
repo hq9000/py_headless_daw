@@ -1,6 +1,7 @@
 from typing import List
 
 from py_headless_daw.project.having_parameters import HavingParameters
+from py_headless_daw.project.parameter import Parameter
 from py_headless_daw.project.plugins.internal_plugin import InternalPlugin, GainPlugin, PanningPlugin
 from py_headless_daw.project.plugins.plugin import Plugin
 from py_headless_daw.project.project import Track
@@ -22,6 +23,12 @@ class AudioTrack(Track):
 
     def add_parameter(self, name: str, value: float):
         raise Exception('adding parameters to this object is not supported')
+
+    def get_gain_parameter(self) -> Parameter:
+        return self._gain.get_parameter(GainPlugin.PARAMETER_GAIN)
+
+    def get_panning_parameter(self) -> Parameter:
+        return self._panner.get_parameter(PanningPlugin.PARAMETER_PANNING)
 
     @property
     def plugins(self) -> List[Plugin]:
