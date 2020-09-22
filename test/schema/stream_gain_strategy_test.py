@@ -28,5 +28,16 @@ class StreamGainStrategyTest(unittest.TestCase):
 
         strategy.render(interval, [in_stream_buffer], [out_stream_buffer], [input_event_buffer], [output_event_buffer])
 
-        for x in range(0, 100):
-            self.assertTrue(0.54 < out_stream_buffer[x] < 0.56)
+        # the first few samples are closer to the initial value
+        for x in range(0, 3):
+            self.assertTrue(0.24 < out_stream_buffer[x] < 0.26)
+
+        # while the last few are closer to the target one
+        for x in range(out_stream_buffer.shape[0] - 3, out_stream_buffer.shape[0]):
+            self.assertTrue(0.24 < out_stream_buffer[x] > 0.45)
+
+        strategy.render(interval, [in_stream_buffer], [out_stream_buffer], [[]], [[]])
+        # now we render without any events in the input, the logic in the
+        # strategy is slightly different in this case
+        for x in range(out_stream_buffer.shape[0] - 3, out_stream_buffer.shape[0]):
+            self.assertTrue(out_stream_buffer[x] > 0.45)

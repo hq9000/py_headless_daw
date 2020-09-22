@@ -22,7 +22,6 @@ class StreamGain(ProcessingStrategy):
         all_events = self._flatten_event_inputs(event_inputs)
         all_events = sorted(all_events, key=lambda event: event.sample_position)
 
-
         new_desired_gain = self.gain
 
         for event in all_events:
@@ -35,7 +34,7 @@ class StreamGain(ProcessingStrategy):
             # even in this simplified approach,
             # we still want to avoid abrupt volume changes resulting in clicks,
             # for that we smoothen out transition:
-            # if a change in gain is detected (new desired gain != current gain)
+            # if a change in gain is detected (new desired gain != current gain),
             # it will be reached during this buffer by applying a slowly changing array
             gain_operation = self._get_smoothener_array(self.gain, new_desired_gain, stream_outputs[0].shape[0])
         else:
