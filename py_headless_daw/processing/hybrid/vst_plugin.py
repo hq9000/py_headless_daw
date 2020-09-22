@@ -106,7 +106,7 @@ class VstPlugin(ProcessingStrategy):
 
     def _find_parameter_index_by_name(self, parameter_string_id: str) -> int:
         """
-        this method is ued to convert from internal parameter ids (which are unique human-readable strings)
+        this method is used to convert from internal parameter ids (which are unique human-readable strings)
         into the indices of params of this particular vst plugin
 
         :param parameter_string_id:
@@ -114,12 +114,12 @@ class VstPlugin(ProcessingStrategy):
         """
         available_parameter_names: List[str] = []
         for idx in range(0, self._internal_plugin.get_num_parameters()):
-            available_parameter_names.append(self._internal_plugin.get_parameter_name(idx))
-            if self._internal_plugin.get_parameter_name(idx) == parameter_string_id:
+            available_parameter_names.append(str(self._internal_plugin.get_parameter_name(idx)))
+            if self._internal_plugin.get_parameter_name(idx) == parameter_string_id.encode('utf-8'):
                 return idx
 
         raise LookupError(
-            'a parameter named ' + parameter_string_id + ' not found in this vst plugin. Available parameters are '
+            'a parameter named ' + str(parameter_string_id) + ' not found in this vst plugin. Available parameters are '
             + ", ".join(available_parameter_names))
 
     @staticmethod

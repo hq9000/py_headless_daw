@@ -24,6 +24,7 @@ class Envelope(ValueProvider):
     def __init__(self, value_consumer: ValueConsumer):
         super().__init__()
         self.target: ValueConsumer = value_consumer
+        self.target.value_provider = self
         self._points: List[EnvelopePoint] = []
 
     @property
