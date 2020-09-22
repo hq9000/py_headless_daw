@@ -55,7 +55,9 @@ class RidingOnBugs:
 
         envelope.points = [
             EnvelopePoint(0, 0),
-            EnvelopePoint(self.length_bars * self.bar_length / 4, 1.0)
+            EnvelopePoint(self.length_bars * self.bar_length / 4, 1.0),
+            EnvelopePoint(self.length_bars * self.bar_length / 4 * 3, 1.0),
+            EnvelopePoint(self.length_bars * self.bar_length, 0.0)
         ]
 
         return bass_drum_track
