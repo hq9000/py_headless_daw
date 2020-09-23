@@ -21,7 +21,7 @@ class WaveDataProvider(WaveformProviderInterface):
     """
 
     def get_wave_data_by_file_path(self, file_path: str) -> Waveform:
-        wav_file_details:  Tuple[int, np.ndarray] = scipy.io.wavfile.read(file_path)
+        wav_file_details: Tuple[int, np.ndarray] = scipy.io.wavfile.read(file_path)
         (sample_rate, data) = wav_file_details
 
         if data.ndim > 1:

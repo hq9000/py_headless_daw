@@ -21,8 +21,7 @@ class EventTrack(ProcessingStrategy):
 
         for event in self._events:
             if interval.start_in_bars <= event.position_in_bars < interval.end_in_bars:
-                sample_position = interval.num_samples * \
-                                  (event.position_in_bars - interval.start_in_bars) / interval.get_length_in_bars()
+                sample_position = interval.num_samples * (event.position_in_bars - interval.start_in_bars) / interval.get_length_in_bars()
 
                 sample_position: int = round(sample_position)
                 real_event = event.event

@@ -119,7 +119,8 @@ class VstPlugin(ProcessingStrategy):
                 return idx
 
         raise LookupError(
-            'a parameter named ' + str(parameter_string_id) + ' not found in this vst plugin. Available parameters are '
+            'a parameter named ' + str(parameter_string_id)
+            + ' not found in this vst plugin. Available parameters are '
             + ", ".join(available_parameter_names))
 
     @staticmethod

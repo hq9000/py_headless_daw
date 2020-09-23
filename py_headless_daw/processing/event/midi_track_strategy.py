@@ -62,8 +62,6 @@ class MidiTrackStrategy(ProcessingStrategy):
 
         res: List[MidiEvent] = []
 
-        tolerance: float = 0.000000001
-
         if self.round(note_start_in_seconds) >= self.round(interval.start_in_seconds):
             sample_position = self._calculate_sample_position(interval, self.round(note_start_in_seconds))
             res.append(
