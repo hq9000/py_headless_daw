@@ -2,7 +2,7 @@
 
 ## Overview
 
-This "song" has two tracks
+This "song" has tree tracks
 
 - reverberated bass drum 
   - this is a `SamplerTrack` where  `bd.wav`-based clips are evenly placed
@@ -13,11 +13,13 @@ This "song" has two tracks
 - midi track
   - this track is an input for the synth track and consists of a single midi clip playing a short note
 
-![image](https://user-images.githubusercontent.com/21345604/93659049-ee8d0f80-fa49-11ea-91b4-8085965048e4.png)
+![image](https://user-images.githubusercontent.com/21345604/93955793-3a48fd00-fd59-11ea-88d9-6f94e2023c9f.png)
 
 when rendered, the waveform looks somewhat like this:
 
-![image](https://user-images.githubusercontent.com/21345604/93659060-19776380-fa4a-11ea-9abb-09bd996b9e9c.png)
+![image](https://user-images.githubusercontent.com/21345604/93956098-09b59300-fd5a-11ea-9b53-6305e304d7fa.png)
+
+
 
 ## Implementation
 
