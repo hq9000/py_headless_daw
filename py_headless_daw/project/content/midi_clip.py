@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Sequence
 
 from py_headless_daw.project.content.clip import Clip
 
@@ -7,11 +7,11 @@ class MidiClip(Clip):
     def __init__(self, start_time: float, end_time: float):
         super().__init__(start_time, end_time)
         from py_headless_daw.project.content.midi_note import MidiNote  # to avoid an import-time loop
-        self.midi_notes: List[MidiNote] = []
+        self.midi_notes: Sequence[MidiNote] = []
 
     @property
     def events(self):
-        # type: ()->List[MidiClipEvent]
+        # type: ()->Sequence[MidiClipEvent]
         return self.midi_notes
 
 

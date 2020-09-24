@@ -1,6 +1,3 @@
-from typing import Optional
-
-
 class TimeInterval:
     id_cursor: int = 0
 
@@ -10,8 +7,8 @@ class TimeInterval:
         self.start_in_bars: float = 0
         self.end_in_bars: float = 0
         self.num_samples: int = 0
-        self._start_in_seconds: Optional[float] = None
-        self._end_in_seconds: Optional[float] = None
+        self._start_in_seconds: float = 0
+        self._end_in_seconds: float = 0
 
     def get_length_in_bars(self) -> float:
         return self.end_in_bars - self.start_in_bars

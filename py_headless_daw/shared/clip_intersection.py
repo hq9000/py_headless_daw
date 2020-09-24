@@ -55,4 +55,4 @@ def _create_intersection_of_clip_and_interval(clip: Clip, interval: TimeInterval
     return res
 
 
-ClipIntersection.create_intersection_of_clip_and_interval = _create_intersection_of_clip_and_interval
+ClipIntersection.create_intersection_of_clip_and_interval = _create_intersection_of_clip_and_interval  # type: ignore
