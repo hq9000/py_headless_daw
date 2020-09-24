@@ -2,7 +2,7 @@ from typing import List
 
 from py_headless_daw.project.audio_track import AudioTrack
 from py_headless_daw.project.content.audio_clip import AudioClip
-from py_headless_daw.project.plugins.internal_plugin import InternalPlugin, SamplerPlugin
+from py_headless_daw.project.plugins.internal_plugin import SamplerPlugin
 from py_headless_daw.project.plugins.plugin import Plugin
 
 

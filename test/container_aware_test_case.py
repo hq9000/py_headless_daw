@@ -1,4 +1,3 @@
-import logging
 import unittest
 
 from py_headless_daw.application_container import ApplicationContainer

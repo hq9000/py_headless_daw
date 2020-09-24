@@ -2,7 +2,7 @@ from typing import List
 
 from py_headless_daw.project.having_parameters import HavingParameters
 from py_headless_daw.project.parameter import Parameter
-from py_headless_daw.project.plugins.internal_plugin import InternalPlugin, GainPlugin, PanningPlugin
+from py_headless_daw.project.plugins.internal_plugin import GainPlugin, PanningPlugin
 from py_headless_daw.project.plugins.plugin import Plugin
 from py_headless_daw.project.project import Track
 

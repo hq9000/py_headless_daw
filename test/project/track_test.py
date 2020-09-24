@@ -8,4 +8,3 @@ class TrackTest(unittest.TestCase):
         track = AudioTrack()
         self.assertEqual(2, len(track.parameters))
         self.assertEqual(2, len(track.plugins))
-

@@ -51,7 +51,7 @@ class Sampler(ClipTrackProcessingStrategy):
             # number of channels should match it not a mono sample
             if wav_data.num_channels != len(stream_outputs):
                 raise Exception(
-                    f"""number of channels in wav_data {wav_data.num_channels} 
+                    f"""number of channels in wav_data {wav_data.num_channels}
                     and in output {len(stream_outputs)} does not match. Related file: {clip.source_file_path}""")
 
         patch_start_in_wav_data_in_samples: int = round(clip.cue_sample + intersection.start_clip_time * sample_rate)
@@ -89,8 +89,7 @@ class Sampler(ClipTrackProcessingStrategy):
             patched_data: np.ndarray = output[patch_start_in_output_in_samples:patch_end_in_output_in_samples]
 
             if patch_data.shape != patched_data.shape:
-                raise Exception(f"""
-                patch and patched have different shapes. 
+                raise Exception(f"""patch and patched have different shapes.
                 patch: {str(patch_data.shape)}
                 patched: {str(patched_data.shape)}
                 """)
