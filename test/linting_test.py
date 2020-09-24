@@ -14,7 +14,7 @@ class LintingTest(unittest.TestCase):
 
         cmd_line = f'flake8 {this_dir + "/../py_headless_daw"} --count --ignore={",".join(checks_to_ignore)} --show-source --statistics'
         result = subprocess.run(cmd_line.split())
-        self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+        self.assertEqual(0, result.returncode, str(result.stdout) + str(result.stderr))
 
 
 if __name__ == '__main__':

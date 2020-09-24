@@ -1,6 +1,4 @@
-from typing import Optional
-
-from py_headless_daw.project.value_provider_consumer import ValueProvider, ValueConsumer
+from py_headless_daw.project.value_provider_consumer import ValueConsumer
 
 
 class Parameter(ValueConsumer):
@@ -8,6 +6,3 @@ class Parameter(ValueConsumer):
         super().__init__()
         self.name: str = name
         self.value: float = value
-
-
-

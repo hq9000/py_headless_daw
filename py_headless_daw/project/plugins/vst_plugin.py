@@ -20,5 +20,3 @@ class VstPlugin(Plugin):
             name: str = plugin_instance.get_parameter_name(i).decode()
             value: float = plugin_instance.get_parameter_value(i)
             self.add_parameter(name, value)
-
-

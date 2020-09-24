@@ -1,5 +1,3 @@
-from typing import List
-
 from py_headless_daw.project.track import Track
 
 
