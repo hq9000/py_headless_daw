@@ -12,8 +12,17 @@ class LintingTest(unittest.TestCase):
             'W503'
         ]
 
-        cmd_line = f'flake8 {this_dir + "/../py_headless_daw"} --count --ignore={",".join(checks_to_ignore)} --show-source --statistics'
-        result = subprocess.run(cmd_line.split())
+        cmd_line_parts = [
+            "flake8",
+            this_dir + "/../py_headless_daw",
+            this_dir + "/../test",
+            "--count",
+            f'--ignore={",".join(checks_to_ignore)}',
+            '--show-source',
+            '--statistics'
+        ]
+
+        result = subprocess.run(cmd_line_parts)
         self.assertEqual(0, result.returncode, str(result.stdout) + str(result.stderr))
 
 

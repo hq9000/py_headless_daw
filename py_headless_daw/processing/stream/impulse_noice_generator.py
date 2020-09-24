@@ -13,6 +13,7 @@ class ImpulseNoiseGeneratorStrategy(ProcessingStrategy):
     generates portions of noise intermittenly with portions of silence.
     Used mainly for testing and initial development.
     """
+
     def __init__(self):
         super().__init__()
         self.times_called = 0

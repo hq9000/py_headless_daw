@@ -1,12 +1,7 @@
 import logging
 import sys
-import unittest
 from pathlib import Path
-from typing import List
 
-import numpy as np
-
-from py_headless_daw.compiler.project_compiler import ProjectCompiler
 from py_headless_daw.project.audio_track import AudioTrack
 from py_headless_daw.project.content.audio_clip import AudioClip
 from py_headless_daw.project.content.midi_clip import MidiClip
@@ -19,8 +14,6 @@ from py_headless_daw.project.plugins.vst_plugin import VstPlugin
 from py_headless_daw.project.project import Project
 from py_headless_daw.project.project_renderer import ProjectRenderer
 from py_headless_daw.project.sampler_track import SamplerTrack
-from py_headless_daw.schema.dto.time_interval import TimeInterval
-from py_headless_daw.schema.wiring import StreamNode
 from test.container_aware_test_case import ContainerAwareTestCase
 
 
@@ -166,10 +159,7 @@ class ProjectTest(ContainerAwareTestCase):
 
         renderer: ProjectRenderer = self.get_container().project_renderer()
 
-        res = renderer.render_to_array(project, 0, 10)
-
-
-
+        renderer.render_to_array(project, 0, 10)
 
     @staticmethod
     def _create_vst_plugin(so_name: str, plugin_name: str = "no name") -> VstPlugin:
