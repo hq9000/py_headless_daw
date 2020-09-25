@@ -17,7 +17,7 @@ class AudioTrack(Track):
         self._gain: GainPlugin = GainPlugin()
         self._panner: PanningPlugin = PanningPlugin()
 
-    @HavingParameters.parameters.getter
+    @HavingParameters.parameters.getter  # type: ignore
     def parameters(self):
         return self._gain.parameters + self._panner.parameters
 
