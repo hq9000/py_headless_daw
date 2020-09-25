@@ -25,6 +25,18 @@ class LintingTest(unittest.TestCase):
         result = subprocess.run(cmd_line_parts)
         self.assertEqual(0, result.returncode, str(result.stdout) + str(result.stderr))
 
+    def test_mypy(self):
+        this_dir = os.path.dirname(os.path.realpath(__file__))
+
+        cmd_line_parts = [
+            "mypy",
+            "--ignore-missing-imports",
+            this_dir + "/../py_headless_daw/",
+        ]
+
+        result = subprocess.run(cmd_line_parts)
+        self.assertEqual(0, result.returncode, str(result.stdout) + str(result.stderr))
+
 
 if __name__ == '__main__':
     unittest.main()
