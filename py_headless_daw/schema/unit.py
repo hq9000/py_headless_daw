@@ -1,5 +1,5 @@
 import logging
-from typing import List, Union, Dict, cast, Optional
+from typing import List, Union, Dict, cast, Optional, Sequence
 
 import numpy as np
 
@@ -232,7 +232,7 @@ class Unit:
     def _get_output_event_buffers(self) -> List[List[Event]]:
         return self._convert_nodes_into_buffers(self.output_event_nodes)
 
-    def _convert_nodes_into_buffers(self, nodes: List[Node]) -> List:
+    def _convert_nodes_into_buffers(self, nodes: Sequence[Node]) -> List:
         res = []
         for node in nodes:
             res.append(self._find_internal_buffer(node))
@@ -250,13 +250,13 @@ class Unit:
                 return True
         return False
 
-    def get_all_output_nodes(self) -> List[Node]:
+    def get_all_output_nodes(self) -> Sequence[Node]:
         # noinspection PyTypeChecker
-        return self.output_stream_nodes + self.output_event_nodes
+        return self.output_stream_nodes + self.output_event_nodes  # type: ignore
 
-    def get_all_input_nodes(self) -> List[Node]:
+    def get_all_input_nodes(self) -> Sequence[Node]:
         # noinspection PyTypeChecker
-        return self.input_stream_nodes + self.input_event_nodes
+        return self.input_stream_nodes + self.input_event_nodes # type: ignore
 
     def _validate_interval(self, interval: TimeInterval):
         inferred_sample_rate = round(interval.num_samples / (interval.end_in_seconds - interval.start_in_seconds))

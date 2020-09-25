@@ -11,6 +11,10 @@ from py_headless_daw.schema.processing_strategy import ProcessingStrategy
 class StreamGain(ProcessingStrategy):
     PARAMETER_GAIN: str = 'gain'
 
+    def __init__(self, gain: np.float32):
+        self.gain: np.float32 = gain
+        super().__init__()
+
     # noinspection PyShadowingNames
     def render(self, interval: TimeInterval, stream_inputs: List[np.ndarray], stream_outputs: List[np.ndarray],
                event_inputs: List[List[Event]], event_outputs: List[List[Event]]):
@@ -45,10 +49,6 @@ class StreamGain(ProcessingStrategy):
         for i in range(0, len(stream_inputs)):
             np.copyto(stream_outputs[i], stream_inputs[i])
             stream_outputs[i] *= gain_operation
-
-    def __init__(self, gain: np.float32):
-        super().__init__()
-        self.gain: np.float32 = gain
 
     def _get_smoothener_array(self, initial_gain: float, new_desired_gain: float, num_samples: int) -> np.ndarray:
         return np.linspace(start=initial_gain, stop=new_desired_gain, num=num_samples, dtype=np.float32)
