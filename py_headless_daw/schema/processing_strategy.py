@@ -24,7 +24,7 @@ class ProcessingStrategy(ABC):
 
     @unit.setter
     def unit(self, unit: Unit):
-        self._unit: Unit = unit
+        self._unit = unit
 
     @staticmethod
     def _flatten_event_inputs(event_inputs: List[List[Event]]) -> List[Event]:

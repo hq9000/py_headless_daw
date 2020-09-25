@@ -46,6 +46,8 @@ class MidiTrackStrategy(ProcessingStrategy):
         if isinstance(clip_event, MidiNote):
             midi_note: MidiNote = cast(MidiNote, clip_event)
             return self._convert_midi_note_to_events(interval, midi_note)
+        else:
+            return []
 
     def _convert_midi_note_to_events(self, interval: TimeInterval, midi_note: MidiNote) -> List[MidiEvent]:
         note_start_in_seconds = midi_note.get_absolute_start_time()

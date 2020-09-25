@@ -1,5 +1,5 @@
 import logging
-from typing import List, Union, Dict, cast
+from typing import List, Union, Dict, cast, Optional, Sequence
 
 import numpy as np
 
@@ -34,13 +34,16 @@ class Unit:
         self._output_event_nodes: List[EventNode] = [EventNode(self) for _ in range(number_of_event_outputs)]
 
         self.last_processed_interval_id: int = -1
-        self._processing_strategy = None  # no type hints to avoid an import cycle
+
+        # inplace import to avoid cycle reference
+        from py_headless_daw.schema.processing_strategy import ProcessingStrategy
+        self._processing_strategy: Optional["ProcessingStrategy"] = None
 
         if processing_strategy is not None:
             self.set_processing_strategy(processing_strategy)
 
         self.name = 'unnamed'
-        self._internal_buffers: Dict[Node] = {}
+        self._internal_buffers: Dict[Node, np.ndarray] = {}
 
     @property
     def output_stream_nodes(self) -> List[StreamNode]:
@@ -90,15 +93,18 @@ class Unit:
 
         self._allocate_internal_event_buffers()
 
-        for node in self.input_stream_nodes:
-            node.render(interval, self._find_internal_buffer(node))
+        for stream_node in self.input_stream_nodes:
+            stream_node.render(interval, self._find_internal_buffer(stream_node))
 
-        for node in self.input_event_nodes:
-            node.render(interval, self._find_internal_buffer(node))
+        for event_node in self.input_event_nodes:
+            event_node.render(interval, self._find_internal_buffer(event_node))
 
         self.last_processed_interval_id = interval.id
         logging.debug('rendering processing strategy for unit "' + self.name + '" on %d:(%2.2f,%2.2f,%d)' % (
             interval.id, interval.start_in_seconds, interval.end_in_seconds, interval.num_samples))
+
+        if self._processing_strategy is None:
+            raise Exception('processing strategy not initialized in this unit')
 
         self._processing_strategy.render(interval, self._get_input_stream_buffers(), self._get_output_stream_buffers(),
                                          self._get_input_event_buffers(), self._get_output_event_buffers())
@@ -111,34 +117,12 @@ class Unit:
 
         :return:
         """
-        found_units: Dict[Unit] = {}
-        all_input_nodes: List[Node] = self.input_stream_nodes + self.input_event_nodes
-
-        for node in all_input_nodes:
-            found_units[node.connector.input_node.unit] = 1
+        found_units: Dict[Unit, int] = {}
+        all_input_nodes: List[Node] = []
+        all_input_nodes.extend(self.input_stream_nodes)
+        all_input_nodes.extend(self.input_event_nodes)
 
         return len(found_units.keys())
-
-    def render_stream_through_sub_buffers(self, interval: TimeInterval, out_stream_buffers: List[np.ndarray],
-                                          sub_buffers: List[np.ndarray]):
-
-        num_total_samples = out_stream_buffers[0].shape[0]
-        num_sub_buffer_samples = sub_buffers[0].shape[0]
-        num_sub_buffers = round(num_total_samples / num_sub_buffer_samples)
-
-        sub_buffer_length_in_bars = interval.get_length_in_bars() / num_sub_buffers
-
-        for i in range(0, num_sub_buffers):
-            sub_interval = TimeInterval()
-            sub_interval.start_in_bars = interval.start_in_bars + i * sub_buffer_length_in_bars
-            sub_interval.end_in_bars = interval.start_in_bars + (i + 1) * sub_buffer_length_in_bars
-            sub_interval.num_samples = num_sub_buffer_samples
-
-            self.render(sub_interval, sub_buffers[0], None, self.output_stream_nodes[0])
-            self.render(sub_interval, sub_buffers[1], None, self.output_stream_nodes[1])
-
-            out_stream_buffers[0][i * num_sub_buffer_samples:(i + 1) * num_sub_buffer_samples] = sub_buffers[0]
-            out_stream_buffers[1][i * num_sub_buffer_samples:(i + 1) * num_sub_buffer_samples] = sub_buffers[1]
 
     def render(self, interval: TimeInterval, out_stream_buffer: Union[np.ndarray, None],
                out_event_buffer: Union[List[Event], None],
@@ -162,12 +146,18 @@ class Unit:
             self._refresh_internal_buffers(interval)
 
         if out_node.is_stream():
-            out_node: StreamNode
-            self._render_stream_buffer_to_output(out_node, out_stream_buffer, rendering_type)
+            self._render_stream_buffer_to_output(
+                cast(StreamNode, out_node),
+                out_stream_buffer,
+                rendering_type)
 
-        if out_node.is_event():
-            out_node: EventNode
-            self._render_event_buffer_to_output(out_node, out_event_buffer, rendering_type)
+        if out_event_buffer is not None:
+            if out_node.is_event():
+                self._render_event_buffer_to_output(
+                    cast(EventNode, out_node),
+                    out_event_buffer,
+                    rendering_type
+                )
 
     def _render_stream_buffer_to_output(self, out_node: StreamNode, out_stream_buffer: np.ndarray, rendering_type: str):
         """
@@ -242,7 +232,7 @@ class Unit:
     def _get_output_event_buffers(self) -> List[List[Event]]:
         return self._convert_nodes_into_buffers(self.output_event_nodes)
 
-    def _convert_nodes_into_buffers(self, nodes: List[Node]) -> List:
+    def _convert_nodes_into_buffers(self, nodes: Sequence[Node]) -> List:
         res = []
         for node in nodes:
             res.append(self._find_internal_buffer(node))
@@ -260,13 +250,13 @@ class Unit:
                 return True
         return False
 
-    def get_all_output_nodes(self) -> List[Node]:
+    def get_all_output_nodes(self) -> Sequence[Node]:
         # noinspection PyTypeChecker
-        return self.output_stream_nodes + self.output_event_nodes
+        return self.output_stream_nodes + self.output_event_nodes  # type: ignore
 
-    def get_all_input_nodes(self) -> List[Node]:
+    def get_all_input_nodes(self) -> Sequence[Node]:
         # noinspection PyTypeChecker
-        return self.input_stream_nodes + self.input_event_nodes
+        return self.input_stream_nodes + self.input_event_nodes  # type: ignore
 
     def _validate_interval(self, interval: TimeInterval):
         inferred_sample_rate = round(interval.num_samples / (interval.end_in_seconds - interval.start_in_seconds))

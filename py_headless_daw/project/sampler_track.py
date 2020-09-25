@@ -18,7 +18,7 @@ class SamplerTrack(AudioTrack):
         super().__init__()
         self.clips: List[AudioClip] = []
 
-    @AudioTrack.plugins.getter
+    @AudioTrack.plugins.getter  # type: ignore
     def plugins(self) -> List[Plugin]:
         sampler_plugin: Plugin = SamplerPlugin(self.clips)
         return [sampler_plugin] + super().plugins

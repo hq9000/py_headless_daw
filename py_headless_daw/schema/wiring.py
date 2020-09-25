@@ -73,15 +73,17 @@ class Node:
         # to postpone importing to avoid a cycle:
         from py_headless_daw.schema.unit import RENDERING_TYPE_REPLACE, RENDERING_TYPE_ADD
 
+        nodes_to_render: List[Node]
+
         if not self._is_unit_output():
             # this node is not directly an output of a unit, so we
             # need to find its outputting units through the connectors
-            nodes_to_render: List[Node] = []
+            nodes_to_render = []
             for connector in self._connectors:
                 nodes_to_render.append(connector.input_node)
         else:
             # the node IS an output of a unit, so we render it directly`
-            nodes_to_render: List[Node] = [self]
+            nodes_to_render = [self]
 
         for sequence_number, node_to_render in enumerate(nodes_to_render):
 

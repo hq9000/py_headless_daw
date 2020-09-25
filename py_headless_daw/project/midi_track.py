@@ -13,7 +13,7 @@ class MidiTrack(Track):
         self.channel: int = channel
         self.clips: List[MidiClip] = []
 
-    def add_output(self, output: AudioTrack):
+    def add_output(self, output: Track):
         if not isinstance(output, AudioTrack):
             raise RoutingException(
                 'output of a midi track should be an audio track, instead attempted to use as output: ' + str(

@@ -32,7 +32,7 @@ class HavingParameters:
         return param.value
 
     def set_parameter_value(self, name: str, value: float):
-        param = self.get_parameter_value(name)
+        param = self.get_parameter(name)
         param.value = value
 
     @property

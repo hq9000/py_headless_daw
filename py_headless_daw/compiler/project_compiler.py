@@ -82,14 +82,14 @@ class ProjectCompiler:
     @classmethod
     def _connect_units(cls, source: Unit, destination: Unit):
         for i, source_stream_node in enumerate(source.output_stream_nodes):
-            output_node = destination.input_stream_nodes[i]
-            if not Connector.connected(source_stream_node, output_node):
-                Connector(source_stream_node, output_node)
+            output_stream_node = destination.input_stream_nodes[i]
+            if not Connector.connected(source_stream_node, output_stream_node):
+                Connector(source_stream_node, output_stream_node)
 
         for i, source_event_node in enumerate(source.output_event_nodes):
-            output_node = destination.input_event_nodes[i]
-            if not Connector.connected(source_event_node, output_node):
-                Connector(source_event_node, output_node)
+            output_event_node = destination.input_event_nodes[i]
+            if not Connector.connected(source_event_node, output_event_node):
+                Connector(source_event_node, output_event_node)
 
     # noinspection PyUnusedLocal
     @staticmethod
@@ -113,15 +113,21 @@ class ProjectCompiler:
                 self._connect_units(previous_unit, last_unit)
             previous_unit = last_unit
 
+        if first_unit is None or last_unit is None:
+            raise Exception('first_unit and/or last_unit are not defined')
+
         res = Chain(first_unit, last_unit)
         res.name = track.name
         return res
 
     def _create_audio_plugin_unit(self, host: Host, project: Project, plugin: Plugin, track: Track) -> Unit:
+
+        main_unit: Unit
+
         if isinstance(plugin, VstProjectPlugin):
-            main_unit: Unit = self._create_vst_audio_plugin_unit(host, project, plugin, track)
+            main_unit = self._create_vst_audio_plugin_unit(host, project, plugin, track)
         elif isinstance(plugin, InternalProjectPlugin):
-            main_unit: Unit = self._create_internal_plugin_unit(host, project, plugin, track)
+            main_unit = self._create_internal_plugin_unit(host, project, plugin, track)
         else:
             raise Exception('do not know how to treat project plugins of class ' + type(plugin).__name__)
 
@@ -183,6 +189,9 @@ class ProjectCompiler:
     def _create_unit_for_parameter_value_emission(cls, host: Host, parameter: Parameter,
                                                   transformer_function: Callable[
                                                       [float, int], Event]) -> Unit:
+        if parameter.value_provider is None:
+            raise Exception('value_provider is None')
+
         strategy = ValueProviderBasedEventEmitter(parameter.value_provider, transformer_function)
         res = Unit(0, 0, 0, 1, host, strategy)
 

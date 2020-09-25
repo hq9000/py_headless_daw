@@ -29,18 +29,18 @@ class Chain(Unit):
         self._fist_unit: Unit = first_unit
         self._last_unit: Unit = last_unit
 
-    @Unit.input_stream_nodes.getter
+    @Unit.input_stream_nodes.getter  # type: ignore
     def input_stream_nodes(self) -> List[StreamNode]:
         return self._fist_unit.input_stream_nodes
 
-    @Unit.input_event_nodes.getter
+    @Unit.input_event_nodes.getter  # type: ignore
     def input_event_nodes(self) -> List[EventNode]:
         return self._fist_unit.input_event_nodes
 
-    @Unit.output_stream_nodes.getter
+    @Unit.output_stream_nodes.getter  # type: ignore
     def output_stream_nodes(self) -> List[StreamNode]:
         return self._last_unit.output_stream_nodes
 
-    @Unit.output_event_nodes.getter
+    @Unit.output_event_nodes.getter  # type: ignore
     def output_event_nodes(self) -> List[EventNode]:
         return self._last_unit.output_event_nodes

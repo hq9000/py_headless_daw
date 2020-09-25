@@ -6,7 +6,7 @@ class MidiEventFactory:
 
     STATUS_TEMPLATE_NOTE_ON: int = 0b10010000
     STATUS_TEMPLATE_NOTE_OFF: int = 0b10000000
-    STATUS_TEMPLATE_PROGRAM_CHANGE: 0b11000000
+    STATUS_TEMPLATE_PROGRAM_CHANGE: int = 0b11000000
 
     def __init__(self):
         self.channel_number: int = 0
