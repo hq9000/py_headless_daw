@@ -1,5 +1,5 @@
 from abc import ABC
-from typing import List
+from typing import List, Sequence
 
 from py_headless_daw.project.content.clip import Clip
 from py_headless_daw.schema.dto.time_interval import TimeInterval
@@ -16,8 +16,8 @@ class ClipTrackProcessingStrategy(ProcessingStrategy, ABC):
 
     """
 
-    def __init__(self, clips: List[Clip]):
-        self._clips: List[Clip] = clips
+    def __init__(self, clips: Sequence[Clip]):
+        self._clips: Sequence[Clip] = clips
         super().__init__()
 
     def _find_intersections(self, interval: TimeInterval) -> List[ClipIntersection]:

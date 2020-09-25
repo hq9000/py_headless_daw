@@ -256,7 +256,7 @@ class Unit:
 
     def get_all_input_nodes(self) -> Sequence[Node]:
         # noinspection PyTypeChecker
-        return self.input_stream_nodes + self.input_event_nodes # type: ignore
+        return self.input_stream_nodes + self.input_event_nodes  # type: ignore
 
     def _validate_interval(self, interval: TimeInterval):
         inferred_sample_rate = round(interval.num_samples / (interval.end_in_seconds - interval.start_in_seconds))

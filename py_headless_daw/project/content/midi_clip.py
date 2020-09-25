@@ -1,4 +1,4 @@
-from typing import List, Sequence
+from typing import Sequence
 
 from py_headless_daw.project.content.clip import Clip
 

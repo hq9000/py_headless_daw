@@ -1,4 +1,4 @@
-from typing import List, cast
+from typing import List, cast, Dict
 
 import numpy as np
 
@@ -21,7 +21,7 @@ class Sampler(ClipTrackProcessingStrategy):
     Sampler is a strategy that produces audio basing on the number of associated AudioClips
     """
 
-    _processed_wav_data_cache = {}
+    _processed_wav_data_cache: Dict[str, ProcessedWavData] = {}
 
     def __init__(self, clips: List[AudioClip], wave_data_provider: WaveformProviderInterface):
         super().__init__(clips)
@@ -33,6 +33,9 @@ class Sampler(ClipTrackProcessingStrategy):
 
     def render(self, interval: TimeInterval, stream_inputs: List[np.ndarray], stream_outputs: List[np.ndarray],
                event_inputs: List[List[Event]], event_outputs: List[List[Event]]):
+
+        if self.unit is None:
+            raise Exception('unit is not set in this sampler')
 
         [o.fill(0.0) for o in stream_outputs]
         intersections = self._find_intersections(interval)
@@ -54,14 +57,23 @@ class Sampler(ClipTrackProcessingStrategy):
                     f"""number of channels in wav_data {wav_data.num_channels}
                     and in output {len(stream_outputs)} does not match. Related file: {clip.source_file_path}""")
 
+        if intersection.start_clip_time is None:
+            raise Exception('intersection is missing start clip time prop')
+
         patch_start_in_wav_data_in_samples: int = round(clip.cue_sample + intersection.start_clip_time * sample_rate)
 
         if patch_start_in_wav_data_in_samples > wav_data.length_in_samples():
             return
 
+        if intersection.end_clip_time is None:
+            raise Exception('intersection is missing end clip time prop')
+
         patch_end_in_wav_data_in_samples: int = min(
             round(clip.cue_sample + intersection.end_clip_time * sample_rate),
             wav_data.length_in_samples())
+
+        if intersection.start_project_time is None:
+            raise Exception('intersection is missing start project time')
 
         patch_start_in_output_in_samples: int = round(
             (intersection.start_project_time - interval.start_in_seconds) * sample_rate)
