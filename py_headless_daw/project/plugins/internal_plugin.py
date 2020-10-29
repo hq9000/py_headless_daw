@@ -29,3 +29,7 @@ class SamplerPlugin(InternalPlugin):
     def __init__(self, clips: List[AudioClip]):
         self.clips: List[AudioClip] = clips
         super().__init__()
+
+class DrumSynthPlugin(InternalPlugin):
+
+    def __init__(self,):
