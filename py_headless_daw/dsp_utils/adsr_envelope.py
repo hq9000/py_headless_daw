@@ -17,7 +17,8 @@ class ADSREnvelope(WaveProducerInterface):
         self.release_curve: float = 0
 
     def produce(self, output_buffer: np.ndarray, sample_rate: int, start_sample: int):
-        pass
+        for i in range(output_buffer.shape[0]):
+            output_buffer[i] = self.get_value(start_sample + i, sample_rate)
 
     def get_value(self, sample: int, sample_rate: int) -> float:
         return 1
