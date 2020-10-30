@@ -7,12 +7,12 @@ from py_headless_daw.dsp_utils.wave_producer_interface import WaveProducerInterf
 # https://en.wikipedia.org/wiki/Envelope_(music)#ADSR
 class ADSREnvelope(WaveProducerInterface):
 
-    def __init__(self, attack: float, decay: float, sustain_level: float, sustain_time: float, release: float):
-        self.attack_time: float = attack
-        self.decay_time: float = decay
+    def __init__(self, attack_time: float, decay_time: float, sustain_level: float, sustain_time: float, release_time: float):
+        self.attack_time: float = attack_time
+        self.decay_time: float = decay_time
         self.sustain_level: float = sustain_level
         self.sustain_time: float = sustain_time
-        self.release_time: float = release
+        self.release_time: float = release_time
 
         self.attack_curve: float = 0  # 0 means linear, other values in [-1, 1] range (will) be different extents of curveness
         self.decay_curve: float = 0
@@ -39,6 +39,8 @@ class ADSREnvelope(WaveProducerInterface):
         elif end_of_sustain_sample < sample <= end_of_release_sample:
             phase = (sample - end_of_sustain_sample) / (end_of_release_sample - end_of_sustain_sample)
             return self._get_curve_value(self.sustain_level, 0, self.release_curve, phase)
+        else:
+            return 0.0
 
     @staticmethod
     def _get_curve_value(start_val: float, end_val: float, curve: float, phase: float):
