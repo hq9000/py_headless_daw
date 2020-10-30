@@ -30,5 +30,5 @@ class DrumSynthGenerator(WaveProducerInterface):
             new_osc.frequency = oscillator_config.frequency
             new_osc.volume = oscillator_config.volume
 
-    def produce(self, output_buffer: np.ndarray, sample_rate: int, start_sample: int):
+    def render_to_buffer(self, output_buffer: np.ndarray, sample_rate: int, start_sample: int):
         pass
