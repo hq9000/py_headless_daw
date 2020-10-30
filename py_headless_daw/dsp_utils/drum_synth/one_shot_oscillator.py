@@ -7,13 +7,17 @@ from py_headless_daw.dsp_utils.wave_producer_interface import WaveProducerInterf
 class OneShotOscillator(WaveProducerInterface):
     def produce(self, output_buffer: np.ndarray, sample_rate: int, start_sample: int):
 
-        # 1. generate a volume envelope wave
-        # 2. generate a modulated pitch wave (without volume)
+        if output_buffer.ndim != (1,):
+            raise ValueError("buffers give to an oscillaltor are supposed to be mono")
+
+        volume_env_wave = np.copy(output_buffer)
+        self.volume_envelope.produce(volume_env_wave, sample_rate, start_sample)
+
+        oscillation_wave = np.copy(output_buffer)
+        self._generate_oscillation_wave(oscillation_wave, sample_rate, start_sample)
+
         # 3. multiply two above
         # put to output buffer
-
-
-
 
         pass
 
@@ -29,3 +33,6 @@ class OneShotOscillator(WaveProducerInterface):
 
     def _create_default_envelope(self) -> ADSREnvelope:
         return ADSREnvelope(0, 1, 1, 1)
+
+    def _generate_oscillation_wave(self, osciallation_wave, sample_rate, start_sample):
+        pass
