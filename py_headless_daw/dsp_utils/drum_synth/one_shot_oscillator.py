@@ -6,6 +6,8 @@ from py_headless_daw.dsp_utils.wave_producer_interface import WaveProducerInterf
 
 
 class OneShotOscillator(WaveProducerInterface):
+
+    # different signals https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.sawtooth.html
     TYPE_SINE: str = "sine"
     TYPE_NOISE: str = "noise"
     TYPE_TRIANGLE: str = "triangle"
@@ -36,6 +38,13 @@ class OneShotOscillator(WaveProducerInterface):
     def _generate_oscillation_wave(self, out_buffer: np.ndarray, sample_rate, start_sample):
         phase: float = self.initial_phase
         for i in range(out_buffer.shape[0]):
-            frequency = self.pitch_envelope.get_one_value(start_sample + i, sample_rate)
+            relative_frequency = self.pitch_envelope.get_one_value(start_sample + i, sample_rate)
+            real_frequency = sample_rate / 2 * relative_frequency
+
             out_buffer[i] = math.sin(phase)
-            phase += frequency
+
+            if real_frequency > 0:
+                samples_in_period = (1 / real_frequency) * sample_rate
+                oscillator_step_for_one_sample = 2 * math.pi / samples_in_period
+                phase += oscillator_step_for_one_sample
+
