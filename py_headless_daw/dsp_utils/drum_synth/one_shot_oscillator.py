@@ -39,7 +39,7 @@ class OneShotOscillator(WaveProducerInterface):
         phase: float = self.initial_phase
         for i in range(out_buffer.shape[0]):
             relative_frequency = self.pitch_envelope.get_one_value(start_sample + i, sample_rate)
-            real_frequency = sample_rate / 2 * relative_frequency
+            real_frequency = self.frequency * relative_frequency
 
             out_buffer[i] = math.sin(phase)
 

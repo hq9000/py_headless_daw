@@ -1,6 +1,7 @@
 import numpy as np
 import math
 
+from py_headless_daw.dsp_utils.curve import get_curve_value
 from py_headless_daw.dsp_utils.wave_producer_interface import WaveProducerInterface
 
 
@@ -19,6 +20,10 @@ class ADSREnvelope(WaveProducerInterface):
         self.decay_curve: float = 0
         self.release_curve: float = 0
 
+        self.attack_curve_power: float = 2.0
+        self.decay_curve_power: float = 2.0
+        self.release_curve_power: float = 3.0
+
     def render_to_buffer(self, output_buffer: np.ndarray, sample_rate: int, start_sample: int):
         for i in range(output_buffer.shape[0]):
             output_buffer[i] = self.get_one_value(start_sample + i, sample_rate)
@@ -34,12 +39,12 @@ class ADSREnvelope(WaveProducerInterface):
                 return 1.0
 
             phase = sample / end_of_attack_sample
-            return self._get_curve_value(0, 1.0, self.attack_curve, phase)
+            return get_curve_value(0, 1.0, self.attack_curve, self.attack_curve_power, phase)
         elif end_of_attack_sample < sample <= end_of_decay_sample:
             if sample == end_of_decay_sample:
                 return self.sustain_level
             phase = (sample - end_of_attack_sample) / (end_of_decay_sample - end_of_attack_sample)
-            return self._get_curve_value(1.0, self.sustain_level, self.decay_curve, phase)
+            return get_curve_value(1.0, self.sustain_level, self.decay_curve, self.decay_curve_power, phase)
         elif end_of_decay_sample < sample <= end_of_sustain_sample:
             if sample == end_of_sustain_sample:
                 return self.sustain_level
@@ -49,10 +54,18 @@ class ADSREnvelope(WaveProducerInterface):
                 return 0.0
 
             phase = (sample - end_of_sustain_sample) / (end_of_release_sample - end_of_sustain_sample)
-            return self._get_curve_value(self.sustain_level, 0, self.release_curve, phase)
+            return get_curve_value(self.sustain_level, 0, self.release_curve, self.release_curve_power, phase)
         else:
             return 0.0
 
     @staticmethod
-    def _get_curve_value(start_val: float, end_val: float, curve: float, phase: float):
-        return start_val + (end_val - start_val) * phase
+    def _get_curve_value(start_val: float, end_val: float, curve_ratio: float, curve_power: float, phase: float):
+        linear_value = start_val + (end_val - start_val) * phase
+        if curve_ratio >= 0:
+            curve_value = start_val + (end_val - start_val) * (phase ** curve_power)
+        else:
+            curve_value = start_val + (end_val - start_val) * (1 - (1 - phase) ** curve_power)
+
+        abs_ratio = abs(curve_ratio)
+
+        return linear_value * (1 - abs_ratio) + curve_value * abs_ratio
