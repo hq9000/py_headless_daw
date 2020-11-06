@@ -23,7 +23,7 @@ class DrumSynthGenerator(WaveProducerInterface):
             volume_envelope.attack_curve_power = oscillator_config.volume_envelope_attack_curve_power
             volume_envelope.attack_curve = oscillator_config.volume_envelope_attack_curve_ratio
 
-            volume_envelope.decay_curve_power = oscillator_config.volume_envelope_attack_curve_power
+            volume_envelope.decay_curve_power = oscillator_config.volume_envelope_decay_curve_power
             volume_envelope.decay_curve = oscillator_config.volume_envelope_decay_curve_ratio
 
             volume_envelope.release_curve_power = oscillator_config.volume_envelope_release_curve_power
@@ -38,17 +38,21 @@ class DrumSynthGenerator(WaveProducerInterface):
             pitch_envelope.attack_curve_power = oscillator_config.volume_envelope_attack_curve_power
             pitch_envelope.attack_curve = oscillator_config.volume_envelope_attack_curve_ratio
 
-            pitch_envelope.decay_curve_power = oscillator_config.volume_envelope_attack_curve_power
-            pitch_envelope.decay_curve = oscillator_config.volume_envelope_decay_curve_ratio
+            pitch_envelope.decay_curve_power = oscillator_config.pitch_envelope_decay_curve_power
+            pitch_envelope.decay_curve = oscillator_config.pitch_envelope_decay_curve_ratio
 
-            pitch_envelope.release_curve_power = oscillator_config.volume_envelope_release_curve_power
-            pitch_envelope.release_curve = oscillator_config.volume_envelope_release_curve_ratio
+            pitch_envelope.release_curve_power = oscillator_config.pitch_envelope_release_curve_power
+            pitch_envelope.release_curve = oscillator_config.pitch_envelope_release_curve_ratio
 
             new_osc.pitch_envelope = pitch_envelope
             new_osc.volume_envelope = volume_envelope
 
-            new_osc.frequency = oscillator_config.frequency
+            new_osc.zero_frequency = oscillator_config.zero_frequency
+            new_osc.frequency_range = oscillator_config.frequency_range
+
             new_osc.volume = oscillator_config.volume
+
+            new_osc.initial_phase = oscillator_config.start_phase
 
             self._oscillators.append(new_osc)
 

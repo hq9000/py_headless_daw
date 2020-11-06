@@ -11,8 +11,17 @@ class OneShotOscillator(WaveProducerInterface):
     TYPE_NOISE: str = "noise"
     TYPE_TRIANGLE: str = "triangle"
 
+    def __init__(self):
+        self.pitch_envelope: ADSREnvelope = self._create_default_envelope()
+        self.volume_envelope: ADSREnvelope = self._create_default_envelope()
+        self.zero_frequency: float = 440.0
+        self.frequency_range: float = 440.0
+        self.wave = self.TYPE_SINE
+        self.initial_phase: float = 0.0
+
     def render_to_buffer(self, output_buffer: np.ndarray, sample_rate: int, start_sample: int,
                          mode: str = WaveProducerInterface.MODE_REPLACE):
+
         if output_buffer.ndim != 1:
             raise ValueError(f"buffers given to an oscillator are supposed to be mono, "
                              f"this one has {output_buffer.ndim} dimensions instead of 1")
@@ -32,13 +41,6 @@ class OneShotOscillator(WaveProducerInterface):
         else:
             raise ValueError(f'unknown producing mode {mode}')
 
-    def __init__(self):
-        self.pitch_envelope: ADSREnvelope = self._create_default_envelope()
-        self.volume_envelope: ADSREnvelope = self._create_default_envelope()
-        self.frequency: float = 440.0
-        self.wave = self.TYPE_SINE
-        self.initial_phase: float = 0.0
-
     def _create_default_envelope(self) -> ADSREnvelope:
         return ADSREnvelope(attack_time=0, decay_time=1, sustain_level=1, sustain_time=0, release_time=1)
 
@@ -46,7 +48,7 @@ class OneShotOscillator(WaveProducerInterface):
         phase: float = self.initial_phase
         for i in range(out_buffer.shape[0]):
             relative_frequency = self.pitch_envelope.get_one_value(start_sample + i, sample_rate)
-            real_frequency = self.frequency * relative_frequency
+            real_frequency = self.zero_frequency + self.frequency_range * relative_frequency
 
             out_buffer[i] = math.sin(phase)
 
