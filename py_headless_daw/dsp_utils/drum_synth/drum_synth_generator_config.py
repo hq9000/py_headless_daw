@@ -5,20 +5,39 @@ from typing import List
 @dataclass
 class OscillatorConfig:
     volume: float
-
-    volume_envelope_attack: float
-    volume_envelope_decay: float
-    volume_envelope_sustain: float
-    volume_envelope_release: float
-
-    pitch: float
-
-    pitch_envelope_attack: float
-    pitch_envelope_decay: float
-    pitch_envelope_sustain: float
-    pitch_envelope_release: float
-
     frequency: float
+    start_phase: float
+    wave_type: str =
+
+    volume_envelope_attack_time: float
+    volume_envelope_attack_curve_ratio: float
+    volume_envelope_attack_curve_power: float
+
+    volume_envelope_decay_time: float
+    volume_envelope_decay_curve_ratio: float
+    volume_envelope_decay_curve_power: float
+
+    volume_envelope_sustain_level: float
+    volume_envelope_sustain_time: float
+
+    volume_envelope_release_time: float
+    volume_envelope_release_curve_ratio: float
+    volume_envelope_release_curve_power: float
+
+    pitch_envelope_attack_time: float
+    pitch_envelope_attack_curve_ratio: float
+    pitch_envelope_attack_curve_power: float
+
+    pitch_envelope_decay_time: float
+    pitch_envelope_decay_curve: float
+    pitch_envelope_decay_curve_power: float
+
+    pitch_envelope_sustain_level: float
+    pitch_envelope_sustain_time: float
+
+    pitch_envelope_release_time: float
+    pitch_envelope_release_curve: float
+    pitch_envelope_release_curve_power: float
 
 
 class DrumSynthGeneratorConfig:
