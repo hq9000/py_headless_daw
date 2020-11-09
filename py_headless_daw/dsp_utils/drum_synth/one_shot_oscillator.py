@@ -17,7 +17,9 @@ class OneShotOscillator(WaveProducerInterface):
         self.zero_frequency: float = 440.0
         self.frequency_range: float = 440.0
         self.wave = self.TYPE_SINE
+        self.distortion: float = 0.0
         self.initial_phase: float = 0.0
+        self.volume: float = 1.0
 
     def render_to_buffer(self, output_buffer: np.ndarray, sample_rate: int, start_sample: int,
                          mode: str = WaveProducerInterface.MODE_REPLACE):
@@ -50,9 +52,12 @@ class OneShotOscillator(WaveProducerInterface):
             relative_frequency = self.pitch_envelope.get_one_value(start_sample + i, sample_rate)
             real_frequency = self.zero_frequency + self.frequency_range * relative_frequency
 
-            out_buffer[i] = math.sin(phase)
+            out_buffer[i] = self._wave_function(self.wave, self.distortion, phase)
 
             if real_frequency > 0:
                 samples_in_period = (1 / real_frequency) * sample_rate
                 oscillator_step_for_one_sample = 2 * math.pi / samples_in_period
                 phase += oscillator_step_for_one_sample
+
+    def _wave_function(self, waveform: str, distortion: float, phase: float) -> float:
+        return math.sin(phase)
