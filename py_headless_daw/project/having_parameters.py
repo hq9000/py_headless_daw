@@ -14,7 +14,7 @@ class HavingParameters:
 
     def add_parameter(self,
                       name: str,
-                      value: float,
+                      value: Union[float, str],
                       param_type: str,
                       value_range: Union[Tuple[float, float], List[str]]):
 
