@@ -1,9 +1,10 @@
-from typing import Dict, List, cast
+from typing import Dict, List, cast, Union, Tuple
 
 from py_headless_daw.project.parameter import Parameter
 
 
 class HavingParameters:
+
     def __init__(self):
         self._parameters: Dict[str, Parameter] = {}
         super().__init__()
@@ -11,12 +12,16 @@ class HavingParameters:
     def has_parameter(self, name: str) -> bool:
         return name in self._parameters
 
-    def add_parameter(self, name: str, value: float):
+    def add_parameter(self,
+                      name: str,
+                      value: float,
+                      param_type: str,
+                      value_range: Union[Tuple[float, float], List[str]]):
 
         if name in self._parameters:
             raise Exception('parameter named ' + name + ' already added to this object')
 
-        parameter = Parameter(name, value)
+        parameter = Parameter(name, value, param_type, value_range)
         self._parameters[name] = parameter
 
     def get_parameter(self, name: str) -> Parameter:
@@ -24,7 +29,11 @@ class HavingParameters:
             if parameter.name == name:
                 return parameter
 
-        available_names: List[str] = cast(List[str], map(lambda param: str(param.name), self.parameters))
+        list_of_names: List[str] = [p.name for p in self.parameters]
+
+        # noinspection PyTypeChecker
+        available_names: List[str] = cast(List[str], list_of_names)
+
         raise Exception('parameter named ' + name + ' not found. Available: ' + ', '.join(available_names))
 
     def get_parameter_value(self, name: str) -> float:

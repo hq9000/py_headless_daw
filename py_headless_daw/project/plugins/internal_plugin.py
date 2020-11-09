@@ -30,6 +30,3 @@ class SamplerPlugin(InternalPlugin):
         self.clips: List[AudioClip] = clips
         super().__init__()
 
-class DrumSynthPlugin(InternalPlugin):
-
-    def __init__(self,):
