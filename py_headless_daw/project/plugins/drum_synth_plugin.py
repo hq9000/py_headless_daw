@@ -94,5 +94,8 @@ class DrumSynthPlugin(InternalPlugin):
 
         frequency_range_param.range = (0, 22050)
 
+    def generate_generator(self) -> DrumSynthGenerator:
+        pass
+
     def _generate_param_name(self, suffix: str, oscillator_id: int) -> str:
         return suffix + '_' + 'osc' + str(oscillator_id)
