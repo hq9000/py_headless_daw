@@ -1,12 +1,10 @@
 from copy import copy, deepcopy
 from dataclasses import dataclass
-from typing import List, Optional, cast, Dict, Union
+from typing import List, Optional, Dict, Union
 
 import numpy as np
 
 from py_headless_daw.dsp_utils.drum_synth.drum_synth_generator import DrumSynthGenerator
-from py_headless_daw.dsp_utils.drum_synth.drum_synth_generator_config import DrumSynthGeneratorConfig
-from py_headless_daw.project.having_parameters import HavingParameters
 from py_headless_daw.project.plugins.drum_synth_plugin import DrumSynthPlugin
 from py_headless_daw.schema.dto.time_interval import TimeInterval
 from py_headless_daw.schema.events.event import Event
@@ -24,13 +22,10 @@ class Hit:
 
 
 class DrumSynth(ProcessingStrategy):
-    MAX_HIT_LENGTH_SAMPLES = 44100 * 10
 
     def __init__(self, plugin: DrumSynthPlugin):
 
         self._cached_sound: Optional[np.ndarray] = None
-        self._cached_sound_length_samples: int = 0
-
         self._unfinished_hits: List[Hit] = []
 
         # we will use this one as something that holds parameters,
@@ -45,23 +40,26 @@ class DrumSynth(ProcessingStrategy):
         all_events = sorted(all_events, key=lambda event: event.sample_position)
 
         parameter_value_events = [e for e in all_events if isinstance(e, ParameterValueEvent)]
-        parameter_value_events = cast(List[ParameterValueEvent], parameter_value_events)
+        # type: List[ParameterValueEvent]
 
-        midi_on_events = [e for e in all_events if isinstance(e, MidiEvent) and e.is_note_on()]
-        midi_on_events = cast(List[MidiEvent], midi_on_events)
+        midi_note_on_events = [e for e in all_events if isinstance(e, MidiEvent) and e.is_note_on()]
+        # type: List[MidiEvent]
 
-        # next silence pc warnings in casts above
-        # convert note ons to hits
+        for event in parameter_value_events:
+            # something has changed, so we conservatively
+            # invalidate the cache
+            #
+            # importantly, though, existing hits (i.e. unfinished ones)
+            # will still reference the old cache and, therefore, their
+            # rendering will be finalized appropriately, after which their
+            # remembered cache values will be garbage collected.
+            self._invalidate_cache()
+            self._plugin.set_parameter_value(event.parameter_id, event.value)
 
-        for event in all_events:
-            if isinstance(event, ParameterValueEvent):
-                self._cached_sound = None
-                self._cached_sound_length_samples = 0
+        if self._cached_sound is None:  # the cache was not initialized or has been invalidated
+            self._regenerate_cache(self.unit.host.sample_rate)
 
-                event = cast(ParameterValueEvent, event)
-                self._plugin.set_parameter_value(event.parameter_id, event.value)
-
-        new_hits = self._convert_note_events_to_new_hits()
+        new_hits = self._convert_note_events_to_new_hits(midi_note_on_events)
 
         all_hits = [*new_hits, *self._unfinished_hits]
         self._unfinished_hits = self._apply_hits_to_inputs(stream_inputs, all_hits)
@@ -122,3 +120,27 @@ class DrumSynth(ProcessingStrategy):
     def _apply_parameter_changes(self, values: Dict[str, Union[str, float]]):
         if len(values):
             self._cached_sound = None
+
+    def _invalidate_cache(self):
+        self._cached_sound = None
+        self._cached_sound_length_samples = 0
+
+    def _regenerate_cache(self, sample_rate: int):
+        generator = DrumSynthGenerator(self._plugin.generate_generator_config())
+        needed_length_samples = generator.get_length_of_full_hit_seconds() * sample_rate
+        self._cached_sound = np.zeros(shape=(needed_length_samples,), dtype=np.float32)
+        generator.render_to_buffer(
+            output_buffer=self._cached_sound,
+            sample_rate=sample_rate,
+            start_sample=0)
+
+    def _convert_note_events_to_new_hits(self, events: List[MidiEvent]) -> List[Hit]:
+        res: List[Hit] = []
+        for event in events:
+            hit = Hit(data=self._cached_sound,
+                      sample_length=self._cached_sound_length_samples,
+                      start_sample_in_buffer=event.sample_position,
+                      start_sample_in_hit=0)
+            res.append(hit)
+
+        return res

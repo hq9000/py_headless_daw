@@ -56,7 +56,8 @@ class DrumSynthGenerator(WaveProducerInterface):
 
             self._oscillators.append(new_osc)
 
-    def render_to_buffer(self, output_buffer: np.ndarray, sample_rate: int, start_sample: int, mode: int = WaveProducerInterface.MODE_REPLACE):
+    def render_to_buffer(self, output_buffer: np.ndarray, sample_rate: int, start_sample: int,
+                         mode: int = WaveProducerInterface.MODE_REPLACE):
 
         for pos, oscillator in enumerate(self._oscillators):
 
@@ -66,3 +67,18 @@ class DrumSynthGenerator(WaveProducerInterface):
                 mode = WaveProducerInterface.MODE_MIX
 
             oscillator.render_to_buffer(output_buffer, sample_rate, start_sample, mode)
+
+    def get_length_of_full_hit_seconds(self) -> float:
+        """
+        tells how many samples are needed to fully render a hit with current settings
+
+        It does it by examining volume envelopes of all of the oscillators and
+        returning the maximum length of them.
+        """
+        max_length: float = 0.0
+        for osc in self._oscillators:
+            current_max = osc.volume_envelope.get_length_seconds()
+            if current_max > max_length:
+                max_length = current_max
+
+        return max_length

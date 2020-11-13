@@ -1,5 +1,6 @@
 from typing import cast
 
+from py_headless_daw.dsp_utils.drum_synth.drum_synth_generator_config import DrumSynthGeneratorConfig
 from py_headless_daw.project.parameter import Parameter
 from py_headless_daw.project.plugins.internal_plugin import InternalPlugin
 import inspect
@@ -94,7 +95,7 @@ class DrumSynthPlugin(InternalPlugin):
 
         frequency_range_param.range = (0, 22050)
 
-    def generate_generator(self) -> DrumSynthGenerator:
+    def generate_generator_config(self) -> DrumSynthGeneratorConfig:
         pass
 
     def _generate_param_name(self, suffix: str, oscillator_id: int) -> str:

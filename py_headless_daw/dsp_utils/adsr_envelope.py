@@ -69,3 +69,6 @@ class ADSREnvelope(WaveProducerInterface):
         abs_ratio = abs(curve_ratio)
 
         return linear_value * (1 - abs_ratio) + curve_value * abs_ratio
+
+    def get_length_seconds(self):
+        return self.attack_time + self.decay_time + self.sustain_time + self.release_time
