@@ -36,10 +36,6 @@ class DrumSynthPlugin(InternalPlugin):
     PARAM_NAME_SUFFIX_OSCILLATOR_VOLUME_ENVELOPE_RELEASE_CURVE_RATIO = 'volume_release_curve_ratio'
     PARAM_NAME_SUFFIX_OSCILLATOR_VOLUME_ENVELOPE_RELEASE_CURVE_POWER = 'volume_release_curve_power'
 
-    PARAM_NAME_SUFFIX_OSCILLATOR_PITCH_ENVELOPE_ATTACK_TIME = 'volume_attack_time'
-    PARAM_NAME_SUFFIX_OSCILLATOR_PITCH_ENVELOPE_ATTACK_CURVE_RATIO = 'volume_attack_curve_ratio'
-    PARAM_NAME_SUFFIX_OSCILLATOR_PITCH_ENVELOPE_ATTACK_CURVE_POWER = 'volume_attack_curve_power'
-
     # pitch envelope parameters
     PARAM_NAME_SUFFIX_OSCILLATOR_PITCH_ENVELOPE_DECAY_TIME = 'pitch_decay_time'
     PARAM_NAME_SUFFIX_OSCILLATOR_PITCH_ENVELOPE_DECAY_CURVE_RATIO = 'pitch_decay_curve_ratio'
@@ -58,42 +54,44 @@ class DrumSynthPlugin(InternalPlugin):
 
         number_of_oscillators: int = 4
 
-        non_standard_param_suffixes = [
-            self.PARAM_NAME_SUFFIX_OSCILLATOR_WAVEFORM,
-        ]
+        for i in range(1, number_of_oscillators + 1):
+            
+            self.add_parameter(
+                name=self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_WAVEFORM, i),
+                value=self.PARAM_VALUE_WAVEFORM_SINE,
+                param_type=Parameter.TYPE_ENUM,
+                value_range=[
+                    self.PARAM_VALUE_WAVEFORM_SINE,
+                    self.PARAM_VALUE_WAVEFORM_SAWTOOTH,
+                    self.PARAM_VALUE_WAVEFORM_SQUARE,
+                    self.PARAM_VALUE_WAVEFORM_TRIANGLE,
+                    self.PARAM_VALUE_WAVEFORM_NOISE
+                ]
+            )
 
-        for i in range(1, number_of_oscillators - 1):
+            self.add_parameter(
+                name=self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_ZERO_FREQUENCY, i),
+                value=self.PARAM_VALUE_WAVEFORM_SINE,
+                param_type=Parameter.TYPE_FLOAT,
+                value_range=(0, 22050)
+            )
+
+            self.add_parameter(
+                name=self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_FREQUENCY_RANGE, i),
+                value=self.PARAM_VALUE_WAVEFORM_SINE,
+                param_type=Parameter.TYPE_FLOAT,
+                value_range=(0, 22050)
+            )
+
             for member_name, prop in inspect.getmembers(type(self)):
                 member_name = cast(str, member_name)
                 if member_name.startswith('PARAM_NAME_SUFFIX_OSCILLATOR'):
                     param_name_suffix = getattr(self, member_name)
                     param_name = self._generate_param_name(param_name_suffix, i)
-                    value_range = (0.0, 1.0)
-                    value = 0.5
-                    self.add_parameter(param_name, value, Parameter.TYPE_FLOAT, value_range)
-
-        self.add_parameter(
-            name=self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_WAVEFORM, i),
-            value=self.PARAM_VALUE_WAVEFORM_SINE,
-            param_type=Parameter.TYPE_ENUM,
-            value_range=[
-                self.PARAM_VALUE_WAVEFORM_SINE,
-                self.PARAM_VALUE_WAVEFORM_SAWTOOTH,
-                self.PARAM_VALUE_WAVEFORM_SQUARE,
-                self.PARAM_VALUE_WAVEFORM_TRIANGLE,
-                self.PARAM_VALUE_WAVEFORM_NOISE
-            ]
-        )
-
-        zero_frequency_param = self.get_parameter(
-            self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_ZERO_FREQUENCY, i))
-
-        zero_frequency_param.range = (0, 22050)
-
-        frequency_range_param = self.get_parameter(
-            self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_ZERO_FREQUENCY, i))
-
-        frequency_range_param.range = (0, 22050)
+                    if not self.has_parameter(param_name):
+                        value_range = (0.0, 1.0)
+                        value = 0.5
+                        self.add_parameter(param_name, value, Parameter.TYPE_FLOAT, value_range)
 
     def generate_generator_config(self) -> DrumSynthGeneratorConfig:
         pass

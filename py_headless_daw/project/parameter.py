@@ -1,4 +1,4 @@
-from typing import List, Tuple, Union, cast
+from typing import List, Tuple, Union, cast, Optional
 
 from py_headless_daw.project.value_provider_consumer import ValueConsumer
 
@@ -19,8 +19,8 @@ class Parameter(ValueConsumer):
                 f"unsupported parameter type {parameter_type}, supported: {', '.join(self.get_available_types())}")
 
         self.type: str = parameter_type
-        self.range = parameter_range
-        self.value: ParameterValueType = value
+        self._range: Optional[ParameterRangeType] = None
+        self._value: Optional[ParameterValueType] = None
 
     @property
     def value(self):
@@ -46,7 +46,7 @@ class Parameter(ValueConsumer):
                                  f"is out of range {value_range[0]} - {value_range[1]} "
                                  f"(error: 8e343a6e)")
 
-            self.value = new_value
+            self._value = new_value
         elif self.type == self.TYPE_ENUM:
             value_range = cast(self.range, List[str])
             if type(new_value) is not str:
@@ -58,11 +58,11 @@ class Parameter(ValueConsumer):
                 raise ValueError(
                     f"{new_value}, a value for parameter {self.name} should have been one of {', '.join(value_range)}")
 
-            self.value = new_value
+            self._value = new_value
 
     @property
     def range(self) -> ParameterRangeType:
-        return self.range
+        return self._range
 
     @range.setter
     def range(self, value: ParameterValueType):
@@ -71,8 +71,8 @@ class Parameter(ValueConsumer):
                 if len(value) != 2:
                     raise ValueError('ranges for float params must be tuples of length 2 (error: a27c90e2)')
                 for i in range(2):
-                    if not isinstance(value[i], float):
-                        raise ValueError('ranges for float params must be tuples of floats (error: 80d5db89)')
+                    if not isinstance(value[i], float) and not isinstance(value[i], int):
+                        raise ValueError('ranges for float params must be tuples of floats or ints (error: 80d5db89)')
             else:
                 raise ValueError('for float params, range must be a tuple of two floats (error: e37e6f14)')
         elif self.type == self.TYPE_ENUM:
@@ -85,4 +85,4 @@ class Parameter(ValueConsumer):
         else:
             raise ValueError('unsupported type (error: 2878e15c)')
 
-        self.range = value
+        self._range = value
