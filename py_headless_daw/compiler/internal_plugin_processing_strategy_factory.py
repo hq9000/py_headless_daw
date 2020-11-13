@@ -33,4 +33,4 @@ class InternalPluginProcessingStrategyFactory:
                 "I don't know how to produce a processing strategy for internal plugin of type " + str(type(plugin)))
 
     def _construct_drum_synth_plugin(self, plugin: DrumSynthPlugin) -> DrumSynth:
-        pass
+        return DrumSynth(plugin)

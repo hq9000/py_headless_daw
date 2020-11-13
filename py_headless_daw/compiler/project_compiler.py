@@ -19,8 +19,6 @@ from py_headless_daw.schema.host import Host
 from py_headless_daw.schema.unit import Unit
 from py_headless_daw.schema.wiring import StreamNode, Connector
 
-# todo generate drum synth strategies
-
 
 class ProjectCompiler:
 
