@@ -39,6 +39,16 @@ class ADSREnvelopeTestCase(unittest.TestCase):
         buffer = np.ndarray(shape=(400,), dtype=np.float32)
         envelope.render_to_buffer(buffer, 100, 0)
 
+    def test_get_length(self):
+        envelope = ADSREnvelope(
+            attack_time=1,
+            decay_time=1,
+            sustain_level=0.5,
+            sustain_time=1,
+            release_time=1
+        )
+        self.assertEqual(4.0, envelope.get_length_seconds())
+
 
 if __name__ == '__main__':
     unittest.main()
