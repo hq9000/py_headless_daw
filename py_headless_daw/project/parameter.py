@@ -19,8 +19,8 @@ class Parameter(ValueConsumer):
                 f"unsupported parameter type {parameter_type}, supported: {', '.join(self.get_available_types())}")
 
         self.type: str = parameter_type
-        self._range: Optional[ParameterRangeType] = None
-        self._value: Optional[ParameterValueType] = None
+        self._range: Optional[ParameterRangeType] = parameter_range
+        self._value: Optional[ParameterValueType] = value
 
     @property
     def value(self):

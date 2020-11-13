@@ -1,4 +1,4 @@
-from typing import cast
+from typing import cast, List
 
 from py_headless_daw.dsp_utils.drum_synth.drum_synth_generator_config import DrumSynthGeneratorConfig, OscillatorConfig
 from py_headless_daw.project.parameter import Parameter
@@ -39,6 +39,10 @@ class DrumSynthPlugin(InternalPlugin):
     PARAM_NAME_SUFFIX_OSCILLATOR_VOLUME_ENVELOPE_RELEASE_CURVE_POWER = 'volume_release_curve_power'
 
     # pitch envelope parameters
+    PARAM_NAME_SUFFIX_OSCILLATOR_PITCH_ENVELOPE_ATTACK_TIME = 'pitch_decay_time'
+    PARAM_NAME_SUFFIX_OSCILLATOR_PITCH_ENVELOPE_ATTACK_CURVE_RATIO = 'pitch_decay_curve_ratio'
+    PARAM_NAME_SUFFIX_OSCILLATOR_PITCH_ENVELOPE_ATTACK_CURVE_POWER = 'pitch_decay_curve_power'
+
     PARAM_NAME_SUFFIX_OSCILLATOR_PITCH_ENVELOPE_DECAY_TIME = 'pitch_decay_time'
     PARAM_NAME_SUFFIX_OSCILLATOR_PITCH_ENVELOPE_DECAY_CURVE_RATIO = 'pitch_decay_curve_ratio'
     PARAM_NAME_SUFFIX_OSCILLATOR_PITCH_ENVELOPE_DECAY_CURVE_POWER = 'pitch_decay_curve_power'
@@ -107,8 +111,61 @@ class DrumSynthPlugin(InternalPlugin):
                 wave_type=self.get_parameter_value(
                     self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_WAVEFORM, i)),
 
-                # todo volume envelope
+                volume_envelope_attack_time=self.get_parameter_value(
+                    self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_VOLUME_ENVELOPE_ATTACK_TIME, i)),
+                volume_envelope_attack_curve_ratio=self.get_parameter_value(
+                    self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_VOLUME_ENVELOPE_ATTACK_CURVE_RATIO, i)),
+                volume_envelope_attack_curve_power=self.get_parameter_value(
+                    self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_VOLUME_ENVELOPE_ATTACK_CURVE_POWER, i)),
+
+                volume_envelope_decay_time=self.get_parameter_value(
+                    self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_VOLUME_ENVELOPE_DECAY_TIME, i)),
+                volume_envelope_decay_curve_ratio=self.get_parameter_value(
+                    self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_VOLUME_ENVELOPE_DECAY_CURVE_RATIO, i)),
+                volume_envelope_decay_curve_power=self.get_parameter_value(
+                    self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_VOLUME_ENVELOPE_DECAY_CURVE_POWER, i)),
+
+                volume_envelope_sustain_level=self.get_parameter_value(
+                    self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_VOLUME_ENVELOPE_SUSTAIN_LEVEL, i)),
+                volume_envelope_sustain_time=self.get_parameter_value(
+                    self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_VOLUME_ENVELOPE_SUSTAIN_TIME, i)),
+
+                volume_envelope_release_time=self.get_parameter_value(
+                    self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_VOLUME_ENVELOPE_RELEASE_TIME, i)),
+                volume_envelope_release_curve_ratio=self.get_parameter_value(
+                    self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_VOLUME_ENVELOPE_RELEASE_CURVE_RATIO, i)),
+                volume_envelope_release_curve_power=self.get_parameter_value(
+                    self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_VOLUME_ENVELOPE_RELEASE_CURVE_POWER, i)),
+
+                pitch_envelope_attack_time=self.get_parameter_value(
+                    self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_PITCH_ENVELOPE_ATTACK_TIME, i)),
+                pitch_envelope_attack_curve_ratio=self.get_parameter_value(
+                    self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_PITCH_ENVELOPE_ATTACK_CURVE_RATIO, i)),
+                pitch_envelope_attack_curve_power=self.get_parameter_value(
+                    self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_PITCH_ENVELOPE_ATTACK_CURVE_POWER, i)),
+
+                pitch_envelope_decay_time=self.get_parameter_value(
+                    self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_PITCH_ENVELOPE_DECAY_TIME, i)),
+                pitch_envelope_decay_curve_ratio=self.get_parameter_value(
+                    self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_PITCH_ENVELOPE_DECAY_CURVE_RATIO, i)),
+                pitch_envelope_decay_curve_power=self.get_parameter_value(
+                    self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_PITCH_ENVELOPE_DECAY_CURVE_POWER, i)),
+
+                pitch_envelope_sustain_level=self.get_parameter_value(
+                    self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_PITCH_ENVELOPE_SUSTAIN_LEVEL, i)),
+                pitch_envelope_sustain_time=self.get_parameter_value(
+                    self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_PITCH_ENVELOPE_SUSTAIN_TIME, i)),
+
+                pitch_envelope_release_time=self.get_parameter_value(
+                    self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_PITCH_ENVELOPE_RELEASE_TIME, i)),
+                pitch_envelope_release_curve_ratio=self.get_parameter_value(
+                    self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_PITCH_ENVELOPE_RELEASE_CURVE_RATIO,
+                                              i)),
+                pitch_envelope_release_curve_power=self.get_parameter_value(
+                    self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_PITCH_ENVELOPE_RELEASE_CURVE_POWER,
+                                              i))
             )
+
             osc_configs.append(osc_config)
 
         res = DrumSynthGeneratorConfig(osc_configs)

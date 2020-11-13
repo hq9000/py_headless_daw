@@ -1,5 +1,6 @@
 from copy import copy, deepcopy
 from dataclasses import dataclass
+from math import ceil
 from typing import List, Optional, Dict, Union
 
 import numpy as np
@@ -124,7 +125,7 @@ class DrumSynth(ProcessingStrategy):
 
     def _regenerate_cache(self, sample_rate: int):
         generator = DrumSynthGenerator(self._plugin.generate_generator_config())
-        needed_length_samples = generator.get_length_of_full_hit_seconds() * sample_rate
+        needed_length_samples = ceil(generator.get_length_of_full_hit_seconds() * sample_rate)
         self._cached_sound = np.zeros(shape=(needed_length_samples,), dtype=np.float32)
         generator.render_to_buffer(
             output_buffer=self._cached_sound,
