@@ -1,12 +1,14 @@
 from typing import cast
 
-from py_headless_daw.dsp_utils.drum_synth.drum_synth_generator_config import DrumSynthGeneratorConfig
+from py_headless_daw.dsp_utils.drum_synth.drum_synth_generator_config import DrumSynthGeneratorConfig, OscillatorConfig
 from py_headless_daw.project.parameter import Parameter
 from py_headless_daw.project.plugins.internal_plugin import InternalPlugin
 import inspect
 
 
 class DrumSynthPlugin(InternalPlugin):
+    NUMBER_OF_OSCILLATORS = 4
+
     PARAM_VALUE_WAVEFORM_SINE = 'sine'
     PARAM_VALUE_WAVEFORM_SAWTOOTH = 'sawtooth'
     PARAM_VALUE_WAVEFORM_SQUARE = 'square'
@@ -52,10 +54,8 @@ class DrumSynthPlugin(InternalPlugin):
 
         super().__init__()
 
-        number_of_oscillators: int = 4
+        for i in range(1, self.NUMBER_OF_OSCILLATORS + 1):
 
-        for i in range(1, number_of_oscillators + 1):
-            
             self.add_parameter(
                 name=self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_WAVEFORM, i),
                 value=self.PARAM_VALUE_WAVEFORM_SINE,
@@ -94,7 +94,26 @@ class DrumSynthPlugin(InternalPlugin):
                         self.add_parameter(param_name, value, Parameter.TYPE_FLOAT, value_range)
 
     def generate_generator_config(self) -> DrumSynthGeneratorConfig:
-        pass
+        osc_configs: List[OscillatorConfig] = []
+        for i in range(1, self.NUMBER_OF_OSCILLATORS + 1):
+            osc_config = OscillatorConfig(
+                volume=self.get_parameter_value(self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_VOLUME, i)),
+                zero_frequency=self.get_parameter_value(
+                    self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_ZERO_FREQUENCY, i)),
+                frequency_range=self.get_parameter_value(
+                    self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_FREQUENCY_RANGE, i)),
+                start_phase=self.get_parameter_value(
+                    self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_INITIAL_PHASE, i)),
+                wave_type=self.get_parameter_value(
+                    self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_WAVEFORM, i)),
+
+                # todo volume envelope
+            )
+            osc_configs.append(osc_config)
+
+        res = DrumSynthGeneratorConfig(osc_configs)
+
+        return res
 
     def _generate_param_name(self, suffix: str, oscillator_id: int) -> str:
         return suffix + '_' + 'osc' + str(oscillator_id)

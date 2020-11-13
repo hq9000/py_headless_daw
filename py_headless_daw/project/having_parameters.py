@@ -1,6 +1,6 @@
 from typing import Dict, List, cast, Union, Tuple
 
-from py_headless_daw.project.parameter import Parameter
+from py_headless_daw.project.parameter import Parameter, ParameterValueType
 
 
 class HavingParameters:
@@ -36,7 +36,7 @@ class HavingParameters:
 
         raise Exception('parameter named ' + name + ' not found. Available: ' + ', '.join(available_names))
 
-    def get_parameter_value(self, name: str) -> float:
+    def get_parameter_value(self, name: str) -> ParameterValueType:
         param = self.get_parameter(name)
         return param.value
 

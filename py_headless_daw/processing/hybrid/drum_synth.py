@@ -64,9 +64,6 @@ class DrumSynth(ProcessingStrategy):
         all_hits = [*new_hits, *self._unfinished_hits]
         self._unfinished_hits = self._apply_hits_to_inputs(stream_inputs, all_hits)
 
-    def _convert_events_to_new_hits(self, events) -> List[Hit]:
-        pass
-
     def _apply_hits_to_inputs(self, stream_outputs: List[np.ndarray], hits: List[Hit]) -> List[Hit]:
         """
         renders all hits to outputs, returns a list hits to be passed to the next iteration

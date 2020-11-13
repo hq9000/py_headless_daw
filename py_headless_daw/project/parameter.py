@@ -24,7 +24,7 @@ class Parameter(ValueConsumer):
 
     @property
     def value(self):
-        return self.value
+        return self._value
 
     @classmethod
     def get_available_types(cls) -> List[str]:
