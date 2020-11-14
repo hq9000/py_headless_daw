@@ -19,8 +19,8 @@ class Parameter(ValueConsumer):
                 f"unsupported parameter type {parameter_type}, supported: {', '.join(self.get_available_types())}")
 
         self.type: str = parameter_type
-        self._range: Optional[ParameterRangeType] = parameter_range
-        self._value: Optional[ParameterValueType] = value
+        self.range = parameter_range
+        self.value = value
 
     @property
     def value(self):
@@ -33,10 +33,10 @@ class Parameter(ValueConsumer):
     @value.setter
     def value(self, new_value: ParameterValueType):
         if self.type == self.TYPE_FLOAT:
-            value_range = cast(self.range, Tuple[float, float])
+            value_range = cast(Tuple[float, float], self.range)
             value = cast(new_value, float)
 
-            if type(value) is not float:
+            if isinstance(value, float):
                 raise ValueError(
                     f"a new value for parameter {self.name} should have been float, "
                     f"instead is {str(type(new_value))} (error: 90a2a0ed)")
@@ -48,7 +48,7 @@ class Parameter(ValueConsumer):
 
             self._value = new_value
         elif self.type == self.TYPE_ENUM:
-            value_range = cast(self.range, List[str])
+            value_range = cast(List[str], self.range)
             if type(new_value) is not str:
                 raise ValueError(
                     f"a new value for parameter {self.name} should have been str, "
