@@ -1,7 +1,7 @@
 import numpy as np
 
 from py_headless_daw.compiler.compiler_exception import CompilerException
-from py_headless_daw.processing.hybrid.drum_synth import DrumSynth
+from py_headless_daw.processing.hybrid.drum_synth_strategy import DrumSynthStrategy
 from py_headless_daw.processing.stream.sampler import Sampler
 from py_headless_daw.processing.stream.stereo_panner import StereoPanner
 from py_headless_daw.processing.stream.stream_gain import StreamGain
@@ -32,5 +32,5 @@ class InternalPluginProcessingStrategyFactory:
             raise CompilerException(
                 "I don't know how to produce a processing strategy for internal plugin of type " + str(type(plugin)))
 
-    def _construct_drum_synth_plugin(self, plugin: DrumSynthPlugin) -> DrumSynth:
-        return DrumSynth(plugin)
+    def _construct_drum_synth_plugin(self, plugin: DrumSynthPlugin) -> DrumSynthStrategy:
+        return DrumSynthStrategy(plugin)

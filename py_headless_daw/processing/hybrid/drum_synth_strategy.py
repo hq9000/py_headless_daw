@@ -22,7 +22,7 @@ class Hit:
     sample_length: int
 
 
-class DrumSynth(ProcessingStrategy):
+class DrumSynthStrategy(ProcessingStrategy):
 
     def __init__(self, plugin: DrumSynthPlugin):
 
