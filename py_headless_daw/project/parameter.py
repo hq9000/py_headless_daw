@@ -36,10 +36,10 @@ class Parameter(ValueConsumer):
             value_range = cast(Tuple[float, float], self.range)
             value = cast(new_value, float)
 
-            if isinstance(value, float):
+            if not isinstance(new_value, float) and not isinstance(new_value, int):
                 raise ValueError(
                     f"a new value for parameter {self.name} should have been float, "
-                    f"instead is {str(type(new_value))} (error: 90a2a0ed)")
+                    f"instead is {str(type(new_value))} with value {str(new_value)} (error: 90a2a0ed)")
 
             if not value_range[0] <= new_value <= value_range[1]:
                 raise ValueError(f"float parameter {self.name} value of {new_value} "
@@ -48,7 +48,7 @@ class Parameter(ValueConsumer):
 
             self._value = new_value
         elif self.type == self.TYPE_ENUM:
-            value_range = cast(List[str], self.range)
+            value_range = cast('List[str]', self.range)
             if type(new_value) is not str:
                 raise ValueError(
                     f"a new value for parameter {self.name} should have been str, "

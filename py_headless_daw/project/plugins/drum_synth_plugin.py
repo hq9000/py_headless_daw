@@ -5,9 +5,12 @@ from py_headless_daw.project.parameter import Parameter
 from py_headless_daw.project.plugins.internal_plugin import InternalPlugin
 import inspect
 
+DEFAULT_FREQUENCY_RANGE = 20_000
+
 
 class DrumSynthPlugin(InternalPlugin):
     NUMBER_OF_OSCILLATORS = 4
+    DEFAULT_ZERO_FREQUENCY = 10
 
     PARAM_VALUE_WAVEFORM_SINE = 'sine'
     PARAM_VALUE_WAVEFORM_SAWTOOTH = 'sawtooth'
@@ -75,14 +78,14 @@ class DrumSynthPlugin(InternalPlugin):
 
             self.add_parameter(
                 name=self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_ZERO_FREQUENCY, i),
-                value=self.PARAM_VALUE_WAVEFORM_SINE,
+                value=self.DEFAULT_ZERO_FREQUENCY,
                 param_type=Parameter.TYPE_FLOAT,
                 value_range=(0, 22050)
             )
 
             self.add_parameter(
                 name=self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_FREQUENCY_RANGE, i),
-                value=self.PARAM_VALUE_WAVEFORM_SINE,
+                value=DEFAULT_FREQUENCY_RANGE,
                 param_type=Parameter.TYPE_FLOAT,
                 value_range=(0, 22050)
             )
@@ -133,9 +136,11 @@ class DrumSynthPlugin(InternalPlugin):
                 volume_envelope_release_time=self.get_parameter_value(
                     self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_VOLUME_ENVELOPE_RELEASE_TIME, i)),
                 volume_envelope_release_curve_ratio=self.get_parameter_value(
-                    self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_VOLUME_ENVELOPE_RELEASE_CURVE_RATIO, i)),
+                    self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_VOLUME_ENVELOPE_RELEASE_CURVE_RATIO,
+                                              i)),
                 volume_envelope_release_curve_power=self.get_parameter_value(
-                    self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_VOLUME_ENVELOPE_RELEASE_CURVE_POWER, i)),
+                    self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_VOLUME_ENVELOPE_RELEASE_CURVE_POWER,
+                                              i)),
 
                 pitch_envelope_attack_time=self.get_parameter_value(
                     self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_PITCH_ENVELOPE_ATTACK_TIME, i)),

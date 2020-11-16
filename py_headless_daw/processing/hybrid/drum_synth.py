@@ -136,7 +136,7 @@ class DrumSynth(ProcessingStrategy):
         res: List[Hit] = []
         for event in events:
             hit = Hit(data=self._cached_sound,
-                      sample_length=self._cached_sound_length_samples,
+                      sample_length=self._cached_sound.shape[0],
                       start_sample_in_buffer=event.sample_position,
                       start_sample_in_hit=0)
             res.append(hit)
