@@ -64,6 +64,7 @@ class DrumSynth(ProcessingStrategy):
 
         all_hits = [*new_hits, *self._unfinished_hits]
         self._unfinished_hits = self._apply_hits_to_inputs(stream_inputs, all_hits)
+        pass
 
     def _apply_hits_to_inputs(self, stream_outputs: List[np.ndarray], hits: List[Hit]) -> List[Hit]:
         """
@@ -78,10 +79,16 @@ class DrumSynth(ProcessingStrategy):
         hits_for_next_iteration: List[Hit] = []
 
         for hit in hits:
+            hit_for_next: Optional[Hit] = None
             for stream_output in stream_outputs:
-                hit_for_next = self._apply_one_hit_to_one_output(hit, stream_output)
-                if hit_for_next is not None:
-                    hits_for_next_iteration.append(hit_for_next)
+                hit_for_next_from_this_channel = self._apply_one_hit_to_one_output(hit, stream_output)
+                if hit_for_next is None:
+                    # we take the first reported hit for next (presumably from the
+                    # first channel)
+                    hit_for_next = hit_for_next_from_this_channel
+
+            if hit_for_next is not None:
+                hits_for_next_iteration.append(hit_for_next)
 
         return hits_for_next_iteration
 
@@ -102,9 +109,10 @@ class DrumSynth(ProcessingStrategy):
 
         np.add(patch, patched, out=patched)
 
-        if patch_start_in_hit + patch_length < hit.sample_length:
+        if patch_end_in_output == buffer_length:
             res = copy(hit)
             res.start_sample_in_hit += patch_length
+            res.start_sample_in_buffer = 0
             return res
         else:
             return None
