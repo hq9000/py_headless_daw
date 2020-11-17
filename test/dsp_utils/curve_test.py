@@ -28,8 +28,7 @@ class MyTestCase(unittest.TestCase):
             end_val=end_val,
             curve_ratio=curve_ratio,
             curve_power=curve_power,
-            phase=phase)
-                          )
+            phase=phase))
 
 
 if __name__ == '__main__':

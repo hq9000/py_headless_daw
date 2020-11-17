@@ -1,5 +1,4 @@
 import numpy as np
-import math
 
 from py_headless_daw.dsp_utils.curve import get_curve_value
 from py_headless_daw.dsp_utils.wave_producer_interface import WaveProducerInterface
@@ -24,7 +23,7 @@ class ADSREnvelope(WaveProducerInterface):
         self.decay_curve_power: float = 2.0
         self.release_curve_power: float = 3.0
 
-    def render_to_buffer(self, output_buffer: np.ndarray, sample_rate: int, start_sample: int):
+    def render_to_buffer(self, output_buffer: np.ndarray, sample_rate: int, start_sample: int, mode: str = WaveProducerInterface.MODE_REPLACE):
         for i in range(output_buffer.shape[0]):
             output_buffer[i] = self.get_one_value(start_sample + i, sample_rate)
 

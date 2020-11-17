@@ -1,6 +1,6 @@
 from typing import Dict, List, cast, Union, Tuple
 
-from py_headless_daw.project.parameter import Parameter, ParameterValueType
+from py_headless_daw.project.parameter import Parameter, ParameterValueType, ParameterRangeType
 
 
 class HavingParameters:
@@ -14,9 +14,9 @@ class HavingParameters:
 
     def add_parameter(self,
                       name: str,
-                      value: Union[float, str],
+                      value: ParameterValueType,
                       param_type: str,
-                      value_range: Union[Tuple[float, float], List[str]]):
+                      value_range: ParameterRangeType):
 
         if name in self._parameters:
             raise Exception('parameter named ' + name + ' already added to this object')
@@ -40,7 +40,23 @@ class HavingParameters:
         param = self.get_parameter(name)
         return param.value
 
-    def set_parameter_value(self, name: str, value: float):
+    def get_float_parameter_value(self, name: str) -> float:
+        param = self.get_parameter(name)
+        if param.type != Parameter.TYPE_FLOAT:
+            raise ValueError(f"parameter {name} was expected to be float (error: f009d0ef)")
+        value = self.get_parameter_value(name)
+        cast_value = cast(float, value)
+        return cast_value
+
+    def get_enum_parameter_value(self, name: str) -> str:
+        param = self.get_parameter(name)
+        if param.type != Parameter.TYPE_ENUM:
+            raise ValueError(f"parameter {name} was expected to be enum (error: 80a1d180)")
+        value = self.get_parameter_value(name)
+        cast_value = cast(str, value)
+        return cast_value
+
+    def set_parameter_value(self, name: str, value: ParameterValueType):
         param = self.get_parameter(name)
         param.value = value
 

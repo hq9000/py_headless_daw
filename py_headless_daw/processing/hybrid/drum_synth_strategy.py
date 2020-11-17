@@ -1,7 +1,7 @@
 from copy import copy, deepcopy
 from dataclasses import dataclass
 from math import ceil
-from typing import List, Optional, Dict, Union
+from typing import List, Optional, Dict, Union, cast
 
 import numpy as np
 
@@ -40,11 +40,11 @@ class DrumSynthStrategy(ProcessingStrategy):
         all_events = self._flatten_event_inputs(event_inputs)
         all_events = sorted(all_events, key=lambda event: event.sample_position)
 
-        parameter_value_events = [e for e in all_events if isinstance(e, ParameterValueEvent)]
-        # type: List[ParameterValueEvent]
+        parameter_value_events = [e for e in all_events if
+                                  isinstance(e, ParameterValueEvent)]  # type: List[ParameterValueEvent]
 
-        midi_note_on_events = [e for e in all_events if isinstance(e, MidiEvent) and e.is_note_on()]
-        # type: List[MidiEvent]
+        midi_note_on_events = [e for e in all_events if
+                               isinstance(e, MidiEvent) and e.is_note_on()]  # type: List[MidiEvent]
 
         for event in parameter_value_events:
             # something has changed, so we conservatively
@@ -58,6 +58,8 @@ class DrumSynthStrategy(ProcessingStrategy):
             self._plugin.set_parameter_value(event.parameter_id, event.value)
 
         if self._cached_sound is None:  # the cache was not initialized or has been invalidated
+            if self.unit is None:
+                raise ValueError('unit is None, which was not expected (error: 0faca3c9)')
             self._regenerate_cache(self.unit.host.sample_rate)
 
         new_hits = self._convert_note_events_to_new_hits(midi_note_on_events)
@@ -142,9 +144,10 @@ class DrumSynthStrategy(ProcessingStrategy):
 
     def _convert_note_events_to_new_hits(self, events: List[MidiEvent]) -> List[Hit]:
         res: List[Hit] = []
+        cached_sound = cast(np.ndarray, self._cached_sound)
         for event in events:
             hit = Hit(data=self._cached_sound,
-                      sample_length=self._cached_sound.shape[0],
+                      sample_length=cached_sound.shape[0],
                       start_sample_in_buffer=event.sample_position,
                       start_sample_in_hit=0)
             res.append(hit)

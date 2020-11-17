@@ -5,9 +5,10 @@ import numpy as np
 
 from py_headless_daw.dsp_utils.drum_synth.drum_synth_generator import DrumSynthGenerator
 from py_headless_daw.dsp_utils.drum_synth.drum_synth_generator_config import DrumSynthGeneratorConfig, OscillatorConfig
-from py_headless_daw.dsp_utils.wave_producer_interface import WaveProducerInterface
 from py_headless_daw.dsp_utils.wave_types import WAVE_TYPE_SINE
-import matplotlib.pyplot as plt
+
+
+# import matplotlib.pyplot as plt
 
 
 class MyTestCase(unittest.TestCase):
@@ -46,8 +47,8 @@ class MyTestCase(unittest.TestCase):
 
         generator.render_to_buffer(output_buffer, 44100, 0)
 
-        plt.plot(output_buffer)
-        plt.show()
+        # plt.plot(output_buffer)
+        # plt.show()
 
 
 if __name__ == '__main__':

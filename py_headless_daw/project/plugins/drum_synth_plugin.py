@@ -104,69 +104,69 @@ class DrumSynthPlugin(InternalPlugin):
         osc_configs: List[OscillatorConfig] = []
         for i in range(1, self.NUMBER_OF_OSCILLATORS + 1):
             osc_config = OscillatorConfig(
-                volume=self.get_parameter_value(self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_VOLUME, i)),
-                zero_frequency=self.get_parameter_value(
+                volume=self.get_float_parameter_value(self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_VOLUME, i)),
+                zero_frequency=self.get_float_parameter_value(
                     self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_ZERO_FREQUENCY, i)),
-                frequency_range=self.get_parameter_value(
+                frequency_range=self.get_float_parameter_value(
                     self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_FREQUENCY_RANGE, i)),
-                start_phase=self.get_parameter_value(
+                start_phase=self.get_float_parameter_value(
                     self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_INITIAL_PHASE, i)),
-                wave_type=self.get_parameter_value(
+                wave_type=self.get_enum_parameter_value(
                     self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_WAVEFORM, i)),
 
-                volume_envelope_attack_time=self.get_parameter_value(
+                volume_envelope_attack_time=self.get_float_parameter_value(
                     self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_VOLUME_ENVELOPE_ATTACK_TIME, i)),
-                volume_envelope_attack_curve_ratio=self.get_parameter_value(
+                volume_envelope_attack_curve_ratio=self.get_float_parameter_value(
                     self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_VOLUME_ENVELOPE_ATTACK_CURVE_RATIO, i)),
-                volume_envelope_attack_curve_power=self.get_parameter_value(
+                volume_envelope_attack_curve_power=self.get_float_parameter_value(
                     self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_VOLUME_ENVELOPE_ATTACK_CURVE_POWER, i)),
 
-                volume_envelope_decay_time=self.get_parameter_value(
+                volume_envelope_decay_time=self.get_float_parameter_value(
                     self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_VOLUME_ENVELOPE_DECAY_TIME, i)),
-                volume_envelope_decay_curve_ratio=self.get_parameter_value(
+                volume_envelope_decay_curve_ratio=self.get_float_parameter_value(
                     self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_VOLUME_ENVELOPE_DECAY_CURVE_RATIO, i)),
-                volume_envelope_decay_curve_power=self.get_parameter_value(
+                volume_envelope_decay_curve_power=self.get_float_parameter_value(
                     self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_VOLUME_ENVELOPE_DECAY_CURVE_POWER, i)),
 
-                volume_envelope_sustain_level=self.get_parameter_value(
+                volume_envelope_sustain_level=self.get_float_parameter_value(
                     self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_VOLUME_ENVELOPE_SUSTAIN_LEVEL, i)),
-                volume_envelope_sustain_time=self.get_parameter_value(
+                volume_envelope_sustain_time=self.get_float_parameter_value(
                     self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_VOLUME_ENVELOPE_SUSTAIN_TIME, i)),
 
-                volume_envelope_release_time=self.get_parameter_value(
+                volume_envelope_release_time=self.get_float_parameter_value(
                     self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_VOLUME_ENVELOPE_RELEASE_TIME, i)),
-                volume_envelope_release_curve_ratio=self.get_parameter_value(
+                volume_envelope_release_curve_ratio=self.get_float_parameter_value(
                     self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_VOLUME_ENVELOPE_RELEASE_CURVE_RATIO,
                                               i)),
-                volume_envelope_release_curve_power=self.get_parameter_value(
+                volume_envelope_release_curve_power=self.get_float_parameter_value(
                     self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_VOLUME_ENVELOPE_RELEASE_CURVE_POWER,
                                               i)),
 
-                pitch_envelope_attack_time=self.get_parameter_value(
+                pitch_envelope_attack_time=self.get_float_parameter_value(
                     self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_PITCH_ENVELOPE_ATTACK_TIME, i)),
-                pitch_envelope_attack_curve_ratio=self.get_parameter_value(
+                pitch_envelope_attack_curve_ratio=self.get_float_parameter_value(
                     self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_PITCH_ENVELOPE_ATTACK_CURVE_RATIO, i)),
-                pitch_envelope_attack_curve_power=self.get_parameter_value(
+                pitch_envelope_attack_curve_power=self.get_float_parameter_value(
                     self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_PITCH_ENVELOPE_ATTACK_CURVE_POWER, i)),
 
-                pitch_envelope_decay_time=self.get_parameter_value(
+                pitch_envelope_decay_time=self.get_float_parameter_value(
                     self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_PITCH_ENVELOPE_DECAY_TIME, i)),
-                pitch_envelope_decay_curve_ratio=self.get_parameter_value(
+                pitch_envelope_decay_curve_ratio=self.get_float_parameter_value(
                     self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_PITCH_ENVELOPE_DECAY_CURVE_RATIO, i)),
-                pitch_envelope_decay_curve_power=self.get_parameter_value(
+                pitch_envelope_decay_curve_power=self.get_float_parameter_value(
                     self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_PITCH_ENVELOPE_DECAY_CURVE_POWER, i)),
 
-                pitch_envelope_sustain_level=self.get_parameter_value(
+                pitch_envelope_sustain_level=self.get_float_parameter_value(
                     self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_PITCH_ENVELOPE_SUSTAIN_LEVEL, i)),
-                pitch_envelope_sustain_time=self.get_parameter_value(
+                pitch_envelope_sustain_time=self.get_float_parameter_value(
                     self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_PITCH_ENVELOPE_SUSTAIN_TIME, i)),
 
-                pitch_envelope_release_time=self.get_parameter_value(
+                pitch_envelope_release_time=self.get_float_parameter_value(
                     self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_PITCH_ENVELOPE_RELEASE_TIME, i)),
-                pitch_envelope_release_curve_ratio=self.get_parameter_value(
+                pitch_envelope_release_curve_ratio=self.get_float_parameter_value(
                     self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_PITCH_ENVELOPE_RELEASE_CURVE_RATIO,
                                               i)),
-                pitch_envelope_release_curve_power=self.get_parameter_value(
+                pitch_envelope_release_curve_power=self.get_float_parameter_value(
                     self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_PITCH_ENVELOPE_RELEASE_CURVE_POWER,
                                               i))
             )

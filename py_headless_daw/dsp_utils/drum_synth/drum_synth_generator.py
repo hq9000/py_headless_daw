@@ -57,7 +57,7 @@ class DrumSynthGenerator(WaveProducerInterface):
             self._oscillators.append(new_osc)
 
     def render_to_buffer(self, output_buffer: np.ndarray, sample_rate: int, start_sample: int,
-                         mode: int = WaveProducerInterface.MODE_REPLACE):
+                         mode: str = WaveProducerInterface.MODE_REPLACE):
 
         for pos, oscillator in enumerate(self._oscillators):
 

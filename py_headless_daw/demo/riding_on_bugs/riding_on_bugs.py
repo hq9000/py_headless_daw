@@ -15,6 +15,7 @@ from py_headless_daw.project.sampler_track import SamplerTrack
 
 logger = logging.getLogger(__name__)
 
+
 # todo add a couple of hits with drum synthesizer
 
 class RidingOnBugs:
