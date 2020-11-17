@@ -30,7 +30,6 @@ class ProjectTest(ContainerAwareTestCase):
         audio_track = AudioTrack()
         midi_track.add_output(audio_track)
 
-    # todo add drum synth
     # noinspection PyMethodMayBeStatic
     def test_create_project(self):
         """

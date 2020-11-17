@@ -6,7 +6,7 @@ from py_headless_daw.project.parameter import Parameter
 
 class EnvelopeTest(unittest.TestCase):
     def test_envelope(self):
-        target = Parameter('a', 0.777)
+        target = Parameter('a', 0.777, Parameter.TYPE_FLOAT, (0.0, 1.0))
         envelope = Envelope(target)
 
         point1 = EnvelopePoint(0.0, 0.0)
