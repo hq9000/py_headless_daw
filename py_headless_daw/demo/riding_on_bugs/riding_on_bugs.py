@@ -82,6 +82,9 @@ class RidingOnBugs:
         drum_synth_track.name = 'drum synth track'
 
         drum_synth_track.set_parameter_value(drum_synth_track.get_gain_parameter().name, 0.01)
+
+        # todo describe drum synth in doc/drum_synth_plugin.md
+
         return drum_synth_track
 
     def _create_synth_track(self):
