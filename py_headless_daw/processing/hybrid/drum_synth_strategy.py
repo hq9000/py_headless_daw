@@ -65,10 +65,10 @@ class DrumSynthStrategy(ProcessingStrategy):
         new_hits = self._convert_note_events_to_new_hits(midi_note_on_events)
 
         all_hits = [*new_hits, *self._unfinished_hits]
-        self._unfinished_hits = self._apply_hits_to_inputs(stream_outputs, all_hits)
+        self._unfinished_hits = self._apply_hits_to_outputs(stream_outputs, all_hits)
         pass
 
-    def _apply_hits_to_inputs(self, stream_outputs: List[np.ndarray], hits: List[Hit]) -> List[Hit]:
+    def _apply_hits_to_outputs(self, stream_outputs: List[np.ndarray], hits: List[Hit]) -> List[Hit]:
         """
         renders all hits to outputs, returns a list hits to be passed to the next iteration
 

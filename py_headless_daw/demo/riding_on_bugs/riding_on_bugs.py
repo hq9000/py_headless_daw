@@ -2,12 +2,17 @@ import logging
 import os
 from typing import List, Optional
 
+from matplotlib.backends.backend_pdf import Stream
+
+from py_headless_daw.processing.stream.stream_gain import StreamGain
 from py_headless_daw.project.audio_track import AudioTrack
 from py_headless_daw.project.content.audio_clip import AudioClip
 from py_headless_daw.project.content.midi_clip import MidiClip
 from py_headless_daw.project.content.midi_note import MidiNote
 from py_headless_daw.project.envelope import Envelope, EnvelopePoint
 from py_headless_daw.project.midi_track import MidiTrack
+from py_headless_daw.project.plugins.drum_synth_plugin import DrumSynthPlugin
+from py_headless_daw.project.plugins.internal_plugin import InternalPlugin
 from py_headless_daw.project.plugins.vst_plugin import VstPlugin
 from py_headless_daw.project.project import Project
 from py_headless_daw.project.project_renderer import ProjectRenderer
@@ -39,9 +44,10 @@ class RidingOnBugs:
         bass_drum_track = self._create_bass_drum_track()
 
         synth_track = self._create_synth_track()
+        drum_synth_track = self._create_drum_synth_track()
 
         master_track = AudioTrack()
-        master_track.inputs = [bass_drum_track, synth_track]
+        master_track.inputs = [bass_drum_track, synth_track, drum_synth_track]
 
         return Project(master_track)
 
@@ -63,6 +69,20 @@ class RidingOnBugs:
         ]
 
         return bass_drum_track
+
+    def _create_drum_synth_track(self) -> AudioTrack:
+        drum_midi_track = MidiTrack(1)
+        drum_midi_track.clips = self._get_drum_synth_midi_clips()
+        drum_midi_track.clips = self._get_drum_synth_midi_clips()
+        drum_synth_plugin = DrumSynthPlugin()
+        drum_synth_track = AudioTrack()
+
+        drum_synth_track.plugins = [drum_synth_plugin]
+        drum_synth_track.inputs = [drum_midi_track]
+        drum_synth_track.name = 'drum synth track'
+
+        drum_synth_track.set_parameter_value(drum_synth_track.get_gain_parameter().name, 0.01)
+        return drum_synth_track
 
     def _create_synth_track(self):
         midi_track = MidiTrack(1)
@@ -90,6 +110,15 @@ class RidingOnBugs:
         return str(os.path.dirname(os.path.realpath(__file__)))
 
     def _get_synth_midi_clips(self) -> List[MidiClip]:
+        clips = []
+        for i in range(self.length_bars):
+            clip = self._generate_synth_midi_clip(i)
+            if clip is not None:
+                clips.append(clip)
+
+        return clips
+
+    def _get_drum_synth_midi_clips(self) -> List[MidiClip]:
         clips = []
         for i in range(self.length_bars):
             clip = self._generate_synth_midi_clip(i)
