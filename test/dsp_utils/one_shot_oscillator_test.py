@@ -4,8 +4,10 @@ import numpy as np
 
 from py_headless_daw.dsp_utils.adsr_envelope import ADSREnvelope
 from py_headless_daw.dsp_utils.drum_synth.one_shot_oscillator import OneShotOscillator
+
+
 # noinspection PyUnresolvedReferences
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 
 
 class OneShotOscillatorTestCase(unittest.TestCase):
@@ -29,8 +31,8 @@ class OneShotOscillatorTestCase(unittest.TestCase):
         output_buffer = np.ndarray(shape=(output_buffer_size,), dtype=np.float32)
         osc.render_to_buffer(output_buffer, sample_rate, 0)
 
-        plt.plot(output_buffer)
-        plt.show()
+        # plt.plot(output_buffer)
+        # plt.show()
 
 
 if __name__ == '__main__':

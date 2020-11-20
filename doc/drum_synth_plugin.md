@@ -14,13 +14,15 @@ The implementation is pure Python. It might seem slow, but, considering use case
 
 Related classes:
 
-- DrumSynthGenerator
+- `OneShotOscillator`
+    - models a single ADSR-controlled ocillator
+- `DrumSynthGenerator`
     - a low-level generation plugin
-- DrumSynthGeneratorConfig
+- `DrumSynthGeneratorConfig`
     - a simple data class containing settings for a generator such as per-osciallator ADSR envelope parameters (there are 4 oscillators)
-- DrumSynthStrategy
+- `DrumSynthStrategy`
     - a standard hybrid processing strategy. Consumes events (such as parameter changes and notes)
-- DrumSynthPlugin
+- `DrumSynthPlugin`
     - a project-level abstraction to be put to audio tracks 
    
 ## Demo
