@@ -22,7 +22,7 @@ class PanningPlugin(InternalPlugin):
 
     def __init__(self):
         super().__init__()
-        self.add_parameter(self.PARAMETER_PANNING, 0.0, Parameter.TYPE_FLOAT, (0.0, 1.0))
+        self.add_parameter(self.PARAMETER_PANNING, 0.0, Parameter.TYPE_FLOAT, (-1.0, 1.0))
 
 
 class SamplerPlugin(InternalPlugin):

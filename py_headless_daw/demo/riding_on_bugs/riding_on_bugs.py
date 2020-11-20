@@ -48,7 +48,6 @@ class RidingOnBugs:
 
         master_track = AudioTrack()
         master_track.inputs = [bass_drum_track, synth_track, drum_synth_track]
-        master_track.inputs = [drum_synth_track]
 
         return Project(master_track)
 
@@ -82,10 +81,11 @@ class RidingOnBugs:
         drum_synth_track.inputs = [drum_midi_track]
         drum_synth_track.name = 'drum synth track'
 
-        drum_synth_track.set_parameter_value(drum_synth_track.get_gain_parameter().name, 0.07)
+        drum_synth_track.set_parameter_value(drum_synth_track.get_gain_parameter().name, 0.01)
 
         # todo describe drum synth in doc/drum_synth_plugin.md
 
+        drum_synth_track.set_parameter_value(drum_synth_track.get_panning_parameter().name, -0.9)
         # todo add setting non-default panning just for test
         return drum_synth_track
 
