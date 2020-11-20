@@ -22,11 +22,12 @@ class InternalPluginProcessingStrategyFactory:
     def produce(self, plugin: InternalProjectPlugin, track: AudioTrack) -> ProcessingStrategy:
 
         overall_track_gain_value = track.get_gain_parameter().value
+        overall_track_panning_value = track.get_panning_parameter().value
 
         if isinstance(plugin, GainPlugin):
             return StreamGain(np.float32(overall_track_gain_value))
         elif isinstance(plugin, PanningPlugin):
-            return StereoPanner(np.float32(0.0))
+            return StereoPanner(np.float32(overall_track_panning_value))
         elif isinstance(plugin, SamplerPlugin):
             return Sampler(plugin.clips, self._waveform_provider)
         elif isinstance(plugin, DrumSynthPlugin):

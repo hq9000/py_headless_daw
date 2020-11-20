@@ -13,6 +13,8 @@ from py_headless_daw.schema.events.midi_event import MidiEvent
 from py_headless_daw.schema.events.parameter_value_event import ParameterValueEvent
 from py_headless_daw.schema.processing_strategy import ProcessingStrategy
 
+import matplotlib.pyplot as plt
+
 
 @dataclass
 class Hit:
@@ -65,6 +67,9 @@ class DrumSynthStrategy(ProcessingStrategy):
         new_hits = self._convert_note_events_to_new_hits(midi_note_on_events)
 
         all_hits = [*new_hits, *self._unfinished_hits]
+
+        self._zero_outputs(stream_outputs)
+
         self._unfinished_hits = self._apply_hits_to_outputs(stream_outputs, all_hits)
         pass
 
@@ -142,6 +147,9 @@ class DrumSynthStrategy(ProcessingStrategy):
             sample_rate=sample_rate,
             start_sample=0)
 
+        # plt.plot(self._cached_sound)
+        # plt.show()
+
     def _convert_note_events_to_new_hits(self, events: List[MidiEvent]) -> List[Hit]:
         res: List[Hit] = []
         cached_sound = cast(np.ndarray, self._cached_sound)
@@ -153,3 +161,7 @@ class DrumSynthStrategy(ProcessingStrategy):
             res.append(hit)
 
         return res
+
+    def _zero_outputs(self, stream_outputs: List[np.ndarray]):
+        for o in stream_outputs:
+            o.fill(0)
