@@ -12,13 +12,13 @@ This "song" has tree tracks
   - an audio track with an instance of `VstPlugin` which loads `amsynth-vst.x86_64-linux`
 - midi track
   - this track is an input for the synth track and consists of a single midi clip playing a short note
+- drum synth track
+  - an audio track with an instance of `DrumSynthPlugin`
+- midi track
+  - this track is an input for the drum synth track and consists of a single midi clip playing a short note
 
-![image](https://user-images.githubusercontent.com/21345604/93955793-3a48fd00-fd59-11ea-88d9-6f94e2023c9f.png)
 
-when rendered, the waveform looks somewhat like this:
-
-![image](https://user-images.githubusercontent.com/21345604/93956098-09b59300-fd5a-11ea-9b53-6305e304d7fa.png)
-
+![image](https://user-images.githubusercontent.com/21345604/99762138-dfd5de00-2b08-11eb-9a29-af1ececc83f8.png)
 
 
 ## Implementation
