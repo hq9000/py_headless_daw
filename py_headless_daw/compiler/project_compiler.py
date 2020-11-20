@@ -74,7 +74,7 @@ class ProjectCompiler:
         elif isinstance(track, AudioTrack):
             res = self._compile_audio_track_itself(host, project, cast(AudioTrack, track))
         else:
-            raise Exception('don\'t know ho to compile this type of track')
+            raise Exception(f'don\'t know how to compile this type of track: {str(type(track))}')
 
         compiled_tracks[track] = res
         return res
@@ -172,7 +172,7 @@ class ProjectCompiler:
 
     def _create_internal_plugin_unit(self, host: Host, project: Project, plugin: InternalProjectPlugin,
                                      track: Track) -> Unit:
-        strategy = self._internal_plugin_processing_strategy_factory.produce(plugin)
+        strategy = self._internal_plugin_processing_strategy_factory.produce(plugin, track)
 
         num_input_event_channels = 1
         num_input_stream_channels = project.num_audio_channels

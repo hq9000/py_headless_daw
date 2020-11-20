@@ -15,5 +15,5 @@ zipp==3.1.0
 dependency-injector==3.28.0
 parametrized~=0.1
 scipy~=1.5.2
-cython_vst_loader==0.0.1
+cython_vst_loader==0.2.0
 mypy==0.782

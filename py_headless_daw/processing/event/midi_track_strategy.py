@@ -79,12 +79,14 @@ class MidiTrackStrategy(ProcessingStrategy):
     @staticmethod
     def _calculate_sample_position(interval: TimeInterval, event_time_in_seconds: float) -> int:
 
-        assert interval.start_in_seconds <= event_time_in_seconds < interval.end_in_seconds, \
+        tolerance: float = 0.00000000001
+
+        assert interval.start_in_seconds - tolerance <= event_time_in_seconds < interval.end_in_seconds + tolerance, \
             'event time %5.5f is out of interval [%5.5f, %5.5f)' % (
                 event_time_in_seconds, interval.start_in_seconds, interval.end_in_seconds
             )
 
         relative_time_in_seconds = event_time_in_seconds - interval.start_in_seconds
-        assert 0 <= relative_time_in_seconds < interval.get_length_in_seconds()
+        assert 0 - tolerance <= relative_time_in_seconds < interval.get_length_in_seconds() + tolerance
 
         return round(interval.num_samples * relative_time_in_seconds / interval.get_length_in_seconds())

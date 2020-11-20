@@ -1,6 +1,7 @@
 from typing import List
 
 from py_headless_daw.project.content.audio_clip import AudioClip
+from py_headless_daw.project.parameter import Parameter
 from py_headless_daw.project.plugins.plugin import Plugin
 
 
@@ -13,7 +14,7 @@ class GainPlugin(InternalPlugin):
 
     def __init__(self):
         super().__init__()
-        self.add_parameter(self.PARAMETER_GAIN, 1.0)
+        self.add_parameter(self.PARAMETER_GAIN, 1.0, Parameter.TYPE_FLOAT, (0, 1.0))
 
 
 class PanningPlugin(InternalPlugin):
@@ -21,7 +22,7 @@ class PanningPlugin(InternalPlugin):
 
     def __init__(self):
         super().__init__()
-        self.add_parameter(self.PARAMETER_PANNING, 0.0)
+        self.add_parameter(self.PARAMETER_PANNING, 0.0, Parameter.TYPE_FLOAT, (-1.0, 1.0))
 
 
 class SamplerPlugin(InternalPlugin):

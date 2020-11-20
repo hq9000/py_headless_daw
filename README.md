@@ -1,6 +1,11 @@
 # py_headless_daw
 A GUI-less DAW (Digital Audio Workstation) for producing electronic music using python
 
+## Detailed Documentation
+
+- [Drum synth](doc/drum_synth_plugin.md)
+- [Readme for "Riding on Bugs" demo project](py_headless_daw/demo/riding_on_bugs/README.md)
+
 ## Main concepts
 
 To create some audio with this library, the 3-step workflow described below is to be followed.
@@ -77,4 +82,3 @@ Units can be interconnected to produce multi-stage processing. For that, connect
 
 Compilation of a project is turning a project instance into a list of StreamNode instances.
 After successful compilation, it is possible to render stream data from these nodes to produce the resulting master.
-
