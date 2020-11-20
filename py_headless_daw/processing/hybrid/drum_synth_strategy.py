@@ -13,7 +13,7 @@ from py_headless_daw.schema.events.midi_event import MidiEvent
 from py_headless_daw.schema.events.parameter_value_event import ParameterValueEvent
 from py_headless_daw.schema.processing_strategy import ProcessingStrategy
 
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 
 
 @dataclass

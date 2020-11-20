@@ -6,7 +6,6 @@ A GUI-less DAW (Digital Audio Workstation) for producing electronic music using 
 - [Drum synth](doc/drum_synth_plugin.md)
 - [Readme for "Riding on Bugs" demo project](py_headless_daw/demo/riding_on_bugs/README.md)
 
-
 ## Main concepts
 
 To create some audio with this library, the 3-step workflow described below is to be followed.

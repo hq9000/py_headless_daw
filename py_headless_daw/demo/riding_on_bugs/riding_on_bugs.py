@@ -2,9 +2,6 @@ import logging
 import os
 from typing import List, Optional
 
-from matplotlib.backends.backend_pdf import Stream
-
-from py_headless_daw.processing.stream.stream_gain import StreamGain
 from py_headless_daw.project.audio_track import AudioTrack
 from py_headless_daw.project.content.audio_clip import AudioClip
 from py_headless_daw.project.content.midi_clip import MidiClip
@@ -12,7 +9,6 @@ from py_headless_daw.project.content.midi_note import MidiNote
 from py_headless_daw.project.envelope import Envelope, EnvelopePoint
 from py_headless_daw.project.midi_track import MidiTrack
 from py_headless_daw.project.plugins.drum_synth_plugin import DrumSynthPlugin
-from py_headless_daw.project.plugins.internal_plugin import InternalPlugin
 from py_headless_daw.project.plugins.vst_plugin import VstPlugin
 from py_headless_daw.project.project import Project
 from py_headless_daw.project.project_renderer import ProjectRenderer
@@ -20,8 +16,6 @@ from py_headless_daw.project.sampler_track import SamplerTrack
 
 logger = logging.getLogger(__name__)
 
-
-# todo add a couple of hits with drum synthesizer
 
 class RidingOnBugs:
     """
