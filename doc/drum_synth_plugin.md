@@ -5,7 +5,7 @@
 the project contains an internal Drum Synth plugin.
 Its purpose is to generate synthesized drum hits, such as base drums and hats.
 
-Sounds are generated as sums of several identical, but separately configurable, oscillators each having ADSR envelops for volume and pitch.
+Sounds are generated as sums of several identical, but separately configurable, oscillators each having ADSR envelopes for volume and pitch.
  
 
 ## Implementation
