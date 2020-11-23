@@ -3,12 +3,12 @@ import unittest
 from py_headless_daw.production.seed import Seed
 
 
-class MyTestCase(unittest.TestCase):
+class SeedTestCase(unittest.TestCase):
     def test_choose_one(self):
         seed = Seed('hello world')
-        choice = seed.choose_one('whatever', {
+        choice = seed.choose_one({
             'hello': 10
-        })
+        }, '1')
         self.assertEqual('hello', choice)
 
     def test_randint(self):
