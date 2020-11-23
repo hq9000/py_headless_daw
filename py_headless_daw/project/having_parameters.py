@@ -24,6 +24,9 @@ class HavingParameters:
         parameter = Parameter(name, value, param_type, value_range)
         self._parameters[name] = parameter
 
+    def add_parameter_object(self, parameter: Parameter) -> None:
+        self._parameters[parameter.name] = parameter
+
     def get_parameter(self, name: str) -> Parameter:
         for parameter in self.parameters:
             if parameter.name == name:
