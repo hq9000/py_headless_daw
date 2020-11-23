@@ -4,7 +4,7 @@ from py_headless_daw.project.project import Project
 
 
 class SimpleEdmProducer(ProducerInterface):
-    def generate_project(self, seed: Seed, temperature: float) -> Project:
+    def generate_project(self, seed: Seed) -> Project:
         number_of_synth_tracks = self._think_of_number_of_synth_track(seed)
 
     def _think_of_number_of_synth_track(self, seed: Seed) -> int:
