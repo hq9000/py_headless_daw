@@ -18,4 +18,4 @@ class Seed:
         self.seed: str = seed
 
     def choose_one(self, area_code: str, probabilities: RandomChoiceOptions) -> T:
-        return probabilities.keys()[0]  # dummy impl
+        return list(probabilities.keys())[0]  # dummy impl
