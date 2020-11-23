@@ -2,6 +2,7 @@ from typing import List
 
 from py_headless_daw.production.producer_interface import ProducerInterface
 from py_headless_daw.production.seed import Seed
+from py_headless_daw.production.simple_edm.drum_synth_preset_factory import SimpleEdmDrumSynthPresetFactory
 from py_headless_daw.project.audio_track import AudioTrack
 from py_headless_daw.project.midi_track import MidiTrack
 from py_headless_daw.project.plugins.drum_synth_plugin import DrumSynthPlugin
@@ -51,11 +52,13 @@ class SimpleEdmProducer(ProducerInterface):
         pass
 
     def _generate_drum_synth_audio_track_itself(self) -> AudioTrack:
-        res = AudioTrack
+        res = AudioTrack()
         plugin = DrumSynthPlugin()
+        bd_preset = SimpleEdmDrumSynthPresetFactory().generate_bd_preset()
+        plugin.configure_with_preset(bd_preset)
         res.plugins = [plugin]
-
-        pass
+        return res
 
     def _generate_drum_synth_midi_track(self) -> MidiTrack:
+
         pass
