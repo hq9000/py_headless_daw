@@ -9,7 +9,7 @@ DEFAULT_FREQUENCY_RANGE = 20_000
 
 
 class DrumSynthPlugin(InternalPlugin):
-    NUMBER_OF_OSCILLATORS = 4
+    MAX_NUMBER_OF_OSCILLATORS = 4
     DEFAULT_ZERO_FREQUENCY = 10
 
     PARAM_VALUE_WAVEFORM_SINE = 'sine'
@@ -17,6 +17,8 @@ class DrumSynthPlugin(InternalPlugin):
     PARAM_VALUE_WAVEFORM_SQUARE = 'square'
     PARAM_VALUE_WAVEFORM_TRIANGLE = 'triangle'
     PARAM_VALUE_WAVEFORM_NOISE = 'noise'
+
+    PARAM_NAME_NUM_OSCILLATORS = 'num_oscillators'
 
     PARAM_NAME_SUFFIX_OSCILLATOR_WAVEFORM = 'waveform'
     PARAM_NAME_SUFFIX_OSCILLATOR_WAVE_DISTORTION = 'wave_distortion'
@@ -61,7 +63,14 @@ class DrumSynthPlugin(InternalPlugin):
 
         super().__init__()
 
-        for i in range(1, self.NUMBER_OF_OSCILLATORS + 1):
+        self.add_parameter(name=self.PARAM_NAME_NUM_OSCILLATORS,
+                           value=1,
+                           param_type=Parameter.TYPE_ENUM,
+                           value_range=[
+                               "1", "2", "3", "4"
+                           ])
+
+        for i in range(1, self.MAX_NUMBER_OF_OSCILLATORS + 1):
 
             self.add_parameter(
                 name=self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_WAVEFORM, i),
@@ -102,9 +111,10 @@ class DrumSynthPlugin(InternalPlugin):
 
     def generate_generator_config(self) -> DrumSynthGeneratorConfig:
         osc_configs: List[OscillatorConfig] = []
-        for i in range(1, self.NUMBER_OF_OSCILLATORS + 1):
+        for i in range(1, int(self.get_parameter_value(self.PARAM_NAME_NUM_OSCILLATORS))):
             osc_config = OscillatorConfig(
-                volume=self.get_float_parameter_value(self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_VOLUME, i)),
+                volume=self.get_float_parameter_value(
+                    self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_VOLUME, i)),
                 zero_frequency=self.get_float_parameter_value(
                     self._generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_ZERO_FREQUENCY, i)),
                 frequency_range=self.get_float_parameter_value(

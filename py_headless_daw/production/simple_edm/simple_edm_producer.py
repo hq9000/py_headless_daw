@@ -58,7 +58,7 @@ class SimpleEdmProducer(ProducerInterface):
     def _generate_drum_synth_audio_track_itself(self) -> AudioTrack:
         res = AudioTrack()
         plugin = DrumSynthPlugin()
-        bd_preset = SimpleEdmDrumSynthPresetFactory().generate_bd_preset()
+        bd_preset = SimpleEdmDrumSynthPresetFactory().generate_bd_preset(self._seed)
         plugin.configure_with_preset(bd_preset)
         res.plugins = [plugin]
         return res
