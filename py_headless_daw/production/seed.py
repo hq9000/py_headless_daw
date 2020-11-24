@@ -22,6 +22,11 @@ class Seed:
         local_generator = Random(self._seed + sub_seed)
         return local_generator.randint(min_val, max_val)
 
+    def randfloat(self, min_val: float, max_val: float, sub_seed: str) -> float:
+        local_generator = Random(self._seed + sub_seed)
+        rnd = local_generator.random()
+        return min_val + rnd * (max_val - min_val)
+
     def choose_one(self, probabilities: RandomChoiceOptions, sub_seed: str) -> T:
         sum_of_probabilities: int = 0
 
@@ -38,6 +43,5 @@ class Seed:
                 return option
 
         raise ValueError('unable to generate a random choice (error: 8256cd68)')
-
 
         return list(probabilities.keys())[0]  # dummy impl
