@@ -6,9 +6,9 @@ from py_headless_daw.production.simple_edm.simple_edm_producer import SimpleEdmP
 
 class MyTestCase(unittest.TestCase):
     def test_something(self):
-        producer = SimpleEdmProducer()
         seed = Seed('hello')
-        res = producer.generate_project(seed)
+        producer = SimpleEdmProducer(seed)
+        res = producer.generate_project()
 
 
 if __name__ == '__main__':

@@ -41,7 +41,6 @@ class Seed:
         for option, add_probability in probabilities.items():
             if sum_of_probabilities <= dice_value < sum_of_probabilities + add_probability:
                 return option
+            sum_of_probabilities += add_probability
 
         raise ValueError('unable to generate a random choice (error: 8256cd68)')
-
-        return list(probabilities.keys())[0]  # dummy impl
