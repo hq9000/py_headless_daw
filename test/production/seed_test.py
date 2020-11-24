@@ -28,6 +28,16 @@ class SeedTestCase(unittest.TestCase):
         res = seed.randint(0, 10000, "subseed1")
         self.assertEqual(898, res)
 
+    def test_randfloat(self):
+        seed = Seed('123')
+        rnd = seed.randfloat(10, 20, 'ss')
+        self.assertEqual(12.784257244353906, rnd)
+        rnd = seed.randfloat(10, 20, 'ss')
+        self.assertEqual(12.784257244353906, rnd)
+
+        rnd = seed.randfloat(10, 20, 'ss1')
+        self.assertEqual(16.743403597407195, rnd)
+
 
 if __name__ == '__main__':
     unittest.main()
