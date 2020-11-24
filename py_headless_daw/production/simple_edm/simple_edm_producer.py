@@ -29,7 +29,12 @@ class SimpleEdmProducer(ProducerInterface):
         # for i in range(0, number_of_synth_tracks):
         #     master_track.add_input(self._generate_synth_track(i))
 
-        return Project(master_track)
+        res = Project(master_track)
+
+        res.start_time_seconds = 0.0
+        res.end_time_seconds = 5.0
+
+        return res
 
     def _invent_number_of_synth_tracks(self) -> int:
         return self._seed.choose_one(
