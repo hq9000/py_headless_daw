@@ -44,9 +44,9 @@ class DrumSynthPlugin(InternalPlugin):
     PARAM_NAME_SUFFIX_OSCILLATOR_VOLUME_ENVELOPE_RELEASE_CURVE_POWER = 'volume_release_curve_power'
 
     # pitch envelope parameters
-    PARAM_NAME_SUFFIX_OSCILLATOR_PITCH_ENVELOPE_ATTACK_TIME = 'pitch_decay_time'
-    PARAM_NAME_SUFFIX_OSCILLATOR_PITCH_ENVELOPE_ATTACK_CURVE_RATIO = 'pitch_decay_curve_ratio'
-    PARAM_NAME_SUFFIX_OSCILLATOR_PITCH_ENVELOPE_ATTACK_CURVE_POWER = 'pitch_decay_curve_power'
+    PARAM_NAME_SUFFIX_OSCILLATOR_PITCH_ENVELOPE_ATTACK_TIME = 'pitch_attack_time'
+    PARAM_NAME_SUFFIX_OSCILLATOR_PITCH_ENVELOPE_ATTACK_CURVE_RATIO = 'pitch_attack_curve_ratio'
+    PARAM_NAME_SUFFIX_OSCILLATOR_PITCH_ENVELOPE_ATTACK_CURVE_POWER = 'pitch_attack_curve_power'
 
     PARAM_NAME_SUFFIX_OSCILLATOR_PITCH_ENVELOPE_DECAY_TIME = 'pitch_decay_time'
     PARAM_NAME_SUFFIX_OSCILLATOR_PITCH_ENVELOPE_DECAY_CURVE_RATIO = 'pitch_decay_curve_ratio'
@@ -111,7 +111,7 @@ class DrumSynthPlugin(InternalPlugin):
 
     def generate_generator_config(self) -> DrumSynthGeneratorConfig:
         osc_configs: List[OscillatorConfig] = []
-        for i in range(1, int(self.get_parameter_value(self.PARAM_NAME_NUM_OSCILLATORS))):
+        for i in range(1, int(self.get_parameter_value(self.PARAM_NAME_NUM_OSCILLATORS)) + 1):
             osc_config = OscillatorConfig(
                 volume=self.get_float_parameter_value(
                     self.generate_param_name(self.PARAM_NAME_SUFFIX_OSCILLATOR_VOLUME, i)),

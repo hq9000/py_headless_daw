@@ -18,11 +18,20 @@ class SimpleEdmDrumSynthPresetFactory:
         oscillator_param_data = {
             DrumSynthPlugin.PARAM_NAME_SUFFIX_OSCILLATOR_VOLUME: 1.0,
             DrumSynthPlugin.PARAM_NAME_SUFFIX_OSCILLATOR_WAVEFORM: DrumSynthPlugin.PARAM_VALUE_WAVEFORM_SINE,
-            DrumSynthPlugin.PARAM_NAME_SUFFIX_OSCILLATOR_VOLUME_ENVELOPE_ATTACK_TIME: 0.01,
-            DrumSynthPlugin.PARAM_NAME_SUFFIX_OSCILLATOR_VOLUME_ENVELOPE_DECAY_TIME: seed.randfloat(0.2, 0.3, "bd decay time"),
+
+            DrumSynthPlugin.PARAM_NAME_SUFFIX_OSCILLATOR_VOLUME_ENVELOPE_ATTACK_TIME: 0.001,
+            DrumSynthPlugin.PARAM_NAME_SUFFIX_OSCILLATOR_VOLUME_ENVELOPE_DECAY_TIME: seed.randfloat(0.05, 0.06, "bd decay time"),
             DrumSynthPlugin.PARAM_NAME_SUFFIX_OSCILLATOR_VOLUME_ENVELOPE_SUSTAIN_LEVEL: 0.0,
             DrumSynthPlugin.PARAM_NAME_SUFFIX_OSCILLATOR_VOLUME_ENVELOPE_SUSTAIN_TIME: 0.0,
             DrumSynthPlugin.PARAM_NAME_SUFFIX_OSCILLATOR_VOLUME_ENVELOPE_RELEASE_TIME: 0.0,
+
+            DrumSynthPlugin.PARAM_NAME_SUFFIX_OSCILLATOR_PITCH_ENVELOPE_ATTACK_TIME: 0.01,
+            DrumSynthPlugin.PARAM_NAME_SUFFIX_OSCILLATOR_PITCH_ENVELOPE_DECAY_TIME: seed.randfloat(0.05, 0.06, "bd pitch decay time"),
+            DrumSynthPlugin.PARAM_NAME_SUFFIX_OSCILLATOR_PITCH_ENVELOPE_SUSTAIN_LEVEL: 0.0,
+            DrumSynthPlugin.PARAM_NAME_SUFFIX_OSCILLATOR_PITCH_ENVELOPE_SUSTAIN_TIME: 0.0,
+            DrumSynthPlugin.PARAM_NAME_SUFFIX_OSCILLATOR_PITCH_ENVELOPE_RELEASE_TIME: 0.0,
+
+            DrumSynthPlugin.PARAM_NAME_SUFFIX_OSCILLATOR_FREQUENCY_RANGE: 200.0,
         }
 
         for name, value in global_param_data.items():
