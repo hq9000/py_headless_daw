@@ -17,9 +17,9 @@ class MidiClip(Clip):
 
 class MidiClipEvent:
     """
-    A class representing certain midi event
+    A class representing a midi event
 
-    A midi clip event is something that is characterized by the time of its onset.
+    A midi clip event is an instant (zero length) something that is characterized by the time of its onset.
     There are two ways to translate clip times to wall clock times:
 
     TIMING_TYPE_CLIP_RELATIVE - the time offset from the beginning of the clips is calculated
@@ -27,7 +27,6 @@ class MidiClipEvent:
 
     TIMING_TYPE_CLIP_ABSOLUTE - the time offset from the beginning of the clips is
     taken directly as number of seconds (float) to pass from the beginning of the clip.
-
     """
     TIMING_TYPE_CLIP_RELATIVE: str = 'timing_clip_relative'
     TIMING_TYPE_CLIP_ABSOLUTE: str = 'timing_clip_absolute'

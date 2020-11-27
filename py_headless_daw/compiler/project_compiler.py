@@ -149,8 +149,6 @@ class ProjectCompiler:
     @classmethod
     def _create_vst_audio_plugin_unit(cls, host: Host, project: Project, plugin: VstProjectPlugin,
                                       track: Track) -> Unit:
-        path_to_shared_lib: bytes = plugin.path_to_shared_library.encode('utf-8')
-
         if plugin.is_synth:
             num_input_event_channels = 1
             num_input_stream_channels = 0
@@ -165,7 +163,7 @@ class ProjectCompiler:
         unit = Unit(num_input_stream_channels, num_input_event_channels, num_output_stream_channels,
                     num_output_event_channels, host)
 
-        strategy = VstPluginProcessingStrategy(path_to_shared_lib, unit)
+        strategy = cls._create_vst_plugin_processing_strategy(plugin.path_to_shared_library, unit, plugin)
         unit.set_processing_strategy(strategy)
         unit.name = track.name + " - " + plugin.name
         return unit
@@ -202,3 +200,14 @@ class ProjectCompiler:
     @classmethod
     def _create_parameter_value_transformer_function(cls, parameter, plugin) -> Callable[[float], Event]:
         pass
+
+    @classmethod
+    def _create_vst_plugin_processing_strategy(cls, path_to_shared_lib: str, unit: Unit, plugin: VstProjectPlugin):
+
+        path_to_shared_lib_as_bytes: bytes = path_to_shared_lib.encode('utf-8')
+        strategy = VstPluginProcessingStrategy(path_to_shared_lib_as_bytes, unit)
+
+        for parameter in plugin.parameters:
+            strategy.set_parameter_value(parameter.name, parameter.value)
+
+        return strategy

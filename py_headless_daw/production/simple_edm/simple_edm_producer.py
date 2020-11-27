@@ -1,3 +1,4 @@
+import os
 from typing import List
 
 from py_headless_daw.production.producer_interface import ProducerInterface
@@ -8,6 +9,7 @@ from py_headless_daw.project.content.midi_clip import MidiClip
 from py_headless_daw.project.content.midi_note import MidiNote
 from py_headless_daw.project.midi_track import MidiTrack
 from py_headless_daw.project.plugins.drum_synth_plugin import DrumSynthPlugin
+from py_headless_daw.project.plugins.vst_plugin import VstPlugin
 from py_headless_daw.project.project import Project
 
 
@@ -26,8 +28,8 @@ class SimpleEdmProducer(ProducerInterface):
         bd_track_audio_track = self.generate_bd_track()
         master_track.add_input(bd_track_audio_track)
 
-        # for i in range(0, number_of_synth_tracks):
-        #     master_track.add_input(self._generate_synth_track(i))
+        for i in range(0, number_of_synth_tracks):
+            master_track.add_input(self._generate_synth_track(i))
 
         res = Project(master_track)
 
@@ -58,7 +60,10 @@ class SimpleEdmProducer(ProducerInterface):
         return drum_synth_audio_track
 
     def _generate_synth_track(self, i: int) -> AudioTrack:
-        pass
+        synth_midi_track = self._generate_synth_midi_track(i)
+        synth_track_itself = self._generate_synth_track_itself(i)
+        synth_track_itself.add_input(synth_midi_track)
+        return synth_track_itself
 
     def _generate_drum_synth_audio_track_itself(self) -> AudioTrack:
         res = AudioTrack()
@@ -88,4 +93,18 @@ class SimpleEdmProducer(ProducerInterface):
         note4 = MidiNote(res, 0.75, 65, 80, 0.1)
 
         res.midi_notes = [note1, note2, note3, note4]
+        return res
+
+    def _generate_synth_midi_track(self, i: int) -> MidiTrack:
+        res = MidiTrack(1)
+        return res
+
+    def _generate_synth_track_itself(self, i) -> AudioTrack:
+        res = AudioTrack()
+
+        dir_path = os.path.dirname(os.path.realpath(__file__))
+        path_to_so: str = dir_path + '/../../../test/test_plugins/amsynth-vst.x86_64-linux.so'
+        vst_synth_plugin = VstPlugin(path_to_so)
+
+        res.plugins = [vst_synth_plugin]
         return res
