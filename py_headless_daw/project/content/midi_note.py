@@ -9,7 +9,6 @@ class MidiNote(MidiClipEvent):
         self.note: int = note
         self.velocity: int = velocity
         self.length: float = length
-        self.length_timing: str = self.LENGTH_TIMING_CLIP_RELATIVE
 
     def get_absolute_end_time(self) -> float:
         return self.get_absolute_start_time() + self.length
