@@ -36,7 +36,20 @@ class AmsynthPatchesManager:
             self._patches[file] = self._read_one_patch_file(patch_dir, file)
 
     def _read_one_patch_file(self, patch_dir: str, file: str) -> List[PluginPatch]:
+        with open(patch_dir + '/' + file) as f:
+            lines = [x.strip() for x in f.readlines()]
 
+        if "amSynth" != lines[0]:
+            raise ValueError(f'file named {file} in {patch_dir} does not have an expected header (error: b6f8d217)')
 
+        patch_data_accumulator: List[str] = []
+        patches: List[PluginPatch] = []
+        for line in lines:
+            if line.startswith('<preset> <name>'):
+                if patch_data_accumulator:
+                    new_patch = self._produce_one_patch(patch_data_accumulator)
+                    patches.append(new_patch)
+                    patch_data_accumulator = []
 
+    def _produce_one_patch(self, patch_data_accumulator) -> PluginPatch:
         pass
