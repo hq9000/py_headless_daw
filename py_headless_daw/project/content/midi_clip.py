@@ -32,8 +32,8 @@ class MidiClipEvent:
     TIMING_TYPE_CLIP_RELATIVE: str = 'timing_clip_relative'
     TIMING_TYPE_CLIP_ABSOLUTE: str = 'timing_clip_absolute'
 
-    def __init__(self, clip, clip_time, length):
-        # type: (MidiClip, float, float) -> None
+    def __init__(self, clip, clip_time):
+        # type: (MidiClip, float) -> None
         self.clip_time: float = clip_time
         self.clip: MidiClip = clip
         self.timing_type: str = self.TIMING_TYPE_CLIP_RELATIVE
