@@ -1,6 +1,7 @@
 import os
 from typing import List, Dict, Iterator
 
+from py_headless_daw.project.parameter import Parameter
 from py_headless_daw.project.plugin_patch import PluginPatch
 
 
@@ -42,14 +43,30 @@ class AmsynthPatchesManager:
         if "amSynth" != lines[0]:
             raise ValueError(f'file named {file} in {patch_dir} does not have an expected header (error: b6f8d217)')
 
-        patch_data_accumulator: List[str] = []
+        patch_lines_accumulator: List[str] = []
         patches: List[PluginPatch] = []
         for line in lines:
             if line.startswith('<preset> <name>'):
-                if patch_data_accumulator:
-                    new_patch = self._produce_one_patch(patch_data_accumulator)
+                if patch_lines_accumulator:
+                    new_patch = self._produce_one_patch(patch_lines_accumulator)
                     patches.append(new_patch)
-                    patch_data_accumulator = []
+                    patch_lines_accumulator = []
+            patch_lines_accumulator.append(line)
+        return patches
 
-    def _produce_one_patch(self, patch_data_accumulator) -> PluginPatch:
-        pass
+    def _produce_one_patch(self, patch_strings_accumulator: List[str]) -> PluginPatch:
+        patch = PluginPatch()
+
+        for s in patch_strings_accumulator:
+            if s.startswith("<preset> <name>"):
+                patch.name = s.replace("<preset> <name> ", "").strip()
+            elif s.startswith('<parameter>'):
+                param_name: str = s.split(sep=" ")[1]
+                param_value: float = float(s.split(sep=" ")[2])
+                patch.add_parameter(
+                    param_name,
+                    param_value,
+                    Parameter.TYPE_FLOAT,
+                    value_range=(-100.0, 100.0)
+                )
+        return patch
