@@ -2,7 +2,7 @@ import os
 from typing import List, Dict, Iterator
 
 from py_headless_daw.project.parameter import Parameter
-from py_headless_daw.project.plugin_patch import PluginPatch
+from py_headless_daw.project.named_parameter_bag import NamedParameterBag
 
 
 class AmsynthPatchesManager:
@@ -13,19 +13,19 @@ class AmsynthPatchesManager:
         patches are organized into groups (each group is produced
         by a file found in a patch_dir)
         """
-        self._patches: Dict[str, List[PluginPatch]] = {}
+        self._patches: Dict[str, List[NamedParameterBag]] = {}
         self._read_files(patch_dir)
 
-    def get_all_patches(self) -> List[PluginPatch]:
+    def get_all_patches(self) -> List[NamedParameterBag]:
         return list(self._get_all_patches_iterator())
 
-    def _get_all_patches_iterator(self) -> Iterator[PluginPatch]:
+    def _get_all_patches_iterator(self) -> Iterator[NamedParameterBag]:
         for group in self._patches:
             for patch in self._patches[group]:
                 yield patch
 
-    def get_all_patches_from_group(self, group_name: str) -> List[PluginPatch]:
-        if group_name in self._patches:
+    def get_all_patches_from_group(self, group_name: str) -> List[NamedParameterBag]:
+        if group_name not in self._patches:
             raise ValueError(
                 f'group named {group_name} not found in this amsynth patches manager. Available groups: {" ".join(self._patches.keys())} (error: 3fee472e)')
 
@@ -36,7 +36,7 @@ class AmsynthPatchesManager:
         for file in patch_files:
             self._patches[file] = self._read_one_patch_file(patch_dir, file)
 
-    def _read_one_patch_file(self, patch_dir: str, file: str) -> List[PluginPatch]:
+    def _read_one_patch_file(self, patch_dir: str, file: str) -> List[NamedParameterBag]:
         with open(patch_dir + '/' + file) as f:
             lines = [x.strip() for x in f.readlines()]
 
@@ -44,7 +44,7 @@ class AmsynthPatchesManager:
             raise ValueError(f'file named {file} in {patch_dir} does not have an expected header (error: b6f8d217)')
 
         patch_lines_accumulator: List[str] = []
-        patches: List[PluginPatch] = []
+        patches: List[NamedParameterBag] = []
         for line in lines:
             if line.startswith('<preset> <name>'):
                 if patch_lines_accumulator:
@@ -54,8 +54,8 @@ class AmsynthPatchesManager:
             patch_lines_accumulator.append(line)
         return patches
 
-    def _produce_one_patch(self, patch_strings_accumulator: List[str]) -> PluginPatch:
-        patch = PluginPatch()
+    def _produce_one_patch(self, patch_strings_accumulator: List[str]) -> NamedParameterBag:
+        patch = NamedParameterBag()
 
         for s in patch_strings_accumulator:
             if s.startswith("<preset> <name>"):
