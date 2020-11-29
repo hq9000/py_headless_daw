@@ -3,14 +3,17 @@ from typing import List
 
 from py_headless_daw.production.producer_interface import ProducerInterface
 from py_headless_daw.production.seed import Seed
+from py_headless_daw.production.simple_edm.amsynth_patches_manager import AmsynthPatchesManager
 from py_headless_daw.production.simple_edm.drum_synth_preset_factory import SimpleEdmDrumSynthPresetFactory
 from py_headless_daw.project.audio_track import AudioTrack
 from py_headless_daw.project.content.midi_clip import MidiClip
 from py_headless_daw.project.content.midi_note import MidiNote
 from py_headless_daw.project.midi_track import MidiTrack
+from py_headless_daw.project.named_parameter_bag import NamedParameterBag
 from py_headless_daw.project.plugins.drum_synth_plugin import DrumSynthPlugin
 from py_headless_daw.project.plugins.vst_plugin import VstPlugin
 from py_headless_daw.project.project import Project
+from py_headless_daw.shared.utils import get_path_relative_to_project_root, get_path_relative_to_file
 
 
 class SimpleEdmProducer(ProducerInterface):
@@ -106,5 +109,23 @@ class SimpleEdmProducer(ProducerInterface):
         path_to_so: str = dir_path + '/../../../test/test_plugins/amsynth-vst.x86_64-linux.so'
         vst_synth_plugin = VstPlugin(path_to_so)
 
+        param_bag = self._get_synth_param_bag(i)
+        self._apply_params_bag_to_synth_plugin(param_bag, vst_synth_plugin)
+
         res.plugins = [vst_synth_plugin]
         return res
+
+    def _get_synth_param_bag(self, i) -> NamedParameterBag:
+        manager = AmsynthPatchesManager(get_path_relative_to_file(__file__, 'amsynth_patches'))
+
+        all_patches = manager.get_all_patches()
+        selected_idx = self._seed.randint(0, len(all_patches), 'synth patch for synth number ' + str(i))
+
+        return all_patches[selected_idx]
+
+    def _apply_params_bag_to_synth_plugin(self, param_bag: NamedParameterBag, vst_synth_plugin: VstPlugin):
+        for parameter in param_bag.parameters:
+            name = parameter.name
+            value = param_bag.get_float_parameter_value(name)
+            vst_synth_plugin.set_parameter_value(name, value)
+
