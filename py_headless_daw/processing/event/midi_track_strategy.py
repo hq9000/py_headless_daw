@@ -69,8 +69,11 @@ class MidiTrackStrategy(ProcessingStrategy):
             res.append(
                 self._midi_event_factory.create_note_on_event(midi_note.note, midi_note.velocity, sample_position))
 
-        if self.round(note_end_in_seconds) < self.round(interval.end_in_seconds):
+        if self.round(note_end_in_seconds) <= self.round(interval.end_in_seconds):
             sample_position = self._calculate_sample_position(interval, self.round(note_end_in_seconds))
+            if sample_position == interval.num_samples:
+                sample_position -= 1
+
             res.append(
                 self._midi_event_factory.create_note_off_event(midi_note.note, midi_note.velocity, sample_position))
 
