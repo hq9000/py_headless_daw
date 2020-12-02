@@ -25,7 +25,7 @@ class SimpleEdmProducer(ProducerInterface):
 
     def generate_project(self) -> Project:
         number_of_synth_tracks = self._invent_number_of_synth_tracks()
-
+        number_of_synth_tracks = 1
         master_track = AudioTrack()
 
         bd_track_audio_track = self.generate_bd_track()
@@ -100,6 +100,15 @@ class SimpleEdmProducer(ProducerInterface):
 
     def _generate_synth_midi_track(self, i: int) -> MidiTrack:
         res = MidiTrack(1)
+
+        clip = MidiClip(1, 2)
+
+        note = MidiNote(clip, 0.1, 65, 87, 0.21) # note is correctly terminated
+
+        #note = MidiNote(clip, 0.1, 65, 87, 0.2)
+        clip.midi_notes = [note]
+
+        res.clips = [clip]
         return res
 
     def _generate_synth_track_itself(self, i) -> AudioTrack:
@@ -107,7 +116,9 @@ class SimpleEdmProducer(ProducerInterface):
 
         dir_path = os.path.dirname(os.path.realpath(__file__))
         path_to_so: str = dir_path + '/../../../test/test_plugins/amsynth-vst.x86_64-linux.so'
-        vst_synth_plugin = VstPlugin(path_to_so)
+
+        # unconventionally, amsynth seems not to obey to [0,1] range for its parameters
+        vst_synth_plugin = VstPlugin(path_to_so, (-1000.0, 1000.0))
 
         param_bag = self._get_synth_param_bag(i)
         self._apply_params_bag_to_synth_plugin(param_bag, vst_synth_plugin)
@@ -118,14 +129,14 @@ class SimpleEdmProducer(ProducerInterface):
     def _get_synth_param_bag(self, i) -> NamedParameterBag:
         manager = AmsynthPatchesManager(get_path_relative_to_file(__file__, 'amsynth_patches'))
 
-        all_patches = manager.get_all_patches()
+        all_patches = manager.get_all_patches_from_group('amsynth_factory.bank');
         selected_idx = self._seed.randint(0, len(all_patches), 'synth patch for synth number ' + str(i))
+        selected_idx = 0
 
         return all_patches[selected_idx]
 
     def _apply_params_bag_to_synth_plugin(self, param_bag: NamedParameterBag, vst_synth_plugin: VstPlugin):
         for parameter in param_bag.parameters:
             name = parameter.name
-            value = param_bag.get_float_parameter_value(name)
-            vst_synth_plugin.set_parameter_value(name, value)
-
+            new_value = param_bag.get_float_parameter_value(name)
+            vst_synth_plugin.set_parameter_value(name, new_value)

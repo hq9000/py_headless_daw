@@ -46,6 +46,10 @@ class AmsynthPatchesManager:
         patch_lines_accumulator: List[str] = []
         patches: List[NamedParameterBag] = []
         for line in lines:
+
+            if "amSynth" == line:
+                continue
+
             if line.startswith('<preset> <name>'):
                 if patch_lines_accumulator:
                     new_patch = self._produce_one_patch(patch_lines_accumulator)

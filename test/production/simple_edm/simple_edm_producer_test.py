@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 
 class MyTestCase(unittest.TestCase):
     def test_something(self):
-        seed = Seed('hello')
+        seed = Seed('hello1')
         producer = SimpleEdmProducer(seed)
         project = producer.generate_project()
 
