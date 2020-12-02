@@ -8,7 +8,7 @@ from py_headless_daw.project.project_renderer import ProjectRenderer
 import matplotlib.pyplot as plt
 
 
-class MyTestCase(unittest.TestCase):
+class SimpleEdmProducerTest(unittest.TestCase):
     def test_something(self):
         seed = Seed('hello1')
         producer = SimpleEdmProducer(seed)
