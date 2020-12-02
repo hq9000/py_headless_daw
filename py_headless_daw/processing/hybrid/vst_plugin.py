@@ -31,11 +31,7 @@ class VstPlugin(ProcessingStrategy):
 
     def set_parameter_value(self, name: str, value: float):
         param_idx = self._find_parameter_index_by_name(name)
-        existing_value = self._internal_plugin.get_parameter_value(param_idx)
         self._internal_plugin.set_parameter_value(param_idx, value)
-        updated_value = self._internal_plugin.get_parameter_value(param_idx)
-        name_from_plugin = self._internal_plugin.get_parameter_name(param_idx)
-        pass
 
     def render(self, interval: TimeInterval, stream_inputs: List[np.ndarray], stream_outputs: List[np.ndarray],
                event_inputs: List[List[Event]], event_outputs: List[List[Event]]):

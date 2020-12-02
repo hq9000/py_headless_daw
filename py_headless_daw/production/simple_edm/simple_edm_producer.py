@@ -104,9 +104,9 @@ class SimpleEdmProducer(ProducerInterface):
 
         clip = MidiClip(1, 2)
 
-        note = MidiNote(clip, 0.1, 65, 87, 0.21) # note is correctly terminated
+        # note = MidiNote(clip, 0.1, 65, 87, 0.21) # note is correctly terminated
 
-        #note = MidiNote(clip, 0.1, 65, 87, 0.2)
+        note = MidiNote(clip, 0.1, 64, 87, 0.2)
         clip.midi_notes = [note]
 
         res.clips = [clip]
@@ -132,6 +132,7 @@ class SimpleEdmProducer(ProducerInterface):
         # all_patches = manager.get_all_patches_from_group('amsynth_factory.bank');
         all_patches = manager.get_all_patches()
         selected_idx = self._seed.randint(0, len(all_patches), 'synth patch for synth number ' + str(i))
+        selected_idx = 0
         return all_patches[selected_idx]
 
     def _apply_params_bag_to_synth_plugin(self, param_bag: NamedParameterBag, vst_synth_plugin: VstPlugin):
