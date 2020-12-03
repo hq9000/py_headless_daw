@@ -35,7 +35,7 @@ class Seed:
         for option, add_probability in probabilities.items():
             sum_of_probabilities += add_probability
 
-        dice_value = self.randint(0, sum_of_probabilities, sub_seed)
+        dice_value = self.randint(0, sum_of_probabilities - 1, sub_seed)
 
         sum_of_probabilities = 0
         for option, add_probability in probabilities.items():

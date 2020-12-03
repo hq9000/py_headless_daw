@@ -1,5 +1,6 @@
 import os
-from typing import List
+from dataclasses import dataclass
+from typing import List, Optional
 
 from py_headless_daw.integrations.amsynth.amsynth_parameter_normalizer import AmsynthParameterNormalizer
 from py_headless_daw.production.producer_interface import ProducerInterface
@@ -102,12 +103,7 @@ class SimpleEdmProducer(ProducerInterface):
     def _generate_synth_midi_track(self, i: int) -> MidiTrack:
         res = MidiTrack(1)
 
-        clip = MidiClip(1, 2)
-
-        # note = MidiNote(clip, 0.1, 65, 87, 0.21) # note is correctly terminated
-
-        note = MidiNote(clip, 0.1, 64, 87, 0.2)
-        clip.midi_notes = [note]
+        clip = self._generate_synth_clip(i)
 
         res.clips = [clip]
         return res
@@ -141,3 +137,63 @@ class SimpleEdmProducer(ProducerInterface):
             name = parameter.name
             new_value = normalizer.normalize(name, param_bag.get_float_parameter_value(name))
             vst_synth_plugin.set_parameter_value(name, new_value)
+
+    def _generate_synth_clip(self, synth_id: int) -> MidiClip:
+        length_in_bars = self._seed.choose_one(
+            {
+                2: 10,
+                4: 10,
+                8: 10
+            },
+            f'pattern length for synth {synth_id}'
+        )
+
+        length_in_beats = length_in_bars * 4
+        length_of_one_beat_seconds = 60 / self._bpm
+
+        behavior_pause = "pause"
+        behavior_sustain = "sustain"
+        behavior_start_note = "start_note"
+
+        clip: MidiClip = MidiClip(0, length_in_beats * length_of_one_beat_seconds)
+        note_playing: Optional[MidiNote] = None
+        notes: List[MidiNote] = []
+
+        for position_id in range(length_in_bars):
+            behavior = self._seed.choose_one(
+                {
+                    behavior_pause: 5,
+                    behavior_sustain: 5,
+                    behavior_start_note: 10
+                },
+                f'note behavior for position {position_id} of synth {synth_id}'
+            )
+
+            if note_playing is not None:
+                if behavior == behavior_pause:
+                    note_playing.length = position_id * length_of_one_beat_seconds - note_playing.clip_time
+                    notes.append(note_playing)
+                    note_playing = None
+                elif behavior in [behavior_start_note, behavior_sustain]:
+                    pass
+                else:
+                    raise ValueError(f'unknown behaviour {behavior} (error: 602bfc62)')
+            else:
+                if behavior == behavior_start_note:
+                    pitch: int = self._seed.randint(50, 65, f"pitch for synth {synth_id} at {position_id}")
+                    velocity: int = self._seed.randint(50, 65, f"velocity for synth {synth_id} at {position_id}")
+                    note_playing = MidiNote(
+                        clip,
+                        position_id * length_of_one_beat_seconds,
+                        pitch,
+                        velocity,
+                        length_of_one_beat_seconds
+                    )
+                    note_playing.timing_type = MidiNote.TIMING_TYPE_CLIP_ABSOLUTE
+                elif behavior in [behavior_pause, behavior_sustain]:
+                    pass
+                else:
+                    raise ValueError(f'unknown behavior {behavior} (error: 898ee65b')
+
+        clip.midi_notes = notes
+        return clip
