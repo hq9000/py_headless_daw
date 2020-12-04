@@ -24,6 +24,7 @@ class SimpleEdmProducer(ProducerInterface):
         self._seed: Seed = seed
         self._bpm: int = self._seed.randint(118, 124, 'bpm')
         self._song_length_beats: int = 32
+        self._initial_offset_second = 0.001
 
     def generate_project(self) -> Project:
         number_of_synth_tracks = self._invent_number_of_synth_tracks()
@@ -39,7 +40,7 @@ class SimpleEdmProducer(ProducerInterface):
         res = Project(master_track)
 
         res.start_time_seconds = 0.0
-        res.end_time_seconds = 5.0
+        res.end_time_seconds = 15.0
 
         return res
 
@@ -125,10 +126,10 @@ class SimpleEdmProducer(ProducerInterface):
     def _get_synth_param_bag(self, i) -> NamedParameterBag:
         manager = AmsynthPatchesManager(get_path_relative_to_file(__file__, 'amsynth_patches'))
 
-        # all_patches = manager.get_all_patches_from_group('amsynth_factory.bank');
-        all_patches = manager.get_all_patches()
+        all_patches = manager.get_all_patches_from_group('amsynth_factory.bank')
+        # all_patches = manager.get_all_patches()
         selected_idx = self._seed.randint(0, len(all_patches), 'synth patch for synth number ' + str(i))
-        selected_idx = 0
+        # selected_idx = 2
         return all_patches[selected_idx]
 
     def _apply_params_bag_to_synth_plugin(self, param_bag: NamedParameterBag, vst_synth_plugin: VstPlugin):
@@ -148,6 +149,8 @@ class SimpleEdmProducer(ProducerInterface):
             f'pattern length for synth {synth_id}'
         )
 
+        length_in_bars = 8
+
         length_in_beats = length_in_bars * 4
         length_of_one_beat_seconds = 60 / self._bpm
 
@@ -159,7 +162,7 @@ class SimpleEdmProducer(ProducerInterface):
         note_playing: Optional[MidiNote] = None
         notes: List[MidiNote] = []
 
-        for position_id in range(length_in_bars):
+        for position_id in range(length_in_beats):
             behavior = self._seed.choose_one(
                 {
                     behavior_pause: 5,
@@ -168,6 +171,15 @@ class SimpleEdmProducer(ProducerInterface):
                 },
                 f'note behavior for position {position_id} of synth {synth_id}'
             )
+
+            # if position_id % 4 == 0:
+            #     behavior = behavior_start_note
+            # if position_id % 4 == 1:
+            #     behavior = behavior_sustain
+            # if position_id % 4 == 2:
+            #     behavior = behavior_pause
+            # if position_id % 4 == 3:
+            #     behavior = behavior_pause
 
             if note_playing is not None:
                 if behavior == behavior_pause:
@@ -180,8 +192,10 @@ class SimpleEdmProducer(ProducerInterface):
                     raise ValueError(f'unknown behaviour {behavior} (error: 602bfc62)')
             else:
                 if behavior == behavior_start_note:
-                    pitch: int = self._seed.randint(50, 65, f"pitch for synth {synth_id} at {position_id}")
-                    velocity: int = self._seed.randint(50, 65, f"velocity for synth {synth_id} at {position_id}")
+                    pitch: int = self._seed.randint(50, 60, f"pitch for synth {synth_id} at {position_id}")
+                    velocity: int = self._seed.randint(30, 110, f"velocity for synth {synth_id} at {position_id}")
+                    #pitch = 55
+                    #velocity = 100
                     note_playing = MidiNote(
                         clip,
                         position_id * length_of_one_beat_seconds,
