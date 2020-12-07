@@ -118,7 +118,7 @@ class SimpleEdmProducer(ProducerInterface):
         vst_synth_plugin = VstPlugin(path_to_so, (0.0, 1.0))
 
         param_bag = self._get_synth_param_bag(i)
-        self._apply_params_bag_to_synth_plugin(param_bag, vst_synth_plugin)
+        # self._apply_params_bag_to_synth_plugin(param_bag, vst_synth_plugin)
 
         res.plugins = [vst_synth_plugin]
         return res
@@ -129,7 +129,7 @@ class SimpleEdmProducer(ProducerInterface):
         all_patches = manager.get_all_patches_from_group('amsynth_factory.bank')
         # all_patches = manager.get_all_patches()
         selected_idx = self._seed.randint(0, len(all_patches), 'synth patch for synth number ' + str(i))
-        # selected_idx = 2
+        selected_idx = 0
         return all_patches[selected_idx]
 
     def _apply_params_bag_to_synth_plugin(self, param_bag: NamedParameterBag, vst_synth_plugin: VstPlugin):
@@ -158,7 +158,13 @@ class SimpleEdmProducer(ProducerInterface):
         behavior_sustain = "sustain"
         behavior_start_note = "start_note"
 
+        offset = 0.15
+
         clip: MidiClip = MidiClip(0, length_in_beats * length_of_one_beat_seconds)
+
+        clip.start_time += offset
+        clip.end_time += offset
+
         note_playing: Optional[MidiNote] = None
         notes: List[MidiNote] = []
 
@@ -172,14 +178,14 @@ class SimpleEdmProducer(ProducerInterface):
                 f'note behavior for position {position_id} of synth {synth_id}'
             )
 
-            # if position_id % 4 == 0:
-            #     behavior = behavior_start_note
-            # if position_id % 4 == 1:
-            #     behavior = behavior_sustain
-            # if position_id % 4 == 2:
-            #     behavior = behavior_pause
-            # if position_id % 4 == 3:
-            #     behavior = behavior_pause
+            if position_id % 4 == 0:
+                behavior = behavior_start_note
+            if position_id % 4 == 1:
+                behavior = behavior_sustain
+            if position_id % 4 == 2:
+                behavior = behavior_pause
+            if position_id % 4 == 3:
+                behavior = behavior_pause
 
             if note_playing is not None:
                 if behavior == behavior_pause:
