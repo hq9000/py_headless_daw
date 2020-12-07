@@ -5,7 +5,7 @@ from py_headless_daw.production.seed import Seed
 from py_headless_daw.production.simple_edm.simple_edm_producer import SimpleEdmProducer
 from py_headless_daw.project.project_renderer import ProjectRenderer
 
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 
 
 class SimpleEdmProducerTest(unittest.TestCase):
