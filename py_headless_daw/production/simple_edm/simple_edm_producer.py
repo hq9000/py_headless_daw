@@ -118,7 +118,7 @@ class SimpleEdmProducer(ProducerInterface):
         vst_synth_plugin = VstPlugin(path_to_so, (0.0, 1.0))
 
         param_bag = self._get_synth_param_bag(i)
-        # self._apply_params_bag_to_synth_plugin(param_bag, vst_synth_plugin)
+        self._apply_params_bag_to_synth_plugin(param_bag, vst_synth_plugin)
 
         res.plugins = [vst_synth_plugin]
         return res
