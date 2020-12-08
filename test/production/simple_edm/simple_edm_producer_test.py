@@ -10,7 +10,7 @@ from py_headless_daw.project.project_renderer import ProjectRenderer
 
 class SimpleEdmProducerTest(unittest.TestCase):
     def test_something(self):
-        seed = Seed('hello1')
+        seed = Seed('hello')
         producer = SimpleEdmProducer(seed)
         project = producer.generate_project()
 
