@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 
-from py_headless_daw.production.seed import Seed
 from py_headless_daw.project.project import Project
 
 

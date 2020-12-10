@@ -1,12 +1,11 @@
+from typing import Dict, Union
+
 from py_headless_daw.production.seed import Seed
 from py_headless_daw.project.plugins.drum_synth_plugin import DrumSynthPlugin
 from py_headless_daw.project.plugins.plugin_preset import PluginPreset
 
 
 class SimpleEdmDrumSynthPresetFactory:
-    def create_bd_preset(self) -> PluginPreset:
-        res = PluginPreset()
-        return res
 
     def generate_bd_preset(self, seed: Seed) -> PluginPreset:
         res = PluginPreset('standard bd', DrumSynthPlugin)

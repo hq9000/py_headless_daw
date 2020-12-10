@@ -12,9 +12,10 @@ If you intend to write your own producer, the best way to get familiar with exis
 
 ## Details
 
-Below go a human-readable introduction to what actually happens there:
+Below goes a human-readable introduction to what actually happens there:
 
 The producer, given a seed, generates a project consisting of:
+
 1. a base drum track using built-in drum synthesizer
 1. from 2 to 4 synth tracks using `amsynth` plugin
 1. a reverb send track (`dragonfly reverb`) that synth tracks send to

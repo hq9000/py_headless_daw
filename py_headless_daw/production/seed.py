@@ -1,5 +1,5 @@
-from random import randint, Random
-from typing import Any, Dict, TypeVar
+from random import Random
+from typing import Dict, TypeVar
 
 T = TypeVar('T')
 RandomChoiceOptions = Dict[T, int]
@@ -15,7 +15,9 @@ class Seed:
     """
 
     def __init__(self, seed: str = None):
-        self._seed: str = seed
+        self._seed: str = 'default seed'
+        if seed is not None:
+            self._seed = seed
         self._generator: Random = Random(seed)
 
     def randint(self, min_val: int, max_val: int, sub_seed: str):

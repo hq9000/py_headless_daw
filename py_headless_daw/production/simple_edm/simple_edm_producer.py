@@ -1,5 +1,4 @@
 import os
-from dataclasses import dataclass
 from typing import List, Optional
 
 from py_headless_daw.integrations.amsynth.amsynth_parameter_normalizer import AmsynthParameterNormalizer
@@ -15,7 +14,7 @@ from py_headless_daw.project.named_parameter_bag import NamedParameterBag
 from py_headless_daw.project.plugins.drum_synth_plugin import DrumSynthPlugin
 from py_headless_daw.project.plugins.vst_plugin import VstPlugin
 from py_headless_daw.project.project import Project
-from py_headless_daw.shared.utils import get_path_relative_to_project_root, get_path_relative_to_file
+from py_headless_daw.shared.utils import get_path_relative_to_file
 
 
 class SimpleEdmProducer(ProducerInterface):

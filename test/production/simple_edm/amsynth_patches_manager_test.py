@@ -3,7 +3,6 @@ import unittest
 
 from py_headless_daw.production.simple_edm.amsynth_patches_manager import AmsynthPatchesManager
 from py_headless_daw.project.named_parameter_bag import NamedParameterBag
-from py_headless_daw.project.plugins.plugin_preset import PluginPreset
 
 
 class AmsynthPatchesManagerTest(unittest.TestCase):
