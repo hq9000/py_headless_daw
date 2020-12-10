@@ -27,15 +27,20 @@ class SimpleEdmProducer(ProducerInterface):
         self._initial_offset_second = 0.001
 
     def generate_project(self) -> Project:
-        number_of_synth_tracks = self._invent_number_of_synth_tracks()
+        # number_of_synth_tracks = self._invent_number_of_synth_tracks()
         number_of_synth_tracks = 3
         master_track = AudioTrack()
 
-        bd_track_audio_track = self.generate_bd_track()
+        bd_track_audio_track = self._generate_bd_track()
         master_track.add_input(bd_track_audio_track)
 
+        reverb_send_track = self._generate_reverb_send_track()
+        master_track.add_input(reverb_send_track)
+
         for i in range(0, number_of_synth_tracks):
-            master_track.add_input(self._generate_synth_track(i))
+            synth_track = self._generate_synth_track(i)
+            master_track.add_input(synth_track)
+            reverb_send_track.add_input(synth_track)
 
         res = Project(master_track)
 
@@ -54,7 +59,7 @@ class SimpleEdmProducer(ProducerInterface):
             "num synth tracks"
         )
 
-    def generate_bd_track(self) -> AudioTrack:
+    def _generate_bd_track(self) -> AudioTrack:
         """
         bd track is a midi track feeding itself to drum synth track
         """
@@ -64,6 +69,24 @@ class SimpleEdmProducer(ProducerInterface):
 
         drum_synth_audio_track.add_input(drum_synth_midi_track)
         return drum_synth_audio_track
+
+    def _generate_reverb_send_track(self) -> AudioTrack:
+        res = AudioTrack()
+
+        plugin = self._create_vst_plugin('DragonflyRoomReverb-vst.x86_64-linux.so')
+        res.plugins = [plugin]
+
+        plugin.set_parameter_value('Dry Level',
+                                   0.00000001)  # for some reason pure 0 seems to randomly give some weird behaviour
+        plugin.set_parameter_value('Late Level', 0.5)
+        plugin.set_parameter_value('Decay', 0.18)
+
+        return res
+
+    def _create_vst_plugin(self, so_name: str) -> VstPlugin:
+        dir_path = os.path.dirname(os.path.realpath(__file__))
+        path_to_so: str = dir_path + '/../../../test/test_plugins/' + so_name
+        return VstPlugin(path_to_so, (0.0, 1.0))
 
     def _generate_synth_track(self, i: int) -> AudioTrack:
         synth_midi_track = self._generate_synth_midi_track(i)

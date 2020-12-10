@@ -13,7 +13,7 @@ from py_headless_daw.project.project_renderer import ProjectRenderer
 class SimpleEdmProducerTest(unittest.TestCase):
 
     @parametrized.parametrized([
-        ['hello'], ['hello1'], ['hello2']
+        ['hello'], ['hello1'], ['hello2'], ['123']
     ])
     def generate_audio(self, seed_string: str):
         seed = Seed(seed_string)
