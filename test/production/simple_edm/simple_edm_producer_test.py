@@ -26,6 +26,13 @@ class SimpleEdmProducerTest(unittest.TestCase):
         renderer = ProjectRenderer(compiler)
 
         out_file_path = str(Path(__file__).parent.absolute()) + f"/output/out_{seed_string}.wav"
+
+        if project.start_time_seconds is None:
+            raise ValueError()
+
+        if project.end_time_seconds is None:
+            raise ValueError()
+
         renderer.render_to_file(project, project.start_time_seconds, project.end_time_seconds, out_file_path)
 
         pass

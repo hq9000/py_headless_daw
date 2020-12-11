@@ -165,7 +165,7 @@ class SimpleEdmProducer(ProducerInterface):
             vst_synth_plugin.set_parameter_value(name, new_value)
 
     def _generate_synth_clip(self, synth_id: int) -> MidiClip:
-        length_in_bars = self._seed.choose_one(
+        length_in_bars: int = self._seed.choose_one(
             {
                 2: 10,
                 4: 10,

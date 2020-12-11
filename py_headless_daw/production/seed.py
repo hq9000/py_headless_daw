@@ -29,7 +29,7 @@ class Seed:
         rnd = local_generator.random()
         return min_val + rnd * (max_val - min_val)
 
-    def choose_one(self, probabilities: RandomChoiceOptions, sub_seed: str) -> T:
+    def choose_one(self, probabilities: RandomChoiceOptions[T], sub_seed: str) -> T:
         sum_of_probabilities: int = 0
 
         # probabilities do not have to sum up to 100 or anything,
