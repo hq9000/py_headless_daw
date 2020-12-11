@@ -104,9 +104,9 @@ class ProjectTest(ContainerAwareTestCase):
         midi_clip = MidiClip(0.0, 1.0)
         midi_clip.midi_notes = [
             MidiNote(midi_clip, 0.0, 65, 77, 0.1),
-            MidiNote(midi_clip, 0.25, 66, 72, 0.1),
-            MidiNote(midi_clip, 0.5, 67, 55, 0.1),
-            MidiNote(midi_clip, 0.75, 68, 13, 0.1),
+            #MidiNote(midi_clip, 0.25, 66, 72, 0.1),
+            #MidiNote(midi_clip, 0.5, 67, 55, 0.1),
+            #MidiNote(midi_clip, 0.75, 68, 13, 0.1),
         ]
 
         midi_clip_for_drum_synth = MidiClip(0.0, 1.0)
