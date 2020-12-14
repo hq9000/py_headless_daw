@@ -55,7 +55,6 @@ class SamplerTest(unittest.TestCase):
         [0.75, 1.75, 100, None, 0.25],
         [10.0, 11.0, 100, None, 0.5],  # clip goes beyond underlying file
         [13.0, 14.0, 100, 1.0, None],  # single-channel clip
-
     ])
     def one_case(self, interval_start: float, interval_end: float, buffer_length: int,
                  expected_level_in_output: Optional[float], expected_average: Optional[float]):

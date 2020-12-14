@@ -1,8 +1,12 @@
 # py_headless_daw
 A GUI-less DAW (Digital Audio Workstation) for producing electronic music using python
 
-## Detailed Documentation
+## Links to detailed documentation
 
+Here are links to more in-depth docs on several aspects of the system:
+
+- [Reference producer implementation](doc/simple_edm_producer.md)
+  - an example of a "producer" that generates random "songs". This is meant to be a reference for "real" producers' implementations.
 - [Drum synth](doc/drum_synth_plugin.md)
 - [Readme for "Riding on Bugs" demo project](py_headless_daw/demo/riding_on_bugs/README.md)
 

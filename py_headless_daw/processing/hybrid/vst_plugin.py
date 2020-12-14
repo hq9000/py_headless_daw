@@ -29,13 +29,21 @@ class VstPlugin(ProcessingStrategy):
         host.bpm = bpm
         self._internal_plugin: InternalPlugin = InternalPlugin(path_to_plugin_file, host)
 
+    def set_parameter_value(self, name: str, value: float):
+        param_idx = self._find_parameter_index_by_name(name)
+        self._internal_plugin.set_parameter_value(param_idx, value)
+
     def render(self, interval: TimeInterval, stream_inputs: List[np.ndarray], stream_outputs: List[np.ndarray],
                event_inputs: List[List[Event]], event_outputs: List[List[Event]]):
 
+        # noinspection PyTypeChecker
         midi_events: List[MidiEvent] = cast(List[MidiEvent], self._filter_events(event_inputs, Event.TYPE_MIDI))
+
+        # noinspection PyTypeChecker
         parameter_events: List[ParameterValueEvent] = cast(List[ParameterValueEvent],
                                                            self._filter_events(event_inputs,
-                                                                               Event.TYPE_PARAMETER_VALUE))
+                                                                               Event.TYPE_PARAMETER_VALUE)
+                                                           )
 
         # just setting the values of params (if any corresponding events have arrived) before
         # processing the upcoming audio block.
