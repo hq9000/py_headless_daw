@@ -10,12 +10,12 @@ class AmsynthPatchesManagerTest(unittest.TestCase):
         manager = AmsynthPatchesManager(self._get_patches_dir())
 
         all_patches = manager.get_all_patches()
-        self.assertEqual(768, len(all_patches))
+        self.assertEqual(787, len(all_patches))
 
     def test_getting_patches_of_one_group(self):
         manager = AmsynthPatchesManager(self._get_patches_dir())
         patches = manager.get_all_patches_from_group('PatriksBank02.bank.txt')
-        self.assertEqual(128, len(patches))
+        self.assertEqual(127, len(patches))
         self.assertIsInstance(patches[0], NamedParameterBag)
 
     def _get_patches_dir(self) -> str:

@@ -69,7 +69,7 @@ class ProjectTest(ContainerAwareTestCase):
         synth_track: AudioTrack = AudioTrack()
         drum_synth_track: AudioTrack = AudioTrack()
 
-        midi_track: MidiTrack = MidiTrack(1)
+        synth_midi_track: MidiTrack = MidiTrack(1)
         drum_midi_track: MidiTrack = MidiTrack(1)
 
         sampler_track: SamplerTrack = SamplerTrack()
@@ -80,7 +80,7 @@ class ProjectTest(ContainerAwareTestCase):
         synth_track.name = "Synth Track"
         drum_synth_track.name = "Drum Synth Track"
 
-        midi_track.name = "Midi Track"
+        synth_midi_track.name = "Synth Midi Track"
         drum_midi_track.name = "Drum Midi Track"
 
         sampler_track.name = "Sampler Track"
@@ -89,7 +89,7 @@ class ProjectTest(ContainerAwareTestCase):
         send2.name = "Send2"
 
         # - commutation
-        midi_track.add_output(synth_track)
+        synth_midi_track.add_output(synth_track)
         synth_track.add_output(master_track)
         synth_track.add_output(send1)
         sampler_track.add_output(master_track)
@@ -104,9 +104,9 @@ class ProjectTest(ContainerAwareTestCase):
         midi_clip = MidiClip(0.0, 1.0)
         midi_clip.midi_notes = [
             MidiNote(midi_clip, 0.0, 65, 77, 0.1),
-            #MidiNote(midi_clip, 0.25, 66, 72, 0.1),
-            #MidiNote(midi_clip, 0.5, 67, 55, 0.1),
-            #MidiNote(midi_clip, 0.75, 68, 13, 0.1),
+            MidiNote(midi_clip, 0.25, 66, 72, 0.1),
+            MidiNote(midi_clip, 0.5, 67, 55, 0.1),
+            MidiNote(midi_clip, 0.75, 68, 13, 0.1),
         ]
 
         midi_clip_for_drum_synth = MidiClip(0.0, 1.0)
@@ -117,7 +117,7 @@ class ProjectTest(ContainerAwareTestCase):
             MidiNote(midi_clip, 0.78, 68, 13, 0.1),
         ]
 
-        midi_track.clips = [midi_clip]
+        synth_midi_track.clips = [midi_clip]
         drum_midi_track.clips = [midi_clip_for_drum_synth]
 
         # - adding some audio content
