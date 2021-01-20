@@ -18,5 +18,25 @@ The instructions above assume a compatible venv (python 3.7+) is activated.
 
 ### Build and upload to the index
 
+- `rm dist/*`
 - `python setup.py sdist bdist_wheel`
 - `python -m twine upload dist/*`
+  - for testing `python -m twine upload --repository testpypi dist/*`
+
+### Installing the package
+
+just run `pip install py_headless_daw`, this will install the latest version uploaded to the main pypi
+
+if you want to install from testpypi, the command changes to
+`pip install --upgrade --index-url https://test.pypi.org/simple/ py_headless_daw`
+  
+#### Known issue with uploading to testpypi
+when installing from testpypi as described above, it has been seen to require compiling `numpy` from scratch which takes a lot of time and often fails for some reason with some compilation errors.
+Because of that, at the moment, I have not yet found a way to reliably install this package with dependencies from testpypi.
+
+Instead, I upload new versions to main pypi which does not trigger this problem.
+
+
+#### Upgrading
+
+to upgrade the package, add `--upgrade` to your pip commands above, e.g. ` pip install --upgrade py_headless_daw`
