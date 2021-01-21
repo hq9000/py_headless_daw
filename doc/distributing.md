@@ -31,7 +31,7 @@ if you want to install from testpypi, the command changes to
 `pip install --upgrade --index-url https://test.pypi.org/simple/ py_headless_daw`
   
 #### Known issue with uploading to testpypi
-when installing from testpypi as described above, it has been seen to require compiling `numpy` from scratch which takes a lot of time and often fails for some reason with some compilation errors.
+`nympy` is a dependency of this library. When installing from `testpypi` as described above, somehow it has been seen to require compiling `numpy` from scratch which takes a lot of time and often (so far, always) fails for some reason with some compilation errors.
 Because of that, at the moment, I have not yet found a way to reliably install this package with dependencies from testpypi.
 
 Instead, I upload new versions to main pypi which does not trigger this problem.
