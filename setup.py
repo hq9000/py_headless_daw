@@ -7,7 +7,7 @@ with open("version.txt", "r", encoding="utf-8") as fh:
     version = fh.read()
 
 setuptools.setup(
-    name="py_headless_daw", # Replace with your own username
+    name="py_headless_daw",  # Replace with your own username
     version=version,
     author="Sergey Grechin",
     author_email="grechin.sergey@gmail.com",
