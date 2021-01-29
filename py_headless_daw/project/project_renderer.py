@@ -19,8 +19,15 @@ class ProjectRenderer:
 
     def render_to_file(self, project: Project, start_time: float, end_time: float, out_file_path: str):
         buffer = self.render_to_array(project, start_time, end_time)
-        buffer = np.rot90(buffer, k=-1)
-        wavfile.write(out_file_path, self.SAMPLE_RATE, buffer)
+        self.render_array_to_file(buffer, self.SAMPLE_RATE, out_file_path)
+
+    def render_array_to_file(self, data: np.ndarray, sample_rate: int, out_file_path: str):
+        """
+        data: the array that render_to_array would have produced
+        out_file_path: path to output wav data to
+        """
+        rotated = np.rot90(data, k=-1)
+        wavfile.write(out_file_path, sample_rate, rotated)
 
     def render_to_array(self, project: Project, start_time: float, end_time: float) -> np.ndarray:
         output_stream_nodes: List[StreamNode] = self._compiler.compile(project)
